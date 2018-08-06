@@ -25,4 +25,17 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 ## License
 
 The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
-"# laraCRM" 
+
+# laraCRM
+Created by following http://laraadmin.com/docs/1.0/installation
+
+-composer create-project laravel/laravel=5.2.31 CRM
+-cd CRM
+-sudo chmod -R 777 storage/ bootstrap/ database/migrations/
+-composer require "dwij/laraadmin:1.0.40"
+-Add LaraAdmin Service provider Dwij\Laraadmin\LAProvider::class in config/app.php :
+    'providers' => [
+            ...
+            Dwij\Laraadmin\LAProvider::class
+    ],
+-php artisan la:install
