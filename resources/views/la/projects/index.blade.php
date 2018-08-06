@@ -1,14 +1,14 @@
 @extends("la.layouts.app")
 
-@section("contentheader_title", "Employees")
-@section("contentheader_description", "Employees listing")
-@section("section", "Employees")
+@section("contentheader_title", "Projects")
+@section("contentheader_description", "Projects listing")
+@section("section", "Projects")
 @section("sub_section", "Listing")
-@section("htmlheader_title", "Employees Listing")
+@section("htmlheader_title", "Projects Listing")
 
 @section("headerElems")
-@la_access("Employees", "create")
-	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Employee</button>
+@la_access("Projects", "create")
+	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Project</button>
 @endla_access
 @endsection
 
@@ -45,49 +45,25 @@
 	</div>
 </div>
 
-@la_access("Employees", "create")
+@la_access("Projects", "create")
 <div class="modal fade" id="AddModal" role="dialog" aria-labelledby="myModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Add Employee</h4>
+				<h4 class="modal-title" id="myModalLabel">Add Project</h4>
 			</div>
-			{!! Form::open(['action' => 'LA\EmployeesController@store', 'id' => 'employee-add-form']) !!}
+			{!! Form::open(['action' => 'LA\ProjectsController@store', 'id' => 'project-add-form']) !!}
 			<div class="modal-body">
 				<div class="box-body">
                     @la_form($module)
 					
 					{{--
 					@la_input($module, 'name')
-					@la_input($module, 'designation')
-					@la_input($module, 'gender')
-					@la_input($module, 'mobile')
-					@la_input($module, 'mobile2')
-					@la_input($module, 'email')
-					@la_input($module, 'date_birth')
-					@la_input($module, 'city')
-					@la_input($module, 'address')
-					@la_input($module, 'about')
-					@la_input($module, 'first_approver')
-					@la_input($module, 'second_approver')
-					@la_input($module, 'dept')
-					@la_input($module, 'project_id')
-					@la_input($module, 'salary_cur')
-					@la_input($module, 'date_hire')
-					@la_input($module, 'date_left')
+					@la_input($module, 'client_id')
+					@la_input($module, 'start_date')
+					@la_input($module, 'end_date')
 					--}}
-					<div class="form-group">
-						<label for="role">Role* :</label>
-						<select class="form-control" required="1" data-placeholder="Select Role" rel="select2" name="role">
-							<?php $roles = App\Role::all(); ?>
-							@foreach($roles as $role)
-								@if($role->id != 1)
-									<option value="{{ $role->id }}">{{ $role->name }}</option>
-								@endif
-							@endforeach
-						</select>
-					</div>
 				</div>
 			</div>
 			<div class="modal-footer">
@@ -113,7 +89,7 @@ $(function () {
 	$("#example1").DataTable({
 		processing: true,
         serverSide: true,
-        ajax: "{{ url(config('laraadmin.adminRoute') . '/employee_dt_ajax') }}",
+        ajax: "{{ url(config('laraadmin.adminRoute') . '/project_dt_ajax') }}",
 		language: {
 			lengthMenu: "_MENU_",
 			search: "_INPUT_",
@@ -123,7 +99,7 @@ $(function () {
 		columnDefs: [ { orderable: false, targets: [-1] }],
 		@endif
 	});
-	$("#employee-add-form").validate({
+	$("#project-add-form").validate({
 		
 	});
 });

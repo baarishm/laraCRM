@@ -24,4 +24,16 @@
       user experience. Slimscroll is required when using the
       fixed layout. -->
 
+<script>
+$(document).ready(function () {
+    setTimeout(function () {
+        $('.btn-delete, .btn-danger[type="submit"]').click(function () {
+            if (!confirm("Are you sure to delete?")) {
+                return false;
+            }
+        });
+    }, 300);
+
+});
+</script>
 @stack('scripts')

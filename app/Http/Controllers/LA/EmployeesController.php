@@ -29,10 +29,9 @@ class EmployeesController extends Controller
 {
 	public $show_action = true;
 	public $view_col = 'name';
-	public $listing_cols = ['id', 'name', 'designation', 'mobile', 'email', 'dept'];
+	public $listing_cols = ['id', 'name', 'designation', 'gender', 'mobile', 'mobile2', 'email', 'date_birth', 'city', 'address', 'about', 'first_approver', 'second_approver', 'dept', 'project_id', 'salary_cur', 'date_hire', 'date_left'];
 	
 	public function __construct() {
-		
 		// Field Access of Listing Columns
 		if(\Dwij\Laraadmin\Helpers\LAHelper::laravel_ver() == 5.3) {
 			$this->middleware(function ($request, $next) {
@@ -172,10 +171,9 @@ class EmployeesController extends Controller
 	 */
 	public function edit($id)
 	{
-		if(Module::hasAccess("Employees", "edit")) {
-			
+		if(Module::hasAccess("Employees", "edit")) {			
 			$employee = Employee::find($id);
-			if(isset($employee->id)) {
+			if(isset($employee->id)) {	
 				$module = Module::get('Employees');
 				
 				$module->row = $employee;
@@ -314,7 +312,7 @@ class EmployeesController extends Controller
 		
 		if ($validator->fails()) {
 			return \Redirect::to(config('laraadmin.adminRoute') . '/employees/'.$id)->withErrors($validator);
-		}
+}
 		
 		$employee = Employee::find($id);
 		$user = User::where("context_id", $employee->id)->where('type', 'Employee')->first();

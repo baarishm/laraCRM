@@ -70,4 +70,20 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::get(config('laraadmin.adminRoute') . '/backup_dt_ajax', 'LA\BackupsController@dtajax');
 	Route::post(config('laraadmin.adminRoute') . '/create_backup_ajax', 'LA\BackupsController@create_backup_ajax');
 	Route::get(config('laraadmin.adminRoute') . '/downloadBackup/{id}', 'LA\BackupsController@downloadBackup');
+
+	/* ================== Projects ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/projects', 'LA\ProjectsController');
+	Route::get(config('laraadmin.adminRoute') . '/project_dt_ajax', 'LA\ProjectsController@dtajax');
+
+	/* ================== Tasks ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/tasks', 'LA\TasksController');
+	Route::get(config('laraadmin.adminRoute') . '/task_dt_ajax', 'LA\TasksController@dtajax');
+
+	/* ================== Leads ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/leads', 'LA\LeadsController');
+	Route::get(config('laraadmin.adminRoute') . '/lead_dt_ajax', 'LA\LeadsController@dtajax');
+
+	/* ================== Managers ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/managers', 'LA\ManagersController');
+	Route::get(config('laraadmin.adminRoute') . '/manager_dt_ajax', 'LA\ManagersController@dtajax');
 });

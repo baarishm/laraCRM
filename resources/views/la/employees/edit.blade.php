@@ -1,14 +1,14 @@
 @extends("la.layouts.app")
 
 @section("contentheader_title")
-	<a href="{{ url(config('laraadmin.adminRoute') . '/employees') }}">Employees</a> :
+	<a href="{{ url(config('laraadmin.adminRoute') . '/employees') }}">Employee</a> :
 @endsection
 @section("contentheader_description", $employee->$view_col)
 @section("section", "Employees")
 @section("section_url", url(config('laraadmin.adminRoute') . '/employees'))
 @section("sub_section", "Edit")
 
-@section("htmlheader_title", "Employee Edit : ".$employee->$view_col)
+@section("htmlheader_title", "Employees Edit : ".$employee->$view_col)
 
 @section("main-content")
 
@@ -39,14 +39,17 @@
 					@la_input($module, 'mobile')
 					@la_input($module, 'mobile2')
 					@la_input($module, 'email')
-					@la_input($module, 'dept')
+					@la_input($module, 'date_birth')
 					@la_input($module, 'city')
 					@la_input($module, 'address')
 					@la_input($module, 'about')
-					@la_input($module, 'date_birth')
+					@la_input($module, 'first_approver')
+					@la_input($module, 'second_approver')
+					@la_input($module, 'dept')
+					@la_input($module, 'project_id')
+					@la_input($module, 'salary_cur')
 					@la_input($module, 'date_hire')
 					@la_input($module, 'date_left')
-					@la_input($module, 'salary_cur')
 					--}}
                     <div class="form-group">
 						<label for="role">Role* :</label>
@@ -68,7 +71,6 @@
 						{!! Form::submit( 'Update', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right"><a href="{{ url(config('laraadmin.adminRoute') . '/employees') }}">Cancel</a></button>
 					</div>
 				{!! Form::close() !!}
-				
 			</div>
 		</div>
 	</div>
