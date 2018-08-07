@@ -99,7 +99,7 @@
 
 <section id="about" name="about"></section>
 <!-- INTRO WRAP -->
-<div id="intro">
+<!--<div id="intro">
     <div class="container">
         <div class="row centered">
             <h1>An Architecture designed To Excel</h1>
@@ -123,11 +123,11 @@
         </div>
         <br>
         <hr>
-    </div> <!--/ .container -->
-</div><!--/ #introwrap -->
+    </div> / .container 
+</div>/ #introwrap -->
 
 <!-- FEATURES WRAP -->
-<div id="features">
+<!--<div id="features">
     <div class="container">
         <div class="row">
             <div class="col-lg-5 centered">
@@ -153,11 +153,11 @@
 				</ol>
             </div>
         </div>
-    </div><!--/ .container -->
-</div><!--/ #features -->
+    </div>/ .container 
+</div>/ #features -->
 
 <section id="contact" name="contact"></section>
-<div id="footerwrap">
+<!--<div id="footerwrap">
     <div class="container">
         <div class="col-lg-5">
             <h3>Contact Us</h3><br>
@@ -194,14 +194,14 @@
             </form>
         </div>
     </div>
-</div>
-<div id="c">
+</div>-->
+<!--<div id="c">
     <div class="container">
         <p>
             <strong>Copyright &copy; 2016. Powered by <a href="https://dwijitsolutions.com"><b>Dwij IT Solutions</b></a>
         </p>
     </div>
-</div>
+</div>-->
 
 
 <!-- Bootstrap core JavaScript

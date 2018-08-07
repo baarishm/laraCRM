@@ -63,25 +63,25 @@
             </div><!-- ./col -->
           </div><!-- /.row -->
           <!-- Main row -->
-          <div class="row">
-            <!-- Left col -->
+<!--          <div class="row">
+             Left col 
             <section class="col-lg-7 connectedSortable">
-              <!-- Custom tabs (Charts with tabs)-->
+               Custom tabs (Charts with tabs)
               <div class="nav-tabs-custom">
-                <!-- Tabs within a box -->
+                 Tabs within a box 
                 <ul class="nav nav-tabs pull-right">
                   <li class="active"><a href="#revenue-chart" data-toggle="tab">Area</a></li>
                   <li><a href="#sales-chart" data-toggle="tab">Donut</a></li>
                   <li class="pull-left header"><i class="fa fa-inbox"></i> Sales</li>
                 </ul>
                 <div class="tab-content no-padding">
-                  <!-- Morris chart - Sales -->
+                   Morris chart - Sales 
                   <div class="chart tab-pane active" id="revenue-chart" style="position: relative; height: 300px;"></div>
                   <div class="chart tab-pane" id="sales-chart" style="position: relative; height: 300px;"></div>
                 </div>
-              </div><!-- /.nav-tabs-custom -->
+              </div> /.nav-tabs-custom 
 
-              <!-- Chat box -->
+               Chat box 
               <div class="box box-success">
                 <div class="box-header">
                   <i class="fa fa-comments-o"></i>
@@ -94,7 +94,7 @@
                   </div>
                 </div>
                 <div class="box-body chat" id="chat-box">
-                  <!-- chat item -->
+                   chat item 
                   <div class="item">
                     <img src="{{asset('/la-assets/img/user4-128x128.jpg')}}" alt="user image" class="online">
                     <p class="message">
@@ -114,9 +114,9 @@
                       <div class="pull-right">
                         <button class="btn btn-primary btn-sm btn-flat">Open</button>
                       </div>
-                    </div><!-- /.attachment -->
-                  </div><!-- /.item -->
-                  <!-- chat item -->
+                    </div> /.attachment 
+                  </div> /.item 
+                   chat item 
                   <div class="item">
                     <img src="{{asset('/la-assets/img/user3-128x128.jpg')}}" alt="user image" class="offline">
                     <p class="message">
@@ -128,8 +128,8 @@
                       the arrival of the new theme. They say it is going to be one the
                       best themes on the market
                     </p>
-                  </div><!-- /.item -->
-                  <!-- chat item -->
+                  </div> /.item 
+                   chat item 
                   <div class="item">
                     <img src="{{asset('/la-assets/img/user2-160x160.jpg')}}" alt="user image" class="offline">
                     <p class="message">
@@ -141,8 +141,8 @@
                       the arrival of the new theme. They say it is going to be one the
                       best themes on the market
                     </p>
-                  </div><!-- /.item -->
-                </div><!-- /.chat -->
+                  </div> /.item 
+                </div> /.chat 
                 <div class="box-footer">
                   <div class="input-group">
                     <input class="form-control" placeholder="Type message...">
@@ -151,9 +151,9 @@
                     </div>
                   </div>
                 </div>
-              </div><!-- /.box (chat box) -->
+              </div> /.box (chat box) 
 
-              <!-- TO DO List -->
+               TO DO List 
               <div class="box box-primary">
                 <div class="box-header">
                   <i class="ion ion-clipboard"></i>
@@ -167,22 +167,22 @@
                       <li><a href="#">&raquo;</a></li>
                     </ul>
                   </div>
-                </div><!-- /.box-header -->
+                </div> /.box-header 
                 <div class="box-body">
                   <ul class="todo-list">
                     <li>
-                      <!-- drag handle -->
+                       drag handle 
                       <span class="handle">
                         <i class="fa fa-ellipsis-v"></i>
                         <i class="fa fa-ellipsis-v"></i>
                       </span>
-                      <!-- checkbox -->
+                       checkbox 
                       <input type="checkbox" value="" name="">
-                      <!-- todo text -->
+                       todo text 
                       <span class="text">Design a nice theme</span>
-                      <!-- Emphasis label -->
+                       Emphasis label 
                       <small class="label label-danger"><i class="fa fa-clock-o"></i> 2 mins</small>
-                      <!-- General tools such as edit or delete-->
+                       General tools such as edit or delete
                       <div class="tools">
                         <i class="fa fa-edit"></i>
                         <i class="fa fa-trash-o"></i>
@@ -254,21 +254,21 @@
                       </div>
                     </li>
                   </ul>
-                </div><!-- /.box-body -->
+                </div> /.box-body 
                 <div class="box-footer clearfix no-border">
                   <button class="btn btn-default pull-right"><i class="fa fa-plus"></i> Add item</button>
                 </div>
-              </div><!-- /.box -->
+              </div> /.box 
 
-              <!-- quick email widget -->
+               quick email widget 
               <div class="box box-info">
                 <div class="box-header">
                   <i class="fa fa-envelope"></i>
                   <h3 class="box-title">Quick Email</h3>
-                  <!-- tools box -->
+                   tools box 
                   <div class="pull-right box-tools">
                     <button class="btn btn-info btn-sm" data-widget="remove" data-toggle="tooltip" title="Remove"><i class="fa fa-times"></i></button>
-                  </div><!-- /. tools -->
+                  </div> /. tools 
                 </div>
                 <div class="box-body">
                   <form action="#" method="post">
@@ -288,18 +288,18 @@
                 </div>
               </div>
 
-            </section><!-- /.Left col -->
-            <!-- right col (We are only adding the ID to make the widgets sortable)-->
+            </section> /.Left col 
+             right col (We are only adding the ID to make the widgets sortable)
             <section class="col-lg-5 connectedSortable">
 
-              <!-- Map box -->
+               Map box 
               <div class="box box-solid bg-light-blue-gradient">
                 <div class="box-header">
-                  <!-- tools box -->
+                   tools box 
                   <div class="pull-right box-tools">
                     <button class="btn btn-primary btn-sm daterange pull-right" data-toggle="tooltip" title="Date range"><i class="fa fa-calendar"></i></button>
                     <button class="btn btn-primary btn-sm pull-right" data-widget="collapse" data-toggle="tooltip" title="Collapse" style="margin-right: 5px;"><i class="fa fa-minus"></i></button>
-                  </div><!-- /. tools -->
+                  </div> /. tools 
 
                   <i class="fa fa-map-marker"></i>
                   <h3 class="box-title">
@@ -308,27 +308,27 @@
                 </div>
                 <div class="box-body">
                   <div id="world-map" style="height: 250px; width: 100%;"></div>
-                </div><!-- /.box-body-->
+                </div> /.box-body
                 <div class="box-footer no-border">
                   <div class="row">
                     <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
                       <div id="sparkline-1"></div>
                       <div class="knob-label">Visitors</div>
-                    </div><!-- ./col -->
+                    </div> ./col 
                     <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
                       <div id="sparkline-2"></div>
                       <div class="knob-label">Online</div>
-                    </div><!-- ./col -->
+                    </div> ./col 
                     <div class="col-xs-4 text-center">
                       <div id="sparkline-3"></div>
                       <div class="knob-label">Exists</div>
-                    </div><!-- ./col -->
-                  </div><!-- /.row -->
+                    </div> ./col 
+                  </div> /.row 
                 </div>
               </div>
-              <!-- /.box -->
+               /.box 
 
-              <!-- solid sales graph -->
+               solid sales graph 
               <div class="box box-solid bg-teal-gradient">
                 <div class="box-header">
                   <i class="fa fa-th"></i>
@@ -340,33 +340,33 @@
                 </div>
                 <div class="box-body border-radius-none">
                   <div class="chart" id="line-chart" style="height: 250px;"></div>
-                </div><!-- /.box-body -->
+                </div> /.box-body 
                 <div class="box-footer no-border">
                   <div class="row">
                     <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
                       <input type="text" class="knob" data-readonly="true" value="20" data-width="60" data-height="60" data-fgColor="#39CCCC">
                       <div class="knob-label">Mail-Orders</div>
-                    </div><!-- ./col -->
+                    </div> ./col 
                     <div class="col-xs-4 text-center" style="border-right: 1px solid #f4f4f4">
                       <input type="text" class="knob" data-readonly="true" value="50" data-width="60" data-height="60" data-fgColor="#39CCCC">
                       <div class="knob-label">Online</div>
-                    </div><!-- ./col -->
+                    </div> ./col 
                     <div class="col-xs-4 text-center">
                       <input type="text" class="knob" data-readonly="true" value="30" data-width="60" data-height="60" data-fgColor="#39CCCC">
                       <div class="knob-label">In-Store</div>
-                    </div><!-- ./col -->
-                  </div><!-- /.row -->
-                </div><!-- /.box-footer -->
-              </div><!-- /.box -->
+                    </div> ./col 
+                  </div> /.row 
+                </div> /.box-footer 
+              </div> /.box 
 
-              <!-- Calendar -->
+               Calendar 
               <div class="box box-solid bg-green-gradient">
                 <div class="box-header">
                   <i class="fa fa-calendar"></i>
                   <h3 class="box-title">Calendar</h3>
-                  <!-- tools box -->
+                   tools box 
                   <div class="pull-right box-tools">
-                    <!-- button with a dropdown -->
+                     button with a dropdown 
                     <div class="btn-group">
                       <button class="btn btn-success btn-sm dropdown-toggle" data-toggle="dropdown"><i class="fa fa-bars"></i></button>
                       <ul class="dropdown-menu pull-right" role="menu">
@@ -378,16 +378,16 @@
                     </div>
                     <button class="btn btn-success btn-sm" data-widget="collapse"><i class="fa fa-minus"></i></button>
                     <button class="btn btn-success btn-sm" data-widget="remove"><i class="fa fa-times"></i></button>
-                  </div><!-- /. tools -->
-                </div><!-- /.box-header -->
+                  </div> /. tools 
+                </div> /.box-header 
                 <div class="box-body no-padding">
-                  <!--The calendar -->
+                  The calendar 
                   <div id="calendar" style="width: 100%"></div>
-                </div><!-- /.box-body -->
+                </div> /.box-body 
                 <div class="box-footer text-black">
                   <div class="row">
                     <div class="col-sm-6">
-                      <!-- Progress bars -->
+                       Progress bars 
                       <div class="clearfix">
                         <span class="pull-left">Task #1</span>
                         <small class="pull-right">90%</small>
@@ -403,7 +403,7 @@
                       <div class="progress xs">
                         <div class="progress-bar progress-bar-green" style="width: 70%;"></div>
                       </div>
-                    </div><!-- /.col -->
+                    </div> /.col 
                     <div class="col-sm-6">
                       <div class="clearfix">
                         <span class="pull-left">Task #3</span>
@@ -420,13 +420,13 @@
                       <div class="progress xs">
                         <div class="progress-bar progress-bar-green" style="width: 40%;"></div>
                       </div>
-                    </div><!-- /.col -->
-                  </div><!-- /.row -->
+                    </div> /.col 
+                  </div> /.row 
                 </div>
-              </div><!-- /.box -->
+              </div> /.box 
 
-            </section><!-- right col -->
-          </div><!-- /.row (main row) -->
+            </section> right col 
+          </div> /.row (main row) -->
 
         </section><!-- /.content -->
 @endsection
