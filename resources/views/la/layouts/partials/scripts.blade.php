@@ -33,7 +33,7 @@ $(document).ready(function () {
             }
         });
     }, 300);
-    $('.dats1, .row.stats').hide();
+    $('.bg-primary .dats1, .row.stats').hide();
 });
 </script>
 @stack('scripts')

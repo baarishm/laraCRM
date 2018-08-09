@@ -86,4 +86,9 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Managers ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/managers', 'LA\ManagersController');
 	Route::get(config('laraadmin.adminRoute') . '/manager_dt_ajax', 'LA\ManagersController@dtajax');
+
+	/* ================== Timesheets ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/timesheets', 'LA\TimesheetsController');
+	Route::get(config('laraadmin.adminRoute') . '/timesheet_dt_ajax', 'LA\TimesheetsController@dtajax');
+        Route::get("/sendEmailToLeadsAndManagers", 'LA\TimesheetsController@sendEmailToLeadsAndManagers');
 });
