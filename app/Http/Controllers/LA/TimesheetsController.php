@@ -18,6 +18,7 @@ use Collective\Html\FormFacade as Form;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Timesheet;
+use Mail;
 
 class TimesheetsController extends Controller {
 
@@ -285,7 +286,7 @@ class TimesheetsController extends Controller {
     }
 
     public function sendEmailToLeadsAndManagers(Request $request) {
-        $records = $request->session()->get($_GET['token']);
+        $records = $request->session()->pull($_GET['token']);
         $leads = [];
         foreach ($records as $record) {
             $leads[$record['lead_email']][$record['manager_email']][] = $record;
@@ -298,7 +299,7 @@ class TimesheetsController extends Controller {
                 $html = 'Hello,'
                         . '<br>'
                         . 'Timesheet of ' . Auth::user()->name . ' is as under: <br><br>'
-                        . '<table border="1">'
+                        . '<table border="1" style="width: 100%">'
                         . '<thead>'
                         . '<tr>'
                         . '<th>Name</th>'
@@ -319,12 +320,18 @@ class TimesheetsController extends Controller {
                             . "</tr>";
                 }
                 $html .= "</table>";
-                Mail::to($lead_email)
-                        ->cc($manager_email)
-                        ->send($html);
+                $recipients['to'] = $lead_email;
+                $recipients['cc'] = $manager_email;
+                Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
+                    $m->from('varsha.mittal@ganitsoftech.com', 'Your Application');
+
+                    $m->to($recipients['to'])
+//                            ->cc($recipients['cc']) //need to add this recipent in mailgun
+                            ->subject('Timesheet of ' . Auth::user()->name . '!');
+                });
             }
+            echo "Mail sent successfully!";
         }
-        echo "Mail sent successfully!";
     }
 
 }

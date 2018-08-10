@@ -1,5 +1,33 @@
 @extends("la.layouts.app")
+<style>
+    div.overlay{
+        background: none repeat scroll 0 0 #00000026;
+        position: absolute;
+        display: block;
+        z-index: 1000001;
+        top: 0;
+        height: 100%;
+        width: 100%;
+        margin-top: 50px;
+    }
+    .loader {
+        position: relative;
+        border: 8px solid #7b7b7b;
+        border-top: 8px solid #fbfbfb;
+        border-radius: 50%;
+        width: 60px;
+        height: 60px;
+        animation: spin 2s linear infinite;
+        top: 280px;
+        left: 520px;
+    }
 
+    @keyframes spin {
+        0% { transform: rotate(0deg); }
+        100% { transform: rotate(360deg); }
+    }
+
+</style>
 @section("contentheader_title")
 <a href="{{ url(config('laraadmin.adminRoute') . '/timesheets') }}">Timesheets</a> :
 @endsection
@@ -108,7 +136,9 @@
         </div>
     </div>
 </div>
-
+<div class="overlay">
+    <div class="loader"/>
+</div>
 @endsection
 
 @push('scripts')
@@ -119,17 +149,19 @@ $(function () {
     $("#project-edit-form").validate({
 
     });
-    
-    //hide entry form on page load
+
+    //hide stuff on page load
     $('.entry-form').hide();
-    
+    $('div.overlay').hide();
+    $('[for="dependency_for"], [for="dependent_on"]').parents('div.form-group').fadeOut('slow');
+
     //show entry form on add entry button click
     $("#add-entry").click(function (event) {
         event.preventDefault();
         $('.entry-form').show();
         $("#add-entry").hide();
     });
-    
+
     //show hide dependency based boxes and values
     $('[name="dependency"]').change(function () {
         if ($('[name="dependency"]:checked').val() == 'No') {
@@ -142,21 +174,21 @@ $(function () {
         }
     });
     $('[name="dependency"][value="No"]').trigger('click');
-    
+
     //add lead and manager email in hidden boxes
     $('select[name="manager_id"], select[name="manager_id"]').change(function () {
         $('input[name="lead_email"]').val($('select[name="lead_id"] option:selected').attr('data-mail'));
         $('input[name="manager_email"]').val($('select[name="manager_id"] option:selected').attr('data-mail'));
     });
     $('select[name="manager_id"], select[name="manager_id"]').trigger('change');
-    
+
     //add task and project names in hidden boxes
     $('select[name="project_id"], select[name="task_id"]').change(function () {
         $('input[name="task_name"]').val($('select[name="task_id"] option:selected').html());
         $('input[name="project_name"]').val($('select[name="project_id"] option:selected').html());
     });
     $('select[name="project_id"], select[name="task_id"]').trigger('change');
-    
+
     //initialize datatable
     $("#example1").DataTable({
         language: {
@@ -165,19 +197,22 @@ $(function () {
             searchPlaceholder: "Search"
         },
     });
-    
+
     //send mail
-    $('#send-mail').click(function(event){
+    $('#send-mail').click(function (event) {
         event.preventDefault();
+        $('div.overlay').show();
         $.ajax({
-           url : '/sendEmailToLeadsAndManagers' ,
-           type : 'GET',
-           data : {
-               'token' : $('[name="timesheet_token"]').val()
-           },
-           success : function(data){
-               console.log(data);
-           }        
+            url: '/sendEmailToLeadsAndManagers',
+            type: 'GET',
+            data: {
+                'token': $('[name="timesheet_token"]').val()
+            },
+            success: function (data) {
+                $('div.overlay').hide();
+                alert(data);
+                window.location.href = '/admin/timesheets';
+            }
         });
     })
 });
