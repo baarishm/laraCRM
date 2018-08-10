@@ -29,7 +29,7 @@ class EmployeesController extends Controller {
 
     public $show_action = true;
     public $view_col = 'name';
-    public $listing_cols = ['id', 'name', 'designation', 'gender', 'mobile', 'mobile2', 'email', 'date_birth', 'city', 'address', 'about', 'first_approver', 'second_approver', 'dept', 'project_id', 'salary_cur', 'date_hire', 'date_left'];
+    public $listing_cols = ['id', 'name', 'designation', 'gender', 'mobile', 'mobile2', 'email', 'date_birth', 'city', 'address', 'about', 'first_approver', 'second_approver', 'dept', 'project_id', 'date_hire'];
 
     public function __construct() {
         // Field Access of Listing Columns
@@ -95,34 +95,7 @@ class EmployeesController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            // generate password
-            $password = LAHelper::gen_password();
-
-            // Create Employee
-            $employee_id = Module::insert("Employees", $request);
-            // Create User
-            $user = User::create([
-                        'name' => $request->name,
-                        'email' => $request->email,
-                        'password' => bcrypt($password),
-                        'context_id' => $employee_id,
-                        'type' => "Employee",
-            ]);
-
-            // update user role
-            $user->detachRoles();
-            $role = Role::find($request->role);
-            $user->attachRole($role);
-
-            if (env('MAIL_USERNAME') != null && env('MAIL_USERNAME') != "null" && env('MAIL_USERNAME') != "") {
-                // Send mail to User his Password
-                Mail::send('emails.send_login_cred', ['user' => $user, 'password' => $password], function ($m) use ($user) {
-                    $m->from('hello@laraadmin.com', 'LaraAdmin');
-                    $m->to($user->email, $user->name)->subject('LaraAdmin - Your Login Credentials');
-                });
-            } else {
-                Log::info("User created: username: " . $user->email . " Password: " . $password);
-            }
+            $insert_id = Module::insert("Employees", $request);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
         } else {
@@ -217,17 +190,7 @@ class EmployeesController extends Controller {
                 ;
             }
 
-            $employee_id = Module::updateRow("Employees", $request, $id);
-
-            // Update User
-            $user = User::where('context_id', $employee_id)->first();
-            $user->name = $request->name;
-            $user->save();
-
-            // update user role
-            $user->detachRoles();
-            $role = Role::find($request->role);
-            $user->attachRole($role);
+            $insert_id = Module::updateRow("Employees", $request, $id);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
         } else {

@@ -47,26 +47,9 @@
 					@la_input($module, 'second_approver')
 					@la_input($module, 'dept')
 					@la_input($module, 'project_id')
-					@la_input($module, 'salary_cur')
 					@la_input($module, 'date_hire')
-					@la_input($module, 'date_left')
 					--}}
-                    <div class="form-group">
-						<label for="role">Role* :</label>
-						<select class="form-control" required="1" data-placeholder="Select Role" rel="select2" name="role">
-							<?php $roles = App\Role::all(); ?>
-							@foreach($roles as $role)
-								@if($role->id != 1 || Entrust::hasRole("SUPER_ADMIN"))
-									@if($user->hasRole($role->name))
-										<option value="{{ $role->id }}" selected>{{ $role->name }}</option>
-									@else
-										<option value="{{ $role->id }}">{{ $role->name }}</option>
-									@endif
-								@endif
-							@endforeach
-						</select>
-					</div>
-					<br>
+                    <br>
 					<div class="form-group">
 						{!! Form::submit( 'Update', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right"><a href="{{ url(config('laraadmin.adminRoute') . '/employees') }}">Cancel</a></button>
 					</div>

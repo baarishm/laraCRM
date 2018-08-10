@@ -32,9 +32,7 @@ class CreateEmployeesTable extends Migration
             ["second_approver", "Second Approver", "Dropdown", false, "0", 0, 0, false, "@employees"],
             ["dept", "Department", "Dropdown", false, "0", 0, 0, true, "@departments"],
             ["project_id", "Project Name", "Dropdown", false, "0", 0, 0, false, "@projects"],
-            ["salary_cur", "Current Salary", "Decimal", false, "0.0", 0, 2, false],
             ["date_hire", "Hiring Date", "Date", false, "date('Y-m-d')", 0, 0, false],
-            ["date_left", "Resignation Date", "Date", false, "1990-01-01", 0, 0, false],
         ]);
 		
 		/*
