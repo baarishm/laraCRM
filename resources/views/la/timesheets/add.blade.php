@@ -122,6 +122,7 @@
                 <input type="hidden" name="manager_email" />
                 <input type="hidden" name="project_name" />
                 <input type="hidden" name="task_name" />
+                <input type="hidden" name="submitor_id" value="<?php echo base64_encode(base64_encode(Auth::user()->id)); ?>" />
                 <input type="hidden" name="timesheet_token" value="<?php echo isset($token) ? $token : ''; ?>" />
                 <br>
                 <div class="form-group">

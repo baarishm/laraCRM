@@ -106,7 +106,8 @@ class TimesheetsController extends Controller {
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-
+            
+            $request->submitor_id = base64_decode(base64_decode(submitor_id));
             $insert_id = Module::insert("Timesheets", $request);
 
             $leads = DB::table('leads')
@@ -241,7 +242,7 @@ class TimesheetsController extends Controller {
      */
     public function dtajax() {
         $this->custom_cols = ['submitor_id', 'project_id', 'date', DB::raw("SUM((hours*60) + minutes)/60 as hours")];
-        $values = DB::table('timesheets')->select($this->custom_cols)->whereNull('deleted_at')->groupBy(['date', 'project_id']);
+        $values = DB::table('timesheets')->select($this->custom_cols)->whereNull('deleted_at')->whereRaw('submitor_id = '.Auth::user()->id)->groupBy(['date', 'project_id']);
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 
