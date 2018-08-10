@@ -56,8 +56,6 @@
                     <th>Project Name</th>
                     <th>Task Name</th>
                     <th>Time Spent</th>
-                    <th>Lead Email</th>
-                    <th>Manager Email</th>
                 </tr>
             </thead>
             @if(!empty($records))
@@ -66,8 +64,6 @@
                 <td>{{$record['project_name']}}</td>
                 <td>{{$record['task_name']}}</td>
                 <td>{{$record['hours']+($record['minutes']/60)}}</td>
-                <td>{{$record['lead_email']}}</td>
-                <td>{{$record['manager_email']}}</td>
             </tr>
             @endforeach
             @endif
@@ -82,7 +78,7 @@
 <div class="form-group">
     <a href="#" class="btn btn-success " id ="add-entry">Add Entry</a>
     @if(!empty($records))
-    <a href="#" class="btn btn-primary" id="send-mail">Send Email to Leads and Managers</a>
+    <a href="#" class="btn btn-primary" id="send-mail">Send Timesheet Email</a>
     @endif
 </div>
 <div class="box entry-form">
