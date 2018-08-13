@@ -14,6 +14,7 @@
     }
     .search:focus {
         outline: none; 
+        border-bottom: 1px solid #48b7d2;
     }
 </style>
 @section("contentheader_title", "Timesheets")

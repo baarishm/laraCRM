@@ -27,6 +27,15 @@
         100% { transform: rotate(360deg); }
     }
 
+
+    input[type="search"]{
+        float : right;
+        margin:5px;
+        border:none;
+        border-bottom: 1px solid #9a9999;
+        font-weight: 400;
+    }
+
 </style>
 @section("contentheader_title")
 <a href="{{ url(config('laraadmin.adminRoute') . '/timesheets') }}">Timesheets</a> :
