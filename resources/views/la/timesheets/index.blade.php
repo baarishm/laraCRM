@@ -6,6 +6,15 @@
     .group td{
         text-align:center;
     }
+    .search{
+        float : right;
+        margin:5px;
+        border:none;
+        border-bottom: 1px solid #9a9999;
+    }
+    .search:focus {
+        outline: none; 
+    }
 </style>
 @section("contentheader_title", "Timesheets")
 @section("contentheader_description", "Timesheets listing")
@@ -32,6 +41,8 @@
 <div class="box box-success">
     <!--<div class="box-header"></div>-->
     <div class="box-body">
+        <input type="text" id="date_search" placeholder="Search by Date" class="search">
+        <input type="text" id="project_search" placeholder="Search by Project Name" class="search">
         <table id="example1" class="table table-bordered">
             <thead>
                 <tr class="success">
@@ -46,6 +57,7 @@
             <tbody>
 
             </tbody>
+
         </table>
     </div>
 </div>
@@ -60,11 +72,23 @@
 <script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
 <script>
 $(function () {
+
+    $('#date_search').datetimepicker({
+        format: 'Y-MM-DD'
+    });
     var groupColumn = 2;
-    $("#example1").DataTable({
+    var table = $("#example1").DataTable({
     processing: true,
             serverSide: true,
-            ajax: "{{ url(config('laraadmin.adminRoute') . '/timesheet_dt_ajax') }}",
+            searchable: false,
+            ajax: {
+            url:"{{ url(config('laraadmin.adminRoute') . '/timesheet_dt_ajax') }}",
+                    type : 'get',
+                    data:function(d){
+                    d.project_search = $('#project_search').val();
+                            d.date_search = $('#date_search').val();
+                    }
+            },
             language: {
             lengthMenu: "_MENU_",
                     search: "_INPUT_",
@@ -92,10 +116,10 @@ $(function () {
             @endif
     }
     );
-    $('input[type="search"][aria-controls="example1"]').hide();
-    $("#timesheet-add-form").validate({
-
+    $("#project_search, #date_search").on('keyup dp.change', function () {
+        table.draw();
     });
+    $('input[type="search"][aria-controls="example1"]').hide();
 });
 </script>
 @endpush

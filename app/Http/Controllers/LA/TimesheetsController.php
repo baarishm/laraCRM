@@ -106,7 +106,7 @@ class TimesheetsController extends Controller {
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            
+
             $request->submitor_id = base64_decode(base64_decode(submitor_id));
             $insert_id = Module::insert("Timesheets", $request);
 
@@ -240,9 +240,22 @@ class TimesheetsController extends Controller {
      *
      * @return
      */
-    public function dtajax() {
+    public function dtajax(Request $request) {
+        $project = '';
+        if ($request->project_search != '') {
+            $project = ' and projects.name like "%' . $request->project_search . '%"';
+        }
+        $date = '';
+        if ($request->date_search != '') {
+            $date = ' and timesheets.date like "%' . $request->date_search . '%"';
+        }
         $this->custom_cols = ['submitor_id', 'project_id', 'date', DB::raw("SUM((hours*60) + minutes)/60 as hours")];
-        $values = DB::table('timesheets')->select($this->custom_cols)->whereNull('deleted_at')->whereRaw('submitor_id = '.Auth::user()->id)->groupBy(['date', 'project_id']);
+        $values = DB::table('timesheets')
+                    ->select($this->custom_cols)
+                    ->join('projects', 'projects.id', '=', 'timesheets.project_id')
+                    ->whereNull('timesheets.deleted_at')
+                    ->whereRaw('submitor_id = ' . Auth::user()->id . $project . $date)
+                    ->groupBy(['date', 'project_id']);
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 
