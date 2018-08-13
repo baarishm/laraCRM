@@ -27,6 +27,8 @@ If you discover a security vulnerability within Laravel, please send an e-mail t
 The Laravel framework is open-sourced software licensed under the [MIT license](http://opensource.org/licenses/MIT).
 
 # laraCRM
+** used mailgun for mailing
+
 Created by following http://laraadmin.com/docs/1.0/installation
 
 -composer create-project laravel/laravel=5.2.31 CRM
