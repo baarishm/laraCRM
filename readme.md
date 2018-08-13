@@ -38,4 +38,4 @@ Created by following http://laraadmin.com/docs/1.0/installation
             ...
             Dwij\Laraadmin\LAProvider::class
     ],
--php artisan la:install
+-php artisan la:install 
