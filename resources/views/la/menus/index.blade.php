@@ -15,7 +15,7 @@ use Dwij\Laraadmin\Models\Module;
 @endsection
 
 @section("main-content")
-
+<span style="color:red;"> * Please update Sidebar Menu access once the menu order is changed. </span>
 <div class="box box-success menus">
 	<!--<div class="box-header"></div>-->
 	<div class="box-body">
