@@ -78,30 +78,59 @@ class EmployeesController extends Controller {
         }
     }
 
-    /**
-     * Store a newly created employee in database.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request) {
-        if (Module::hasAccess("Employees", "create")) {
-
-            $rules = Module::validateRules("Employees", $request);
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
-            $insert_id = Module::insert("Employees", $request);
-
-            return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
-        } else {
-            return redirect(config('laraadmin.adminRoute') . "/");
-        }
-    }
+   /**
+	 * Store a newly created employee in database.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @return \Illuminate\Http\Response
+	 */
+	public function store(Request $request)
+	{
+		if(Module::hasAccess("Employees", "create")) {
+		
+			$rules = Module::validateRules("Employees", $request);
+			
+			$validator = Validator::make($request->all(), $rules);
+			
+			if ($validator->fails()) {
+				return redirect()->back()->withErrors($validator)->withInput();
+			}
+			
+			// generate password
+			$password = LAHelper::gen_password();
+			
+			// Create Employee
+			$employee_id = Module::insert("Employees", $request);
+			// Create User
+			$user = User::create([
+				'name' => $request->name,
+				'email' => $request->email,
+				'password' => bcrypt($password),
+				'context_id' => $employee_id,
+				'type' => "Employee",
+			]);
+	
+			// update user role
+			$user->detachRoles();
+			$role = Role::find($request->role);
+			$user->attachRole($role);
+			
+			if(env('MAIL_USERNAME') != null && env('MAIL_USERNAME') != "null" && env('MAIL_USERNAME') != "") {
+				// Send mail to User his Password
+				Mail::send('emails.send_login_cred', ['user' => $user, 'password' => $password], function ($m) use ($user) {
+					$m->from('hello@laraadmin.com', 'LaraAdmin');
+					$m->to($user->email, $user->name)->subject('LaraAdmin - Your Login Credentials');
+				});
+			} else {
+				Log::info("User created: username: ".$user->email." Password: ".$password);
+			}
+			
+			return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
+			
+		} else {
+			return redirect(config('laraadmin.adminRoute')."/");
+		}
+	}
 
     /**
      * Display the specified employee.
@@ -172,31 +201,42 @@ class EmployeesController extends Controller {
     }
 
     /**
-     * Update the specified employee in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function update(Request $request, $id) {
-        if (Module::hasAccess("Employees", "edit")) {
-
-            $rules = Module::validateRules("Employees", $request, true);
-
-            $validator = Validator::make($request->all(), $rules);
-
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-                ;
-            }
-
-            $insert_id = Module::updateRow("Employees", $request, $id);
-
-            return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
-        } else {
-            return redirect(config('laraadmin.adminRoute') . "/");
-        }
-    }
+	 * Update the specified employee in storage.
+	 *
+	 * @param  \Illuminate\Http\Request  $request
+	 * @param  int  $id
+	 * @return \Illuminate\Http\Response
+	 */
+	public function update(Request $request, $id)
+	{
+		if(Module::hasAccess("Employees", "edit")) {
+			
+			$rules = Module::validateRules("Employees", $request, true);
+			
+			$validator = Validator::make($request->all(), $rules);
+			
+			if ($validator->fails()) {
+				return redirect()->back()->withErrors($validator)->withInput();;
+			}
+			
+			$employee_id = Module::updateRow("Employees", $request, $id);
+        	
+			// Update User
+			$user = User::where('context_id', $employee_id)->first();
+			$user->name = $request->name;
+			$user->save();
+			
+			// update user role
+			$user->detachRoles();
+			$role = Role::find($request->role);
+			$user->attachRole($role);
+			
+			return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
+			
+		} else {
+			return redirect(config('laraadmin.adminRoute')."/");
+		}
+	}
 
     /**
      * Remove the specified employee from storage.

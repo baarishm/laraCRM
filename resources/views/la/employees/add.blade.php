@@ -46,8 +46,18 @@
 					@la_input($module, 'project_id')
 					@la_input($module, 'salary_cur')
 					@la_input($module, 'date_hire')
-					@la_input($module, 'date_left')
 					--}}
+                <div class="form-group">
+                    <label for="role">Role* :</label>
+                    <select class="form-control" required="1" data-placeholder="Select Role" rel="select2" name="role">
+                        <?php $roles = App\Role::all(); ?>
+                        @foreach($roles as $role)
+                        @if($role->id != 1)
+                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                        @endif
+                        @endforeach
+                    </select>
+                </div>
                 <br>
                 <div class="form-group">
                     {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right"><a href="{{ url(config('laraadmin.adminRoute') . '/projects') }}">Cancel</a></button>
