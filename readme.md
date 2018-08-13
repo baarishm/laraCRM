@@ -42,6 +42,8 @@ Created by following http://laraadmin.com/docs/1.0/installation
     ],
 - php artisan la:install
 
+- https://confluence.atlassian.com/bitbucket/set-up-an-ssh-key-728138079.html#SetupanSSHkey-ssh1 refer link for generating bitbucket account key
+
 - add 
             $table_name = ($json != 'la_menus') ? strtolower(str_plural($json)) : 'la_menus';
             and change strtolower(str_plural($json)) with $table_name
