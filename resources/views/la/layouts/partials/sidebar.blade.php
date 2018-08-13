@@ -39,7 +39,7 @@
             <?php
             $menuItems = Dwij\Laraadmin\Models\Menu::where("parent", 0)->orderBy('hierarchy', 'asc')->get();
                 $role_id = DB::table('role_user')->select(['role_id'])->whereRaw('user_id = "'.Auth::user()->id.'"')->first();
-                $roleMenu = DB::table('role_menu')->whereRaw('role_id = '. $role_id->role_id)->pluck('menu_id');
+                $roleMenu = DB::table('sidebar_menu_accesses')->whereRaw('role_id = '. $role_id->role_id)->pluck('menu_id');
             ?>
             @foreach ($menuItems as $menu)
                 @if($menu->type == "module")

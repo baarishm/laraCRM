@@ -39,3 +39,7 @@ Created by following http://laraadmin.com/docs/1.0/installation
             Dwij\Laraadmin\LAProvider::class
     ],
 -php artisan la:install 
+
+- add 
+            $table_name = ($json != 'la_menus') ? strtolower(str_plural($json)) : 'la_menus';
+ in process_values function of C:\xampp\htdocs\Ganit\CRM\vendor\dwij\laraadmin\src\LAFormMaker.php
