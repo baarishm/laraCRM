@@ -31,16 +31,16 @@ The Laravel framework is open-sourced software licensed under the [MIT license](
 
 Created by following http://laraadmin.com/docs/1.0/installation
 
--composer create-project laravel/laravel=5.2.31 CRM
--cd CRM
--sudo chmod -R 777 storage/ bootstrap/ database/migrations/
--composer require "dwij/laraadmin:1.0.40"
--Add LaraAdmin Service provider Dwij\Laraadmin\LAProvider::class in config/app.php :
+- composer create-project laravel/laravel=5.2.31 CRM
+- cd CRM
+- sudo chmod -R 777 storage/ bootstrap/ database/migrations/
+- composer require "dwij/laraadmin:1.0.40"
+- Add LaraAdmin Service provider Dwij\Laraadmin\LAProvider::class in config/app.php :
     'providers' => [
             ...
             Dwij\Laraadmin\LAProvider::class
     ],
--php artisan la:install 
+- php artisan la:install 
 
 - add 
             $table_name = ($json != 'la_menus') ? strtolower(str_plural($json)) : 'la_menus';
