@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 13, 2018 at 02:03 PM
+-- Generation Time: Aug 16, 2018 at 10:14 AM
 -- Server version: 10.1.34-MariaDB
 -- PHP Version: 7.2.7
 
@@ -71,7 +71,6 @@ INSERT INTO `departments` (`id`, `name`, `tags`, `color`, `deleted_at`, `created
 CREATE TABLE `employees` (
   `id` int(10) UNSIGNED NOT NULL,
   `name` varchar(250) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
-  `designation` varchar(50) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `gender` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Male',
   `mobile` varchar(20) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `mobile2` varchar(20) COLLATE utf8_unicode_ci NOT NULL,
@@ -86,17 +85,16 @@ CREATE TABLE `employees` (
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
   `first_approver` int(10) UNSIGNED NOT NULL DEFAULT '1',
-  `second_approver` int(10) UNSIGNED NOT NULL DEFAULT '1',
-  `project_id` int(10) UNSIGNED NOT NULL DEFAULT '1'
+  `second_approver` int(10) UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `employees`
 --
 
-INSERT INTO `employees` (`id`, `name`, `designation`, `gender`, `mobile`, `mobile2`, `email`, `dept`, `city`, `address`, `about`, `date_birth`, `date_hire`, `deleted_at`, `created_at`, `updated_at`, `first_approver`, `second_approver`, `project_id`) VALUES
-(1, 'Varsha', 'Super Admin', 'Female', '8888888888', '', 'varsha.mittal@ganitsoftech.com', 1, 'Pune', 'Karve nagar, Pune 411030', 'About user / biography', '2018-08-06', '2018-08-06', NULL, '2018-08-06 01:55:58', '2018-08-06 07:27:02', 1, 2, 1),
-(2, 'Employee 2', 'Developer', 'Female', '9999999999', '', 'employee.2@ganitsoftech.com', 1, 'Gurgaon', '42/3, Sector 45', 'It is a fake id for testing', '1994-07-22', '2018-07-11', NULL, '2018-08-06 02:22:34', '2018-08-06 02:24:33', 1, 1, 1);
+INSERT INTO `employees` (`id`, `name`, `gender`, `mobile`, `mobile2`, `email`, `dept`, `city`, `address`, `about`, `date_birth`, `date_hire`, `deleted_at`, `created_at`, `updated_at`, `first_approver`, `second_approver`) VALUES
+(1, 'Varsha', 'Female', '8888888888', '', 'varsha.mittal@ganitsoftech.com', 1, 'Pune', 'Karve nagar, Pune 411030', 'About user / biography', '2018-08-06', '2018-08-06', NULL, '2018-08-06 01:55:58', '2018-08-06 07:27:02', 1, 2),
+(2, 'Employee 2', 'Female', '9999999999', '', 'employee.2@ganitsoftech.com', 1, 'Gurgaon', '42/3, Sector 45', 'It is a fake id for testing', '1994-07-22', '2018-07-11', NULL, '2018-08-06 02:22:34', '2018-08-06 02:24:33', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -177,7 +175,8 @@ INSERT INTO `la_menus` (`id`, `name`, `url`, `icon`, `type`, `parent`, `hierarch
 (40, 'Timesheets', 'timesheets', 'fa-clock-o', 'module', 0, 1, '2018-08-08 06:13:27', '2018-08-10 05:36:25'),
 (41, 'Add Timesheet', 'timesheets/create', 'fa-clock-o', 'custom', 40, 1, '2018-08-08 06:13:57', '2018-08-08 06:14:31'),
 (42, 'You Recent Timesheets', 'timesheets', 'fa-clock-o', 'custom', 40, 2, '2018-08-08 06:14:23', '2018-08-08 06:14:34'),
-(48, 'Sidebar_Menu_Accesses', 'sidebar_menu_accesses', 'fa fa-link', 'module', 0, 5, '2018-08-13 05:28:33', '2018-08-13 05:33:51');
+(48, 'Sidebar_Menu_Accesses', 'sidebar_menu_accesses', 'fa fa-link', 'module', 0, 6, '2018-08-13 05:28:33', '2018-08-16 01:23:50'),
+(49, 'Organizations', 'organizations', 'fa-university', 'module', 0, 5, '2018-08-16 01:23:38', '2018-08-16 01:23:50');
 
 -- --------------------------------------------------------
 
@@ -339,7 +338,6 @@ INSERT INTO `module_fields` (`id`, `colname`, `label`, `module`, `field_type`, `
 (11, 'hash', 'Hash', 2, 19, 0, '', 0, 250, 0, '', 0, '2018-08-06 01:54:59', '2018-08-06 01:54:59'),
 (12, 'public', 'Is Public', 2, 2, 0, '0', 0, 0, 0, '', 0, '2018-08-06 01:54:59', '2018-08-06 01:54:59'),
 (16, 'name', 'Name', 4, 16, 0, '', 5, 250, 1, '', 1, '2018-08-06 01:55:01', '2018-08-06 01:55:01'),
-(17, 'designation', 'Designation', 4, 19, 0, '', 0, 50, 1, '', 2, '2018-08-06 01:55:01', '2018-08-06 01:55:01'),
 (18, 'gender', 'Gender', 4, 18, 0, 'Male', 0, 0, 1, '[\"Male\",\"Female\"]', 3, '2018-08-06 01:55:01', '2018-08-06 01:55:01'),
 (19, 'mobile', 'Mobile', 4, 14, 0, '', 10, 20, 1, '', 4, '2018-08-06 01:55:01', '2018-08-06 01:55:01'),
 (20, 'mobile2', 'Alternative Mobile', 4, 14, 0, '', 10, 20, 0, '', 5, '2018-08-06 01:55:01', '2018-08-06 01:55:01'),
@@ -348,8 +346,8 @@ INSERT INTO `module_fields` (`id`, `colname`, `label`, `module`, `field_type`, `
 (23, 'city', 'City', 4, 19, 0, '', 0, 50, 0, '', 8, '2018-08-06 01:55:01', '2018-08-06 01:55:01'),
 (24, 'address', 'Address', 4, 1, 0, '', 0, 1000, 0, '', 9, '2018-08-06 01:55:01', '2018-08-06 01:55:01'),
 (25, 'about', 'About', 4, 19, 0, '', 0, 0, 0, '', 10, '2018-08-06 01:55:01', '2018-08-06 01:55:01'),
-(26, 'date_birth', 'Date of Birth', 4, 4, 0, '1990-01-01', 0, 0, 0, '', 7, '2018-08-06 01:55:01', '2018-08-06 01:55:01'),
-(27, 'date_hire', 'Hiring Date', 4, 4, 0, 'date(\'Y-m-d\')', 0, 0, 0, '', 16, '2018-08-06 01:55:01', '2018-08-06 01:55:01'),
+(26, 'date_birth', 'DOB', 4, 4, 0, '1990-01-01', 0, 0, 1, '', 7, '2018-08-06 01:55:01', '2018-08-16 01:43:32'),
+(27, 'date_hire', 'DOJ', 4, 4, 0, 'date(\'Y-m-d\')', 0, 0, 0, '', 16, '2018-08-06 01:55:01', '2018-08-16 01:41:43'),
 (30, 'name', 'Name', 5, 16, 1, '', 1, 250, 1, '', 0, '2018-08-06 01:55:02', '2018-08-06 01:55:02'),
 (31, 'display_name', 'Display Name', 5, 19, 0, '', 0, 250, 1, '', 0, '2018-08-06 01:55:02', '2018-08-06 01:55:02'),
 (32, 'description', 'Description', 5, 21, 0, '', 0, 1000, 0, '', 0, '2018-08-06 01:55:02', '2018-08-06 01:55:02'),
@@ -372,16 +370,13 @@ INSERT INTO `module_fields` (`id`, `colname`, `label`, `module`, `field_type`, `
 (49, 'name', 'Name', 8, 16, 1, '', 1, 250, 1, '', 0, '2018-08-06 01:55:10', '2018-08-06 01:55:10'),
 (50, 'display_name', 'Display Name', 8, 19, 0, '', 0, 250, 1, '', 0, '2018-08-06 01:55:10', '2018-08-06 01:55:10'),
 (51, 'description', 'Description', 8, 21, 0, '', 0, 1000, 0, '', 0, '2018-08-06 01:55:10', '2018-08-06 01:55:10'),
-(52, 'name', 'Project Name', 9, 16, 0, 'Dummy', 5, 255, 1, '', 0, '2018-08-06 02:34:35', '2018-08-06 04:15:16'),
-(53, 'client_id', 'Client', 9, 7, 0, '0', 0, 0, 1, '@organizations', 0, '2018-08-06 04:07:31', '2018-08-06 04:07:43'),
-(54, 'start_date', 'Start Date', 9, 4, 0, '', 0, 0, 0, '', 0, '2018-08-06 04:08:59', '2018-08-06 04:21:57'),
-(55, 'end_date', 'End Date', 9, 4, 0, '', 0, 0, 0, '', 0, '2018-08-06 04:10:07', '2018-08-06 04:10:07'),
-(56, 'name', 'Task Name', 10, 16, 0, 'Dummy Task', 5, 255, 1, '', 0, '2018-08-06 04:20:32', '2018-08-06 04:20:32'),
-(57, 'start_date', 'Start Date', 10, 4, 0, '', 0, 0, 0, '', 0, '2018-08-06 04:21:03', '2018-08-06 04:21:25'),
-(58, 'end_date', 'End Date', 10, 4, 0, '', 0, 0, 0, '', 0, '2018-08-06 04:21:20', '2018-08-06 04:21:20'),
+(52, 'name', 'Project Name', 9, 16, 0, '', 5, 255, 1, '', 1, '2018-08-06 02:34:35', '2018-08-16 01:21:41'),
+(53, 'client_id', 'Client', 9, 7, 0, '0', 0, 0, 1, '@organizations', 4, '2018-08-06 04:07:31', '2018-08-06 04:07:43'),
+(54, 'start_date', 'Start Date', 9, 4, 0, '', 0, 0, 0, '', 5, '2018-08-06 04:08:59', '2018-08-06 04:21:57'),
+(55, 'end_date', 'End Date', 9, 4, 0, '', 0, 0, 0, '', 6, '2018-08-06 04:10:07', '2018-08-06 04:10:07'),
+(56, 'name', 'Task Name', 10, 16, 0, '', 5, 255, 1, '', 0, '2018-08-06 04:20:32', '2018-08-16 01:35:37'),
 (59, 'first_approver', 'First Approver', 4, 7, 0, '0', 0, 0, 0, '@employees', 11, '2018-08-06 07:17:59', '2018-08-06 07:17:59'),
 (60, 'second_approver', 'Second Approver', 4, 7, 0, '0', 0, 0, 0, '@employees', 12, '2018-08-06 07:18:23', '2018-08-06 07:18:23'),
-(61, 'project_id', 'Project Name', 4, 7, 0, '0', 0, 0, 0, '@projects', 14, '2018-08-06 07:18:51', '2018-08-06 07:18:51'),
 (62, 'employee_id', 'Lead Name', 11, 7, 0, '0', 0, 0, 1, '@employees', 0, '2018-08-06 07:32:11', '2018-08-06 07:32:11'),
 (63, 'employee_id', 'Manager Name', 12, 7, 0, '0', 0, 0, 1, '@employees', 0, '2018-08-06 07:33:41', '2018-08-06 07:33:41'),
 (64, 'project_id', 'Project Name', 13, 7, 0, '0', 0, 0, 1, '@projects', 2, '2018-08-08 01:01:24', '2018-08-08 01:01:24'),
@@ -397,7 +392,9 @@ INSERT INTO `module_fields` (`id`, `colname`, `label`, `module`, `field_type`, `
 (74, 'manager_id', 'Manager Name', 13, 7, 0, '0', 0, 0, 0, '@managers', 12, '2018-08-08 01:06:27', '2018-08-08 01:06:27'),
 (75, 'submitor_id', 'Submitor Name', 13, 7, 0, '0', 0, 0, 1, '@employees', 1, '2018-08-08 04:58:37', '2018-08-08 05:05:58'),
 (86, 'role_id', 'Role Name', 19, 7, 0, '', 0, 0, 1, '@roles', 0, '2018-08-13 05:27:53', '2018-08-13 05:27:53'),
-(87, 'menu_id', 'Menu Name', 19, 7, 0, '', 0, 0, 1, '@la_menus', 0, '2018-08-13 05:28:23', '2018-08-13 05:28:23');
+(87, 'menu_id', 'Menu Name', 19, 7, 0, '', 0, 0, 1, '@la_menus', 0, '2018-08-13 05:28:23', '2018-08-13 05:28:23'),
+(88, 'manager_id', 'Manager Name', 9, 7, 0, '', 0, 0, 0, '@employees', 2, '2018-08-16 01:20:10', '2018-08-16 01:20:10'),
+(89, 'lead_id', 'Lead Name', 9, 7, 0, '', 0, 0, 1, '@employees', 3, '2018-08-16 01:20:36', '2018-08-16 01:20:36');
 
 -- --------------------------------------------------------
 
@@ -542,19 +539,22 @@ CREATE TABLE `projects` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Dummy',
+  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT '',
   `client_id` int(10) UNSIGNED NOT NULL DEFAULT '1',
   `start_date` date NOT NULL,
-  `end_date` date NOT NULL
+  `end_date` date NOT NULL,
+  `manager_id` int(10) UNSIGNED NOT NULL DEFAULT '1',
+  `lead_id` int(10) UNSIGNED NOT NULL DEFAULT '1'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `projects`
 --
 
-INSERT INTO `projects` (`id`, `deleted_at`, `created_at`, `updated_at`, `name`, `client_id`, `start_date`, `end_date`) VALUES
-(1, NULL, '2018-08-06 04:17:55', '2018-08-06 04:17:55', 'Client 1 ka first project', 1, '2018-08-06', '0000-00-00'),
-(2, NULL, '2018-08-07 02:04:50', '2018-08-07 02:04:50', 'Project Via Create URL', 1, '2018-08-07', '0000-00-00');
+INSERT INTO `projects` (`id`, `deleted_at`, `created_at`, `updated_at`, `name`, `client_id`, `start_date`, `end_date`, `manager_id`, `lead_id`) VALUES
+(1, NULL, '2018-08-06 04:17:55', '2018-08-06 04:17:55', 'Client 1 ka first project', 1, '2018-08-06', '0000-00-00', 1, 1),
+(2, NULL, '2018-08-07 02:04:50', '2018-08-07 02:04:50', 'Project Via Create URL', 1, '2018-08-07', '0000-00-00', 1, 1),
+(3, NULL, '2018-08-16 00:39:53', '2018-08-16 00:39:53', 'Easy on Books', 1, '2018-08-01', '2019-07-25', 1, 1);
 
 -- --------------------------------------------------------
 
@@ -595,7 +595,7 @@ CREATE TABLE `roles` (
 
 INSERT INTO `roles` (`id`, `name`, `display_name`, `description`, `parent`, `dept`, `deleted_at`, `created_at`, `updated_at`) VALUES
 (1, 'SUPER_ADMIN', 'Super Admin', 'Full Access Role', 1, 1, NULL, '2018-08-06 01:55:17', '2018-08-06 01:55:17'),
-(2, 'ADMIN', 'ADMIN', 'Junior Admin', 2, 1, '2018-08-08 01:00:12', '2018-08-06 02:21:05', '2018-08-08 01:00:12'),
+(2, 'ADMIN', 'ADMIN', 'Junior Admin', 2, 1, '2018-08-16 02:36:42', '2018-08-06 02:21:05', '2018-08-16 02:36:42'),
 (3, 'EMPLOYEE', 'Employee', 'Employee in the company with Timesheet and Leave entry permission ', 3, 2, NULL, '2018-08-08 01:00:06', '2018-08-10 02:29:43');
 
 -- --------------------------------------------------------
@@ -720,7 +720,6 @@ INSERT INTO `role_module_fields` (`id`, `role_id`, `field_id`, `access`, `create
 (11, 1, 11, 'write', '2018-08-06 01:55:17', '2018-08-06 01:55:17'),
 (12, 1, 12, 'write', '2018-08-06 01:55:17', '2018-08-06 01:55:17'),
 (16, 1, 16, 'write', '2018-08-06 01:55:17', '2018-08-06 01:55:17'),
-(17, 1, 17, 'write', '2018-08-06 01:55:17', '2018-08-06 01:55:17'),
 (18, 1, 18, 'write', '2018-08-06 01:55:17', '2018-08-06 01:55:17'),
 (19, 1, 19, 'write', '2018-08-06 01:55:17', '2018-08-06 01:55:17'),
 (20, 1, 20, 'write', '2018-08-06 01:55:17', '2018-08-06 01:55:17'),
@@ -766,7 +765,6 @@ INSERT INTO `role_module_fields` (`id`, `role_id`, `field_id`, `access`, `create
 (62, 2, 11, 'readonly', '2018-08-06 02:21:05', '2018-08-06 02:21:05'),
 (63, 2, 12, 'readonly', '2018-08-06 02:21:05', '2018-08-06 02:21:05'),
 (67, 2, 16, 'readonly', '2018-08-06 02:21:05', '2018-08-06 02:21:05'),
-(68, 2, 17, 'readonly', '2018-08-06 02:21:05', '2018-08-06 02:21:05'),
 (69, 2, 18, 'readonly', '2018-08-06 02:21:05', '2018-08-06 02:21:05'),
 (70, 2, 19, 'readonly', '2018-08-06 02:21:05', '2018-08-06 02:21:05'),
 (71, 2, 20, 'readonly', '2018-08-06 02:21:05', '2018-08-06 02:21:05'),
@@ -808,11 +806,8 @@ INSERT INTO `role_module_fields` (`id`, `role_id`, `field_id`, `access`, `create
 (109, 2, 54, 'invisible', '2018-08-06 04:12:35', '2018-08-06 04:12:35'),
 (110, 2, 55, 'invisible', '2018-08-06 04:12:35', '2018-08-06 04:12:35'),
 (111, 1, 56, 'write', '2018-08-06 04:20:33', '2018-08-06 04:20:33'),
-(112, 1, 57, 'write', '2018-08-06 04:21:03', '2018-08-06 04:21:03'),
-(113, 1, 58, 'write', '2018-08-06 04:21:21', '2018-08-06 04:21:21'),
 (114, 1, 59, 'write', '2018-08-06 07:18:00', '2018-08-06 07:18:00'),
 (115, 1, 60, 'write', '2018-08-06 07:18:24', '2018-08-06 07:18:24'),
-(116, 1, 61, 'write', '2018-08-06 07:18:52', '2018-08-06 07:18:52'),
 (117, 1, 62, 'write', '2018-08-06 07:32:12', '2018-08-06 07:32:12'),
 (118, 1, 63, 'write', '2018-08-06 07:33:42', '2018-08-06 07:33:42'),
 (119, 3, 1, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
@@ -828,7 +823,6 @@ INSERT INTO `role_module_fields` (`id`, `role_id`, `field_id`, `access`, `create
 (129, 3, 11, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
 (130, 3, 12, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
 (134, 3, 16, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
-(135, 3, 17, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
 (136, 3, 18, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
 (137, 3, 19, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
 (138, 3, 20, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
@@ -840,7 +834,6 @@ INSERT INTO `role_module_fields` (`id`, `role_id`, `field_id`, `access`, `create
 (144, 3, 59, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
 (145, 3, 60, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
 (146, 3, 22, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
-(147, 3, 61, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
 (149, 3, 27, 'readonly', '2018-08-08 01:00:06', '2018-08-08 01:00:06'),
 (151, 3, 30, 'readonly', '2018-08-08 01:00:07', '2018-08-08 01:00:07'),
 (152, 3, 31, 'readonly', '2018-08-08 01:00:07', '2018-08-08 01:00:07'),
@@ -869,8 +862,6 @@ INSERT INTO `role_module_fields` (`id`, `role_id`, `field_id`, `access`, `create
 (175, 3, 54, 'readonly', '2018-08-08 01:00:07', '2018-08-08 01:00:07'),
 (176, 3, 55, 'readonly', '2018-08-08 01:00:07', '2018-08-08 01:00:07'),
 (177, 3, 56, 'readonly', '2018-08-08 01:00:07', '2018-08-08 01:00:07'),
-(178, 3, 57, 'readonly', '2018-08-08 01:00:07', '2018-08-08 01:00:07'),
-(179, 3, 58, 'readonly', '2018-08-08 01:00:07', '2018-08-08 01:00:07'),
 (180, 3, 62, 'readonly', '2018-08-08 01:00:07', '2018-08-08 01:00:07'),
 (181, 3, 63, 'readonly', '2018-08-08 01:00:08', '2018-08-08 01:00:08'),
 (182, 1, 64, 'write', '2018-08-08 01:01:24', '2018-08-08 01:01:24'),
@@ -898,7 +889,9 @@ INSERT INTO `role_module_fields` (`id`, `role_id`, `field_id`, `access`, `create
 (204, 1, 75, 'write', '2018-08-08 04:58:38', '2018-08-08 04:58:38'),
 (205, 3, 75, 'write', '2018-08-10 01:42:31', '2018-08-10 01:42:31'),
 (216, 1, 86, 'write', '2018-08-13 05:27:54', '2018-08-13 05:27:54'),
-(217, 1, 87, 'write', '2018-08-13 05:28:23', '2018-08-13 05:28:23');
+(217, 1, 87, 'write', '2018-08-13 05:28:23', '2018-08-13 05:28:23'),
+(218, 1, 88, 'write', '2018-08-16 01:20:11', '2018-08-16 01:20:11'),
+(219, 1, 89, 'write', '2018-08-16 01:20:37', '2018-08-16 01:20:37');
 
 -- --------------------------------------------------------
 
@@ -920,7 +913,6 @@ CREATE TABLE `role_user` (
 
 INSERT INTO `role_user` (`id`, `role_id`, `user_id`, `created_at`, `updated_at`) VALUES
 (1, 1, 1, NULL, NULL),
-(3, 2, 2, NULL, NULL),
 (6, 3, 2, NULL, NULL);
 
 -- --------------------------------------------------------
@@ -964,7 +956,8 @@ INSERT INTO `sidebar_menu_accesses` (`id`, `deleted_at`, `created_at`, `updated_
 (19, NULL, '2018-08-13 11:03:31', '2018-08-13 11:03:31', 1, 33),
 (24, NULL, '2018-08-13 11:03:31', '2018-08-13 11:03:31', 1, 40),
 (25, NULL, '2018-08-13 11:03:31', '2018-08-13 11:03:31', 1, 41),
-(26, NULL, '2018-08-13 11:03:31', '2018-08-13 11:03:31', 1, 42);
+(26, NULL, '2018-08-13 11:03:31', '2018-08-13 11:03:31', 1, 42),
+(27, NULL, '2018-08-16 01:24:02', '2018-08-16 01:24:02', 1, 49);
 
 -- --------------------------------------------------------
 
@@ -977,18 +970,17 @@ CREATE TABLE `tasks` (
   `deleted_at` timestamp NULL DEFAULT NULL,
   `created_at` timestamp NULL DEFAULT NULL,
   `updated_at` timestamp NULL DEFAULT NULL,
-  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT 'Dummy Task',
-  `start_date` date NOT NULL DEFAULT '1970-01-01',
-  `end_date` date NOT NULL
+  `name` varchar(255) COLLATE utf8_unicode_ci NOT NULL DEFAULT ''
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_unicode_ci;
 
 --
 -- Dumping data for table `tasks`
 --
 
-INSERT INTO `tasks` (`id`, `deleted_at`, `created_at`, `updated_at`, `name`, `start_date`, `end_date`) VALUES
-(1, NULL, '2018-08-06 04:22:23', '2018-08-06 04:22:23', 'Create UI', '2018-08-06', '0000-00-00'),
-(2, NULL, '2018-08-06 04:22:47', '2018-08-06 04:23:13', 'Plan Sprint', '2018-08-06', '1970-01-01');
+INSERT INTO `tasks` (`id`, `deleted_at`, `created_at`, `updated_at`, `name`) VALUES
+(1, NULL, '2018-08-06 04:22:23', '2018-08-06 04:22:23', 'Create UI'),
+(2, NULL, '2018-08-06 04:22:47', '2018-08-06 04:23:13', 'Plan Sprint'),
+(3, NULL, '2018-08-16 00:41:06', '2018-08-16 00:41:06', 'Implement Html page ');
 
 -- --------------------------------------------------------
 
@@ -1119,8 +1111,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `context_id`, `email`, `password`, `type`, `remember_token`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(1, 'Varsha', 1, 'varsha.mittal@ganitsoftech.com', '$2y$10$XCoW2KZEkr9ySzAUOKeTmOIW7NONucBOVQ6B4Mzp4qgHg28ofaBWK', 'Employee', 'BomTRRENVTjPCBKv1LZ7mFCndx4UmNwHpRMPanhJW55qweLZE1LRoYf5DDxG', NULL, '2018-08-06 01:55:58', '2018-08-13 05:34:43'),
-(2, 'Employee 2', 2, 'employee.2@ganitsoftech.com', '$2y$10$hCzarBBd.gQLcodlRGp3BeY0YqORJc0uP3Uo8.oUlPl28JR2rM2MG', 'Employee', 'yyIJ7yfG7hYP9oRNwRVUaNB5YtlHNoZx2k3trxaj7blJwmWdbbTekDOpWTGo', NULL, '2018-08-06 02:22:34', '2018-08-13 05:34:53');
+(1, 'Varsha', 1, 'varsha.mittal@ganitsoftech.com', '$2y$10$XCoW2KZEkr9ySzAUOKeTmOIW7NONucBOVQ6B4Mzp4qgHg28ofaBWK', 'Employee', 'JWo3u6DnGuKsCkJeU97nXDDgWAeZQi8ZgVMkWerGa7pX7DX8bqgjTuU5GSDl', NULL, '2018-08-06 01:55:58', '2018-08-16 02:42:32'),
+(2, 'Employee 2', 2, 'employee.2@ganitsoftech.com', '$2y$10$avnQQnUizVTxPy/ZjVQzAuvEVTt0mhMqvRbehlST0oEgyWNoJV6Bm', 'Employee', 'IwiSnHonlZkS6LAYhHymnanoyTsS73pS2WFKyDd46CaB2IiNpQmczX539Ky6', NULL, '2018-08-06 02:22:34', '2018-08-16 02:43:02');
 
 --
 -- Indexes for dumped tables
@@ -1149,8 +1141,7 @@ ALTER TABLE `employees`
   ADD UNIQUE KEY `employees_email_unique` (`email`),
   ADD KEY `employees_dept_foreign` (`dept`),
   ADD KEY `employees_first_approver_foreign` (`first_approver`),
-  ADD KEY `employees_second_approver_foreign` (`second_approver`),
-  ADD KEY `employees_project_id_foreign` (`project_id`);
+  ADD KEY `employees_second_approver_foreign` (`second_approver`);
 
 --
 -- Indexes for table `la_configs`
@@ -1233,7 +1224,9 @@ ALTER TABLE `permission_role`
 --
 ALTER TABLE `projects`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `projects_client_id_foreign` (`client_id`);
+  ADD KEY `projects_client_id_foreign` (`client_id`),
+  ADD KEY `projects_manager_id_foreign` (`manager_id`),
+  ADD KEY `projects_lead_id_foreign` (`lead_id`);
 
 --
 -- Indexes for table `rolemenus`
@@ -1356,7 +1349,7 @@ ALTER TABLE `la_configs`
 -- AUTO_INCREMENT for table `la_menus`
 --
 ALTER TABLE `la_menus`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=49;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=50;
 
 --
 -- AUTO_INCREMENT for table `leads`
@@ -1380,7 +1373,7 @@ ALTER TABLE `modules`
 -- AUTO_INCREMENT for table `module_fields`
 --
 ALTER TABLE `module_fields`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=88;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=91;
 
 --
 -- AUTO_INCREMENT for table `module_field_types`
@@ -1404,7 +1397,7 @@ ALTER TABLE `permissions`
 -- AUTO_INCREMENT for table `projects`
 --
 ALTER TABLE `projects`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `rolemenus`
@@ -1434,7 +1427,7 @@ ALTER TABLE `role_module`
 -- AUTO_INCREMENT for table `role_module_fields`
 --
 ALTER TABLE `role_module_fields`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=218;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=221;
 
 --
 -- AUTO_INCREMENT for table `role_user`
@@ -1446,13 +1439,13 @@ ALTER TABLE `role_user`
 -- AUTO_INCREMENT for table `sidebar_menu_accesses`
 --
 ALTER TABLE `sidebar_menu_accesses`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=32;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=28;
 
 --
 -- AUTO_INCREMENT for table `tasks`
 --
 ALTER TABLE `tasks`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=3;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
 
 --
 -- AUTO_INCREMENT for table `timesheets`
@@ -1482,7 +1475,6 @@ ALTER TABLE `users`
 ALTER TABLE `employees`
   ADD CONSTRAINT `employees_dept_foreign` FOREIGN KEY (`dept`) REFERENCES `departments` (`id`),
   ADD CONSTRAINT `employees_first_approver_foreign` FOREIGN KEY (`first_approver`) REFERENCES `employees` (`id`),
-  ADD CONSTRAINT `employees_project_id_foreign` FOREIGN KEY (`project_id`) REFERENCES `projects` (`id`),
   ADD CONSTRAINT `employees_second_approver_foreign` FOREIGN KEY (`second_approver`) REFERENCES `employees` (`id`);
 
 --
@@ -1521,7 +1513,9 @@ ALTER TABLE `permission_role`
 -- Constraints for table `projects`
 --
 ALTER TABLE `projects`
-  ADD CONSTRAINT `projects_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `organizations` (`id`);
+  ADD CONSTRAINT `projects_client_id_foreign` FOREIGN KEY (`client_id`) REFERENCES `organizations` (`id`),
+  ADD CONSTRAINT `projects_lead_id_foreign` FOREIGN KEY (`lead_id`) REFERENCES `employees` (`id`),
+  ADD CONSTRAINT `projects_manager_id_foreign` FOREIGN KEY (`manager_id`) REFERENCES `employees` (`id`);
 
 --
 -- Constraints for table `rolemenus`
