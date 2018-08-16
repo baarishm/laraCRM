@@ -28,7 +28,7 @@
     }
 
 
-    input[type="search"]{
+    input[type="search"].form-control.input-sm{
         float : right;
         margin:5px;
         border:none;

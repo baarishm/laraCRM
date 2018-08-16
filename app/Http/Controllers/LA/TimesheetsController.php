@@ -23,7 +23,7 @@ use Mail;
 class TimesheetsController extends Controller {
 
     public $show_action = false;
-    public $view_col = 'project_id';
+    public $view_col = '';
     public $listing_cols = ['id', 'submitor_id', 'project_id', 'task_id', 'date', 'hours', 'minutes', 'comments', 'dependency', 'dependency_for', 'dependent_on', 'lead_id', 'manager_id'];
     public $custom_cols = ['id', 'submitor_id', 'project_id', 'task_id', 'date', 'hours', 'minutes', 'comments', 'dependency', 'dependency_for', 'dependent_on', 'lead_id', 'manager_id'];
 
@@ -107,7 +107,7 @@ class TimesheetsController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            $request->submitor_id = base64_decode(base64_decode(submitor_id));
+            $request->submitor_id = base64_decode(base64_decode($request->submitor_id));
             $insert_id = Module::insert("Timesheets", $request);
 
             $leads = DB::table('leads')
