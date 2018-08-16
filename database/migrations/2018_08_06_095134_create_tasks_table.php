@@ -18,9 +18,7 @@ class CreateTasksTable extends Migration
     public function up()
     {
         Module::generate("Tasks", 'tasks', 'name', 'fa-file-o', [
-            ["name", "Task Name", "Name", false, "Dummy Task", 5, 255, true],
-            ["start_date", "Start Date", "Date", false, "", 0, 0, false],
-            ["end_date", "End Date", "Date", false, "", 0, 0, false],
+            ["name", "Task Name", "Name", false, "", 5, 255, true],
         ]);
 		
 		/*

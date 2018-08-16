@@ -19,20 +19,18 @@ class CreateEmployeesTable extends Migration
     {
         Module::generate("Employees", 'employees', 'name', 'fa-group', [
             ["name", "Name", "Name", false, "", 5, 250, true],
-            ["designation", "Designation", "String", false, "", 0, 50, true],
             ["gender", "Gender", "Radio", false, "Male", 0, 0, true, ["Male","Female"]],
             ["mobile", "Mobile", "Mobile", false, "", 10, 20, true],
             ["mobile2", "Alternative Mobile", "Mobile", false, "", 10, 20, false],
             ["email", "Email", "Email", true, "", 5, 250, true],
-            ["date_birth", "Date of Birth", "Date", false, "1990-01-01", 0, 0, false],
+            ["date_birth", "DOB", "Date", false, "1990-01-01", 0, 0, true],
             ["city", "City", "String", false, "", 0, 50, false],
             ["address", "Address", "Address", false, "", 0, 1000, false],
             ["about", "About", "String", false, "", 0, 0, false],
             ["first_approver", "First Approver", "Dropdown", false, "0", 0, 0, false, "@employees"],
             ["second_approver", "Second Approver", "Dropdown", false, "0", 0, 0, false, "@employees"],
             ["dept", "Department", "Dropdown", false, "0", 0, 0, true, "@departments"],
-            ["project_id", "Project Name", "Dropdown", false, "0", 0, 0, false, "@projects"],
-            ["date_hire", "Hiring Date", "Date", false, "date('Y-m-d')", 0, 0, false],
+            ["date_hire", "DOJ", "Date", false, "date('Y-m-d')", 0, 0, false],
         ]);
 		
 		/*

@@ -47,6 +47,4 @@ Created by following http://laraadmin.com/docs/1.0/installation
 - add 
             $table_name = ($json != 'la_menus') ? strtolower(str_plural($json)) : 'la_menus';
             and change strtolower(str_plural($json)) with $table_name
- in process_values function of C:\xampp\htdocs\Ganit\CRM\vendor\dwij\laraadmin\src\LAFormMaker.php
- 
- * in case of count error on import : copy vendor folder of varsha, specially autoload.php, composer + dwij + guzzlehttp + laravel
+ in process_values function of C:\xampp\htdocs\Ganit\CRM\vendor\dwij\laraadmin\src\LAFormMaker.php 

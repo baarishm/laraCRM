@@ -111,7 +111,6 @@ Employee View
                     </div>
                     <div class="panel-body">
                         @la_display($module, 'name')
-                        @la_display($module, 'designation')
                         @la_display($module, 'gender')
                         @la_display($module, 'mobile')
                         @la_display($module, 'mobile2')
@@ -123,7 +122,6 @@ Employee View
                         @la_display($module, 'first_approver')
                         @la_display($module, 'second_approver')
                         @la_display($module, 'dept')
-                        @la_display($module, 'project_id')
                         @la_display($module, 'date_hire')
                     </div>
                 </div>
