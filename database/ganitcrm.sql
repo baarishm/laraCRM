@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Aug 16, 2018 at 10:14 AM
+-- Generation Time: Aug 16, 2018 at 12:58 PM
 -- Server version: 10.1.34-MariaDB
 -- PHP Version: 7.2.7
 
@@ -1065,7 +1065,8 @@ INSERT INTO `timesheets` (`id`, `deleted_at`, `created_at`, `updated_at`, `proje
 (54, NULL, '2018-08-10 01:18:45', '2018-08-10 01:18:45', 2, 1, '2018-08-10', '1', '00', 'redirect', 'No', '', NULL, 1, 1, 1),
 (55, NULL, '2018-08-10 01:26:15', '2018-08-10 01:26:15', 1, 2, '2018-08-10', '2', '30', 'fgd', 'Yes', 'rtet', 2, 1, 1, 1),
 (56, NULL, '2018-08-10 02:53:49', '2018-08-10 02:53:49', 2, 2, '2018-08-10', '2', '30', 'Hey', 'Yes', 'For further comm', 1, 1, 1, 1),
-(57, NULL, '2018-08-10 04:36:21', '2018-08-10 04:36:21', 1, 1, '2018-08-10', '3', '30', 'sadsada', 'No', '', NULL, 1, 1, 2);
+(57, NULL, '2018-08-10 04:36:21', '2018-08-10 04:36:21', 1, 1, '2018-08-10', '3', '30', 'sadsada', 'No', '', NULL, 1, 1, 2),
+(58, NULL, '2018-08-16 04:22:20', '2018-08-16 04:22:20', 2, 2, '2018-08-09', '3', '30', 'dsfdsf', 'Yes', 'dfsdsf', 2, 1, 1, 2);
 
 -- --------------------------------------------------------
 
@@ -1111,8 +1112,8 @@ CREATE TABLE `users` (
 --
 
 INSERT INTO `users` (`id`, `name`, `context_id`, `email`, `password`, `type`, `remember_token`, `deleted_at`, `created_at`, `updated_at`) VALUES
-(1, 'Varsha', 1, 'varsha.mittal@ganitsoftech.com', '$2y$10$XCoW2KZEkr9ySzAUOKeTmOIW7NONucBOVQ6B4Mzp4qgHg28ofaBWK', 'Employee', 'JWo3u6DnGuKsCkJeU97nXDDgWAeZQi8ZgVMkWerGa7pX7DX8bqgjTuU5GSDl', NULL, '2018-08-06 01:55:58', '2018-08-16 02:42:32'),
-(2, 'Employee 2', 2, 'employee.2@ganitsoftech.com', '$2y$10$avnQQnUizVTxPy/ZjVQzAuvEVTt0mhMqvRbehlST0oEgyWNoJV6Bm', 'Employee', 'IwiSnHonlZkS6LAYhHymnanoyTsS73pS2WFKyDd46CaB2IiNpQmczX539Ky6', NULL, '2018-08-06 02:22:34', '2018-08-16 02:43:02');
+(1, 'Varsha', 1, 'varsha.mittal@ganitsoftech.com', '$2y$10$XCoW2KZEkr9ySzAUOKeTmOIW7NONucBOVQ6B4Mzp4qgHg28ofaBWK', 'Employee', 'm9JxJJ6dWFr05OJ8Iv6QB9D1CW5IoPFHhcrO529dnIkWrYYeqMN2LzWCyaA2', NULL, '2018-08-06 01:55:58', '2018-08-16 02:54:41'),
+(2, 'Employee 2', 2, 'employee.2@ganitsoftech.com', '$2y$10$avnQQnUizVTxPy/ZjVQzAuvEVTt0mhMqvRbehlST0oEgyWNoJV6Bm', 'Employee', '1nsT9oEisBCvzHPdrbHrIFBjPhGfiYKa1giuqPSIVbE2LT0Aexdw5PFLYiTt', NULL, '2018-08-06 02:22:34', '2018-08-16 04:11:10');
 
 --
 -- Indexes for dumped tables
@@ -1451,7 +1452,7 @@ ALTER TABLE `tasks`
 -- AUTO_INCREMENT for table `timesheets`
 --
 ALTER TABLE `timesheets`
-  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=58;
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=59;
 
 --
 -- AUTO_INCREMENT for table `uploads`
