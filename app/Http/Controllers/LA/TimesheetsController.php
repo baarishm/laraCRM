@@ -342,7 +342,7 @@ class TimesheetsController extends Controller {
                     $m->from('varsha.mittal@ganitsoftech.com', 'Your Application');
 
                     $m->to($recipients['to'])
-//                            ->cc($recipients['cc']) //need to add this recipent in mailgun
+                           ->cc($recipients['cc']) //need to add this recipent in mailgun
                             ->subject('Timesheet of ' . Auth::user()->name . '!');
                 });
             }
