@@ -96,8 +96,6 @@ class EmployeesController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            $insert_id = Module::insert("Employees", $request);
-
             // Create Employee
             $employee_id = Module::insert("Employees", $request);
             // Create User
