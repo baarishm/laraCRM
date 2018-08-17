@@ -96,4 +96,12 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Sidebar_Menu_Accesses ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/sidebar_menu_accesses', 'LA\Sidebar_Menu_AccessesController');
 	Route::get(config('laraadmin.adminRoute') . '/sidebar_menu_access_dt_ajax', 'LA\Sidebar_Menu_AccessesController@dtajax');
+	
+	/* ================== Sidebar_Menu_Leaves_index ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
+	Route::post(config('laraadmin.adminRoute') . '/leaves/store', 'LA\LeaveMasterController@store');
+	
+	
 });
+
+

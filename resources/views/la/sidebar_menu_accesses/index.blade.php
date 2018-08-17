@@ -9,6 +9,7 @@
 @section("headerElems")
 @la_access("Sidebar_Menu_Accesses", "create")
 	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Sidebar Menu Access</button>
+	
 @endla_access
 @endsection
 
