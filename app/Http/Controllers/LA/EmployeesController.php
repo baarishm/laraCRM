@@ -30,7 +30,7 @@ class EmployeesController extends Controller {
     public $show_action = true;
     public $view_col = 'employees.name as name';
     public $listing_cols = ['id', 'name', 'gender', 'mobile', 'mobile2', 'email', 'date_birth', 'city', 'address', 'about', 'first_approver', 'second_approver', 'dept', 'date_hire'];
-    public $index_listing_cols = ['employees.id as id','employees.name as name', 'roles.display_name as Role', 'gender', 'mobile', 'employees.email as email', 'date_birth', 'first_approver', 'second_approver', 'date_hire'];
+    public $index_listing_cols = ['employees.id as id', 'employees.name as name', 'roles.display_name as Role', 'gender', 'mobile', 'employees.email as email', 'date_birth', 'first_approver', 'second_approver', 'date_hire'];
 
     public function __construct() {
         // Field Access of Listing Columns
@@ -55,7 +55,7 @@ class EmployeesController extends Controller {
         if (Module::hasAccess($module->id)) {
             return View('la.employees.index', [
                 'show_actions' => $this->show_action,
-                'listing_cols' => ['id','name', 'role', 'gender', 'mobile', 'email', 'date_birth', 'first_approver', 'second_approver', 'date_hire'],
+                'listing_cols' => ['id', 'name', 'role', 'gender', 'mobile', 'email', 'date_birth', 'first_approver', 'second_approver', 'date_hire'],
                 'module' => $module
             ]);
         } else {
@@ -102,7 +102,7 @@ class EmployeesController extends Controller {
             $user = User::create([
                         'name' => $request->name,
                         'email' => $request->email,
-                        'password' => bcrypt($password),
+                        'password' => bcrypt('123456'),
                         'context_id' => $employee_id,
                         'type' => "Employee",
             ]);
@@ -112,15 +112,7 @@ class EmployeesController extends Controller {
             $role = Role::find($request->role);
             $user->attachRole($role);
 
-            if (env('MAIL_USERNAME') != null && env('MAIL_USERNAME') != "null" && env('MAIL_USERNAME') != "") {
-                // Send mail to User his Password
-                Mail::send('emails.send_login_cred', ['user' => $user, 'password' => $password], function ($m) use ($user) {
-                    $m->from('hello@laraadmin.com', 'LaraAdmin');
-                    $m->to($user->email, $user->name)->subject('LaraAdmin - Your Login Credentials');
-                });
-            } else {
-                Log::info("User created: username: " . $user->email . " Password: " . $password);
-            }
+            Log::info("User created: username: " . $user->email . " Password: 123456");
 
             return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
         } else {
@@ -217,18 +209,17 @@ class EmployeesController extends Controller {
 
             $insert_id = Module::updateRow("Employees", $request, $id);
 
-			// Update User
-			$user = User::where('context_id', $employee_id)->first();
-			$user->name = $request->name;
-			$user->save();
-			
-			// update user role
-			$user->detachRoles();
-			$role = Role::find($request->role);
-			$user->attachRole($role);
-			
+            // Update User
+            $user = User::where('context_id', $employee_id)->first();
+            $user->name = $request->name;
+            $user->save();
+
+            // update user role
+            $user->detachRoles();
+            $role = Role::find($request->role);
+            $user->attachRole($role);
+
             return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
-			
         } else {
             return redirect(config('laraadmin.adminRoute') . "/");
         }
@@ -258,9 +249,9 @@ class EmployeesController extends Controller {
      */
     public function dtajax() {
         $values = DB::table('employees')
-                 ->leftJoin('users', 'users.context_id', '=', 'employees.id')
-                 ->leftJoin('role_user', 'role_user.user_id', '=', 'users.id')
-                 ->leftJoin('roles', 'roles.id', '=', 'role_user.role_id')
+                ->leftJoin('users', 'users.context_id', '=', 'employees.id')
+                ->leftJoin('role_user', 'role_user.user_id', '=', 'users.id')
+                ->leftJoin('roles', 'roles.id', '=', 'role_user.role_id')
                 ->select($this->index_listing_cols)
                 ->whereNull('employees.deleted_at');
         $out = Datatables::of($values)->make();
