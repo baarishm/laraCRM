@@ -68,11 +68,13 @@ class TimesheetsController extends Controller {
         if (Module::hasAccess("Timesheets", "create")) {
             $leads = DB::table('leads')
                     ->select([DB::raw('users.name as lead_name'), DB::raw('leads.id AS lead_id'), DB::raw('users.email AS lead_email')])
-                    ->leftJoin('users', 'users.id', '=', 'leads.employee_id')
+                    ->leftJoin('users', 'users.context_id', '=', 'leads.employee_id')
+					->whereNull('leads.deleted_at')
                     ->get();
             $managers = DB::table('managers')
                     ->select([DB::raw('users.name as manager_name'), DB::raw('managers.id AS manager_id'), DB::raw('users.email AS manager_email')])
-                    ->leftJoin('users', 'users.id', '=', 'managers.employee_id')
+                    ->leftJoin('users', 'users.context_id', '=', 'managers.employee_id')
+					->whereNull('managers.deleted_at')
                     ->get();
             return view('la.timesheets.add', [
                 'module' => $module,
