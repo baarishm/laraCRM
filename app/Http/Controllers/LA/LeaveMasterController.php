@@ -24,12 +24,19 @@ class LeaveMasterController extends Controller
        return view('create');
 	  
     }
+
+	 public function show(Request $request, $id)
+    {
+        $leaveMaster= LeaveMaster::find($id);
+        return view('ViewData',compact('leaveMaster','$id'));
+	 
+    }
   
    public function store(Request $request)
     {
 		  $this->validate(request(), [
-            'EmpId' => 'required|unique:leaveMaster',
-            'EmpName' => 'required |unique:leaveMaster',
+            'EmpId' => 'required',
+           
             'FromDate' => 'required|date',
             'ToDate' => 'required|date',
 			'LeaveReason' => 'required',
@@ -38,7 +45,7 @@ class LeaveMasterController extends Controller
 
         $leaveMaster= new LeaveMaster();
 		 $leaveMaster->EmpId=$request->get('EmpId');
-        $leaveMaster->EmpName=$request->get('EmpName');
+       
         $FromDate=date_create($request->get('FromDate'));
         $format = date_format($FromDate,"Y-m-d");
         $leaveMaster->FromDate =($format);
@@ -49,7 +56,7 @@ class LeaveMasterController extends Controller
 		$leaveMaster->NoOfDays=$request->get('NoOfDays');
 		$leaveMaster->LeaveReason=$request->get('LeaveReason');
 		$leaveMaster->LeaveType=$request->get('LeaveType');
-		$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
+	//	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
        
         $leaveMaster->save();
         
@@ -59,20 +66,20 @@ class LeaveMasterController extends Controller
     {
 		  $this->validate(request(), [
               'EmpId' => 'required',
-              'EmpName' => 'required',
+              
               'FromDate' => 'required',
              'ToDate' => 'required',
 		     'LeaveReason' => 'required',
          ]);
         $leaveMaster= LeaveMaster::find($id);
 		 $leaveMaster->EmpId=$request->get('EmpId');
-        $leaveMaster->EmpName=$request->get('EmpName');
+       
 		$leaveMaster->FromDate=$request->get('FromDate');
 		$leaveMaster->ToDate=$request->get('ToDate');
 		 $leaveMaster->NoOfDays=$request->get('NoOfDays');
 		 $leaveMaster->LeaveReason=$request->get('LeaveReason');
 		$leaveMaster->LeaveType=$request->get('LeaveType');
-		$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
+	//	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
         $leaveMaster->save();
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been Update');
     }

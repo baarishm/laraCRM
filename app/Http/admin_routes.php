@@ -100,6 +100,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Sidebar_Menu_Leaves_index ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
 	Route::post(config('laraadmin.adminRoute') . '/leaves/store', 'LA\LeaveMasterController@store');
+	/* ================== Sidebar_Menu_Leaves_ViewData ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
 	
 	
 });

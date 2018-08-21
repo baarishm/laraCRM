@@ -41,15 +41,14 @@
     <thead>
       <tr>
        <th>EmpId</th>
-        <th>EmpName</th>
+       
         <th>From Date</th>
 		<th>To Date</th>
 		<th>Total Day</th>
 		<th>Leave Type</th>
-		<th>Leave Duration</th>
-		<th>Approved</th>
-		<th>ApprovedBy</th>
-		<th>RejectedBy</th>
+	<!--	<th>Leave Duration</th> -->
+		<th>Leave Status</th>
+		
 		
         <th >Action</th>  
 		<th ><a  href="leaves/create" class="btn btn-info">Apply Leave</a></th> 
@@ -64,17 +63,16 @@
         @endphp
       <tr>
 	    <td>{{$leaveMaster['EmpId']}}</td>
-         <td>{{$leaveMaster['EmpName']}}</td>
+        
         <td>{{$FromDate}}</td>
 		<td>{{$ToDate}}</td>
         <td>{{$leaveMaster['NoOfDays']}}</td>
         <td>{{$leaveMaster['LeaveType']}}</td>
-		 <td>{{$leaveMaster['LeaveDurationType'] ==.5 ? "Half Day" : "Full Day"}}</td>
+	<!--	 <td>{{$leaveMaster['LeaveDurationType'] ==.5 ? "Half Day" : "Full Day"}}</td>   -->
 		 <td>{{$leaveMaster['Approved']}}</td>
-        <td>{{$leaveMaster['ApprovedBy']}}</td>
-		 <td>{{$leaveMaster['RejectedBy']}}</td>
         
-        <td><a href="{{action('LA\LeaveMasterController@edit', $leaveMaster['id'])}}" class="btn btn-warning">Edit</a></td>
+        
+        <td><a href="{{action('LA\LeaveMasterController@show', $leaveMaster['id'])}}" class="btn btn-warning">View</a></td>
         <td>
           <form action="{{action('LA\LeaveMasterController@destroy', $leaveMaster['id'])}}" method="post">
        <input type="hidden" name="_token" value="{{ csrf_token() }}">

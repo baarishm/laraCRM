@@ -15,18 +15,16 @@
     <div class="container">
       <h2>Edit Form</h2><br  />
         <form method="post" action="{{action('LA\LeaveMasterController@update', $id)}}">
+		
        <input type="hidden" name="_token" value="{{ csrf_token() }}">
         <input name="_method" type="hidden" value="PATCH">
 		 <div class="row">
         
           <div class="form-group col-md-4">
             <label for="name">Employee Id:</label>
-            <input type="text" class="form-control" autocomplete="off" name="EmpId"  placeholder="EmpId" required value="{{$leaveMaster->EmpId}}">
+            <input type="text" class ="form-control" autocomplete="off" readonly="readonly" name="EmpId" value="{{$leaveMaster->EmpId}}">
           </div>
-		   <div class="form-group col-md-4">
-            <label for="name">Emp Name:</label>
-            <input type="text" class="form-control" autocomplete="off" name="EmpName"  placeholder="EmpName" required value="{{$leaveMaster->EmpName}}">
-          </div>
+		  
 		  
           <div class="form-group col-md-4">
 		  <label for="StartDate" class="control-label">Start Date:</label>
@@ -38,7 +36,7 @@
          </div>
 		 <div class="form-group col-md-4">
             <label for="name">Number Of Days</label>
-            <input type="text" class="form-control" name="NoOfDays" autocomplete="off" id="NoOfDays" value="{{$leaveMaster->NoOfDays}}">
+            <input type="text" class="form-control" name="NoOfDays" autocomplete="off" readonly="readonly" id="NoOfDays" value="{{$leaveMaster->NoOfDays}}">
           </div>
 		   <div class="form-group col-md-4">
               <label for="number">Leave Purpose</label>
@@ -48,21 +46,24 @@
 			<div class="form-group col-md-4">
                 <label>Leave Type</label>
                 <select name="LeaveType" class="form-control">
-                  <option value="Casual"  @if($leaveMaster->Office=="Casual") selected @endif>Casual Leave</option>
-                  <option value="Sick"  @if($leaveMaster->Office=="Sick") selected @endif>Sick Leave</option>
-                  <option value="Medical" @if($leaveMaster->Office=="Medical") selected @endif>Medical Leave</option>  
-                  <option value="CompOff" @if($leaveMaster->Office=="CompOff") selected @endif>Comp Off</option>
+				 <option value="" @if($leaveMaster->LeaveType=="") selected @endif>select</option>
+				
+                  <option value="Casual" @if($leaveMaster->LeaveType=="Casual") selected @endif>Casual Leave</option>
+                  <option value="Sick"@if($leaveMaster->LeaveType=="Sick") selected @endif>Sick Leave</option>
+                  <option value="Medical"@if($leaveMaster->LeaveType=="Medical") selected @endif>Medical Leave</option>  
+                  <option value="CompOff"@if($leaveMaster->LeaveType=="CompOff") selected @endif>Comp Off</option>
                 </select>
             </div>
-			<div class="form-group col-md-4">
+		<!--	<div class="form-group col-md-4">
                 <label>Leave Duration Type</label>
-                <select name="LeaveDurationType" class="form-control">
+                <select name="LeaveDurationType" class="form-control"> 
+				 <option value="" @if($leaveMaster->LeaveDurationType=="") selected @endif>select</option>
                   <option value=".5"  @if($leaveMaster->LeaveDurationType==".5") selected @endif>Half Day</option>
                   <option value="1"  @if($leaveMaster->LeaveDurationType=="1") selected @endif>Full Day</option>
                  
                 </select>
-            </div>
-			          <div class="form-group col-md-4" style="margin-top:60px">
+            </div>  -->
+			          <div class="col-sm-12 text-right" style="margin-top:60px">
             <button type="submit" class="btn btn-success" style="margin-left:38px">Update</button>
           </div>
 		  
@@ -87,7 +88,7 @@
 	// $("#NoOfDays").val(days);
 	
 		
-if( start < end)
+if( start <= end)
 	 
 {
 	 days = ((end - start) / (1000 * 60 * 60 * 24))+1;
