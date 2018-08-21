@@ -34,8 +34,6 @@
 					
 					{{--
 					@la_input($module, 'name')
-					@la_input($module, 'start_date')
-					@la_input($module, 'end_date')
 					--}}
                     <br>
 					<div class="form-group">

@@ -23,7 +23,7 @@ use Mail;
 class TimesheetsController extends Controller {
 
     public $show_action = false;
-    public $view_col = 'project_id';
+    public $view_col = '';
     public $listing_cols = ['id', 'submitor_id', 'project_id', 'task_id', 'date', 'hours', 'minutes', 'comments', 'dependency', 'dependency_for', 'dependent_on', 'lead_id', 'manager_id'];
     public $custom_cols = ['id', 'submitor_id', 'project_id', 'task_id', 'date', 'hours', 'minutes', 'comments', 'dependency', 'dependency_for', 'dependent_on', 'lead_id', 'manager_id'];
 
@@ -68,16 +68,26 @@ class TimesheetsController extends Controller {
         if (Module::hasAccess("Timesheets", "create")) {
             $leads = DB::table('leads')
                     ->select([DB::raw('users.name as lead_name'), DB::raw('leads.id AS lead_id'), DB::raw('users.email AS lead_email')])
-                    ->leftJoin('users', 'users.id', '=', 'leads.employee_id')
+                    ->leftJoin('users', 'users.context_id', '=', 'leads.employee_id')
+                    ->whereNull('leads.deleted_at')
                     ->get();
             $managers = DB::table('managers')
                     ->select([DB::raw('users.name as manager_name'), DB::raw('managers.id AS manager_id'), DB::raw('users.email AS manager_email')])
-                    ->leftJoin('users', 'users.id', '=', 'managers.employee_id')
+                    ->leftJoin('users', 'users.context_id', '=', 'managers.employee_id')
+                    ->whereNull('managers.deleted_at')
+                    ->get();
+            $role_id = DB::table('role_user')->whereRaw('user_id = "'.Auth::user()->id.'"')->first();
+            $tasks = DB::table('task_roles')
+                    ->select(['name', 'task_id'])
+                    ->leftJoin('tasks', 'tasks.id', '=', 'task_roles.task_id')
+                    ->whereRaw('role_id = ' . $role_id->role_id. ' or role_id = 0')
+                    ->whereNull('tasks.deleted_at')
                     ->get();
             return view('la.timesheets.add', [
                 'module' => $module,
                 'leads' => $leads,
                 'managers' => $managers,
+                'tasks' => $tasks,
             ]);
         } else {
             return redirect(config('laraadmin.adminRoute') . "/");
@@ -107,7 +117,7 @@ class TimesheetsController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            $request->submitor_id = base64_decode(base64_decode(submitor_id));
+            $request->submitor_id = base64_decode(base64_decode($request->submitor_id));
             $insert_id = Module::insert("Timesheets", $request);
 
             $leads = DB::table('leads')
@@ -118,11 +128,19 @@ class TimesheetsController extends Controller {
                     ->select([DB::raw('users.name as manager_name'), DB::raw('managers.id AS manager_id'), DB::raw('users.email AS manager_email')])
                     ->leftJoin('users', 'users.id', '=', 'managers.employee_id')
                     ->get();
+            $role_id = DB::table('role_user')->whereRaw('user_id = "'.Auth::user()->id.'"')->first();
+            $tasks = DB::table('task_roles')
+                    ->select(['name', 'task_id'])
+                    ->leftJoin('tasks', 'tasks.id', '=', 'task_roles.task_id')
+                    ->whereRaw('role_id = ' . $role_id->role_id. ' or role_id = 0')
+                    ->whereNull('tasks.deleted_at')
+                    ->get();
 //            echo "<pre>".$request->timesheet_token."<br>"; print_r($_SESSION[$request->timesheet_token]);die;
             return view('la.timesheets.add', [
                 'module' => $module,
                 'leads' => $leads,
                 'managers' => $managers,
+                'tasks' => $tasks,
                 'records' => $request->session()->get($request->timesheet_token),
                 'token' => ($request->timesheet_token != '') ? $request->timesheet_token : $request->_token
             ]);
@@ -251,11 +269,11 @@ class TimesheetsController extends Controller {
         }
         $this->custom_cols = ['submitor_id', 'project_id', 'date', DB::raw("SUM((hours*60) + minutes)/60 as hours")];
         $values = DB::table('timesheets')
-                    ->select($this->custom_cols)
-                    ->join('projects', 'projects.id', '=', 'timesheets.project_id')
-                    ->whereNull('timesheets.deleted_at')
-                    ->whereRaw('submitor_id = ' . Auth::user()->id . $project . $date)
-                    ->groupBy(['date', 'project_id']);
+                ->select($this->custom_cols)
+                ->join('projects', 'projects.id', '=', 'timesheets.project_id')
+                ->whereNull('timesheets.deleted_at')
+                ->whereRaw('submitor_id = ' . Auth::user()->id . $project . $date)
+                ->groupBy(['date', 'project_id']);
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 
@@ -340,7 +358,7 @@ class TimesheetsController extends Controller {
                     $m->from('varsha.mittal@ganitsoftech.com', 'Your Application');
 
                     $m->to($recipients['to'])
-//                            ->cc($recipients['cc']) //need to add this recipent in mailgun
+                            ->cc($recipients['cc']) //need to add this recipent in mailgun
                             ->subject('Timesheet of ' . Auth::user()->name . '!');
                 });
             }

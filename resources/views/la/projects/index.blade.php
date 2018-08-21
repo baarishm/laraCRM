@@ -60,6 +60,8 @@
 					
 					{{--
 					@la_input($module, 'name')
+					@la_input($module, 'manager_id')
+					@la_input($module, 'lead_id')
 					@la_input($module, 'client_id')
 					@la_input($module, 'start_date')
 					@la_input($module, 'end_date')

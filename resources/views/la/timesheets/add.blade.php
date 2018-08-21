@@ -28,7 +28,7 @@
     }
 
 
-    input[type="search"]{
+    input[type="search"].form-control.input-sm{
         float : right;
         margin:5px;
         border:none;
@@ -101,7 +101,14 @@
                 <div id="entry_parent">
                     <div class="entry" id="1">
                         @la_input($module, 'project_id')
-                        @la_input($module, 'task_id')
+                        <div class="form-group">
+                            <label for="task_id">Task Name:</label>
+                            <select class="form-control" name="task_id">
+                                @foreach($tasks as $task)
+                                <option value="{{$task->task_id}}">{{$task->name}}</option>
+                                @endforeach
+                            </select>
+                        </div>
                         @la_input($module, 'date')
                         @la_input($module, 'hours')
                         @la_input($module, 'minutes')

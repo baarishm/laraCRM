@@ -18,7 +18,9 @@ class CreateProjectsTable extends Migration
     public function up()
     {
         Module::generate("Projects", 'projects', 'name', 'fa-folder', [
-            ["name", "Project Name", "Name", false, "Dummy", 5, 255, true],
+            ["name", "Project Name", "Name", false, "", 5, 255, true],
+            ["manager_id", "Manager Name", "Dropdown", false, "", 0, 0, false, "@employees"],
+            ["lead_id", "Lead Name", "Dropdown", false, "", 0, 0, true, "@employees"],
             ["client_id", "Client", "Dropdown", false, "0", 0, 0, true, "@organizations"],
             ["start_date", "Start Date", "Date", false, "", 0, 0, false],
             ["end_date", "End Date", "Date", false, "", 0, 0, false],

@@ -23,7 +23,7 @@ class TasksController extends Controller {
 
     public $show_action = true;
     public $view_col = 'name';
-    public $listing_cols = ['id', 'name', 'start_date', 'end_date'];
+    public $listing_cols = ['id', 'name'];
 
     public function __construct() {
         // Field Access of Listing Columns

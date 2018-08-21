@@ -31,7 +31,6 @@
 
                 {{--
 					@la_input($module, 'name')
-					@la_input($module, 'designation')
 					@la_input($module, 'gender')
 					@la_input($module, 'mobile')
 					@la_input($module, 'mobile2')
@@ -43,7 +42,6 @@
 					@la_input($module, 'first_approver')
 					@la_input($module, 'second_approver')
 					@la_input($module, 'dept')
-					@la_input($module, 'project_id')
 					@la_input($module, 'salary_cur')
 					@la_input($module, 'date_hire')
 					--}}

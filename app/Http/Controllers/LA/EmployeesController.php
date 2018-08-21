@@ -28,8 +28,9 @@ use Dwij\Laraadmin\Models\LAConfigs;
 class EmployeesController extends Controller {
 
     public $show_action = true;
-    public $view_col = 'name';
-    public $listing_cols = ['id', 'name', 'designation', 'gender', 'mobile', 'mobile2', 'email', 'date_birth', 'city', 'address', 'about', 'first_approver', 'second_approver', 'dept', 'project_id', 'date_hire'];
+    public $view_col = 'employees.name as name';
+    public $listing_cols = ['id', 'name', 'gender', 'mobile', 'mobile2', 'email', 'date_birth', 'city', 'address', 'about', 'first_approver', 'second_approver', 'dept', 'date_hire'];
+    public $index_listing_cols = ['employees.id as id', 'employees.name as name', 'roles.display_name as Role', 'gender', 'mobile', 'employees.email as email', 'date_birth', 'first_approver', 'second_approver', 'date_hire'];
 
     public function __construct() {
         // Field Access of Listing Columns
@@ -54,7 +55,7 @@ class EmployeesController extends Controller {
         if (Module::hasAccess($module->id)) {
             return View('la.employees.index', [
                 'show_actions' => $this->show_action,
-                'listing_cols' => $this->listing_cols,
+                'listing_cols' => ['id', 'name', 'role', 'gender', 'mobile', 'email', 'date_birth', 'first_approver', 'second_approver', 'date_hire'],
                 'module' => $module
             ]);
         } else {
@@ -78,59 +79,46 @@ class EmployeesController extends Controller {
         }
     }
 
-   /**
-	 * Store a newly created employee in database.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @return \Illuminate\Http\Response
-	 */
-	public function store(Request $request)
-	{
-		if(Module::hasAccess("Employees", "create")) {
-		
-			$rules = Module::validateRules("Employees", $request);
-			
-			$validator = Validator::make($request->all(), $rules);
-			
-			if ($validator->fails()) {
-				return redirect()->back()->withErrors($validator)->withInput();
-			}
-			
-			// generate password
-			$password = LAHelper::gen_password();
-			
-			// Create Employee
-			$employee_id = Module::insert("Employees", $request);
-			// Create User
-			$user = User::create([
-				'name' => $request->name,
-				'email' => $request->email,
-				'password' => bcrypt($password),
-				'context_id' => $employee_id,
-				'type' => "Employee",
-			]);
-	
-			// update user role
-			$user->detachRoles();
-			$role = Role::find($request->role);
-			$user->attachRole($role);
-			
-			if(env('MAIL_USERNAME') != null && env('MAIL_USERNAME') != "null" && env('MAIL_USERNAME') != "") {
-				// Send mail to User his Password
-				Mail::send('emails.send_login_cred', ['user' => $user, 'password' => $password], function ($m) use ($user) {
-					$m->from('hello@laraadmin.com', 'LaraAdmin');
-					$m->to($user->email, $user->name)->subject('LaraAdmin - Your Login Credentials');
-				});
-			} else {
-				Log::info("User created: username: ".$user->email." Password: ".$password);
-			}
-			
-			return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
-			
-		} else {
-			return redirect(config('laraadmin.adminRoute')."/");
-		}
-	}
+    /**
+     * Store a newly created employee in database.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request) {
+        if (Module::hasAccess("Employees", "create")) {
+
+            $rules = Module::validateRules("Employees", $request);
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+            }
+
+            // Create Employee
+            $employee_id = Module::insert("Employees", $request);
+            // Create User
+            $user = User::create([
+                        'name' => $request->name,
+                        'email' => $request->email,
+                        'password' => bcrypt('123456'),
+                        'context_id' => $employee_id,
+                        'type' => "Employee",
+            ]);
+
+            // update user role
+            $user->detachRoles();
+            $role = Role::find($request->role);
+            $user->attachRole($role);
+
+            Log::info("User created: username: " . $user->email . " Password: 123456");
+
+            return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
+        } else {
+            return redirect(config('laraadmin.adminRoute') . "/");
+        }
+    }
 
     /**
      * Display the specified employee.
@@ -201,42 +189,42 @@ class EmployeesController extends Controller {
     }
 
     /**
-	 * Update the specified employee in storage.
-	 *
-	 * @param  \Illuminate\Http\Request  $request
-	 * @param  int  $id
-	 * @return \Illuminate\Http\Response
-	 */
-	public function update(Request $request, $id)
-	{
-		if(Module::hasAccess("Employees", "edit")) {
-			
-			$rules = Module::validateRules("Employees", $request, true);
-			
-			$validator = Validator::make($request->all(), $rules);
-			
-			if ($validator->fails()) {
-				return redirect()->back()->withErrors($validator)->withInput();;
-			}
-			
-			$employee_id = Module::updateRow("Employees", $request, $id);
-        	
-			// Update User
-			$user = User::where('context_id', $employee_id)->first();
-			$user->name = $request->name;
-			$user->save();
-			
-			// update user role
-			$user->detachRoles();
-			$role = Role::find($request->role);
-			$user->attachRole($role);
-			
-			return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
-			
-		} else {
-			return redirect(config('laraadmin.adminRoute')."/");
-		}
-	}
+     * Update the specified employee in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $id) {
+        if (Module::hasAccess("Employees", "edit")) {
+
+            $rules = Module::validateRules("Employees", $request, true);
+
+            $validator = Validator::make($request->all(), $rules);
+
+            if ($validator->fails()) {
+                return redirect()->back()->withErrors($validator)->withInput();
+                ;
+            }
+
+            $insert_id = Module::updateRow("Employees", $request, $id);
+
+            // Update User
+            $user = User::where('context_id', $insert_id)->first();
+            $user->name = $request->name;
+            $user->email = $request->email;
+            $user->save();
+
+            // update user role
+            $user->detachRoles();
+            $role = Role::find($request->role);
+            $user->attachRole($role);
+
+            return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
+        } else {
+            return redirect(config('laraadmin.adminRoute') . "/");
+        }
+    }
 
     /**
      * Remove the specified employee from storage.
@@ -261,16 +249,21 @@ class EmployeesController extends Controller {
      * @return
      */
     public function dtajax() {
-        $values = DB::table('employees')->select($this->listing_cols)->whereNull('deleted_at');
+        $values = DB::table('employees')
+                ->leftJoin('users', 'users.context_id', '=', 'employees.id')
+                ->leftJoin('role_user', 'role_user.user_id', '=', 'users.id')
+                ->leftJoin('roles', 'roles.id', '=', 'role_user.role_id')
+                ->select($this->index_listing_cols)
+                ->whereNull('employees.deleted_at');
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 
         $fields_popup = ModuleFields::getModuleFields('Employees');
 
         for ($i = 0; $i < count($data->data); $i++) {
-            for ($j = 0; $j < count($this->listing_cols); $j++) {
-                $col = $this->listing_cols[$j];
-                if ($fields_popup[$col] != null && starts_with($fields_popup[$col]->popup_vals, "@")) {
+            for ($j = 0; $j < count($this->index_listing_cols); $j++) {
+                $col = $this->index_listing_cols[$j];
+                if (array_key_exists($col, $fields_popup) && $fields_popup[$col] != null && starts_with($fields_popup[$col]->popup_vals, "@")) {
                     $data->data[$i][$j] = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$j]);
                 }
                 if ($col == $this->view_col) {

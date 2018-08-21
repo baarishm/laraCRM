@@ -96,7 +96,7 @@
 	<ul data-toggle="ajax-tab" class="nav nav-tabs profile" role="tablist">
 		<li class=""><a href="{{ url(config('laraadmin.adminRoute') . '/projects') }}" data-toggle="tooltip" data-placement="right" title="Back to Projects"><i class="fa fa-chevron-left"></i></a></li>
 		<li class="active"><a role="tab" data-toggle="tab" class="active" href="#tab-general-info" data-target="#tab-info"><i class="fa fa-bars"></i> General Info</a></li>
-<!--		<li class=""><a role="tab" data-toggle="tab" href="#tab-timeline" data-target="#tab-timeline"><i class="fa fa-clock-o"></i> Timeline</a></li>-->
+		<li class=""><a role="tab" data-toggle="tab" href="#tab-timeline" data-target="#tab-timeline"><i class="fa fa-clock-o"></i> Timeline</a></li>
 	</ul>
 
 	<div class="tab-content">
@@ -108,6 +108,8 @@
 					</div>
 					<div class="panel-body">
 						@la_display($module, 'name')
+						@la_display($module, 'manager_id')
+						@la_display($module, 'lead_id')
 						@la_display($module, 'client_id')
 						@la_display($module, 'start_date')
 						@la_display($module, 'end_date')
