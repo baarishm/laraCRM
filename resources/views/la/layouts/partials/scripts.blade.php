@@ -16,6 +16,7 @@
 
 <script src="{{ asset('la-assets/plugins/stickytabs/jquery.stickytabs.js') }}" type="text/javascript"></script>
 <script src="{{ asset('la-assets/plugins/slimScroll/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
+<script src="{{ asset('la-assets/js/custom.js') }}"></script>
 
 
 
