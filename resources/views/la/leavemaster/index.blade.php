@@ -66,11 +66,11 @@ Leave Dashboard
                 <td>{{$ToDate}}</td>
                 <td>{{$leaveMasterRow->NoOfDays}}</td>
                 <td>{{$leaveMasterRow->leave_name}}</td>
-                <td>{{$leaveMasterRow->Approved}}</td>
+                <td>{{(($leaveMasterRow->Approved != '')? $leaveMasterRow->Approved : 'Pending' ) }}</td>
                 <td><a href="{{action('LA\LeaveMasterController@show',$leaveMasterRow->id)}}" class="btn btn-warning "><i class="fa fa-eye"></i></a>
                 
                     <form action="{{action('LA\LeaveMasterController@destroy', $leaveMasterRow->id)}}" method="post">
-                        
+                        <input type="hidden" name="_token" value="{{ csrf_token()}}">
                         <input name="_method" type="hidden" value="DELETE" >
                         <button class="btn btn-danger pull-left" type="submit"><i class="fa fa-remove"></i></button>
                         
