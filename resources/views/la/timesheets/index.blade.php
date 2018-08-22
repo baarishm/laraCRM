@@ -77,7 +77,7 @@ $(function () {
     $('#date_search').datetimepicker({
         format: 'Y-MM-DD'
     });
-    var groupColumn = 2;
+    var groupColumn = 3;
     var table = $("#example1").DataTable({
     processing: true,
             serverSide: true,
@@ -102,8 +102,9 @@ $(function () {
                     var last = null;
                     api.column(groupColumn, {page:'current'}).data().each(function (group, i) {
             if (last !== group) {
+                    var date_to_show = new Date(group);
             $(rows).eq(i).before(
-                    '<tr class="group"><td colspan="5">' + group + '</td></tr>'
+                    '<tr class="group"><td colspan="5">' + date_to_show.toShortFormat() + '</td></tr>'
                     );
                     last = group;
             }
@@ -113,7 +114,7 @@ $(function () {
             { "visible": false, "targets": groupColumn }
             ],
             @if ($show_actions)
-    columnDefs: [ { orderable: false, targets: [ - 1] }],
+                columnDefs: [ { orderable: false, targets: [ - 1] }, { "visible": false, "targets": groupColumn }],
             @endif
     }
     );

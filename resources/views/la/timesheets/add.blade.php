@@ -155,6 +155,7 @@
                     </div>
                 </div>
                 <input type="hidden" name="submitor_id" value="<?php echo base64_encode(base64_encode(Auth::user()->id)); ?>" />
+                <input type="hidden" name="task_removed" id="task_removed" value="{{$task_removed}}" />
                 <br>
                 <div class="form-group">
                     {!! Form::submit( 'Submit', ['class'=>'btn btn-success pull-left']) !!} 
@@ -202,19 +203,6 @@ $(function () {
     });
     $('[name="dependency"][value="No"]').trigger('click');
 
-    //add lead and manager email in hidden boxes
-    $('select[name="manager_id"], select[name="manager_id"]').change(function () {
-        $('input[name="lead_email"]').val($('select[name="lead_id"] option:selected').attr('data-mail'));
-        $('input[name="manager_email"]').val($('select[name="manager_id"] option:selected').attr('data-mail'));
-    });
-    $('select[name="manager_id"], select[name="manager_id"]').trigger('change');
-
-    //add task and project names in hidden boxes
-    $('select[name="project_id"], select[name="task_id"]').change(function () {
-        $('input[name="task_name"]').val($('select[name="task_id"] option:selected').html());
-        $('input[name="project_name"]').val($('select[name="project_id"] option:selected').html());
-    });
-    $('select[name="project_id"], select[name="task_id"]').trigger('change');
 
     //initialize datatable
     $("#example1").DataTable({
@@ -237,7 +225,8 @@ $(function () {
             url: '/sendEmailToLeadsAndManagers',
             type: 'GET',
             data: {
-                'entry_ids': entry_list
+                'entry_ids': entry_list,
+                'task_removed' : $('#task_removed').val()
             },
             success: function (data) {
                 $('div.overlay').hide();
@@ -248,11 +237,11 @@ $(function () {
     });
 
     $('.remove-row').click(function () {
+        $("#task_removed").val($("#task_removed").val()+','+$(this).parents('tr').attr('data-value'));
         $(this).parents('tr').remove();
-        if($('#example1 tr').length == 1){
+        if ($('#example1 tr').length == 1) {
             $('#send-mail').hide();
-        }
-        else{
+        } else {
             $('#send-mail').show();
         }
     });
