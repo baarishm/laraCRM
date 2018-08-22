@@ -7,7 +7,6 @@
 
 
 @section("main-content")
-
 @if (count($errors) > 0)
 <div class="alert alert-danger">
     <ul>
@@ -37,7 +36,7 @@
                                     <label for="task_id">Task Name:</label>
                                     <select class="form-control" name="task_id">
                                         @foreach($tasks as $task)
-                                        <option value="{{$task->task_id}}">{{$task->name}}</option>
+                                        <option value="{{$task->task_id}}" <?php echo (($task->task_id == $module->row->task_id) ? 'selected' : ''); ?>>{{$task->name}}</option>
                                         @endforeach
                                     </select>
                                 </div>
