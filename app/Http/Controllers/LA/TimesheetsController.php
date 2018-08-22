@@ -260,7 +260,7 @@ class TimesheetsController extends Controller {
                 ->join('tasks', 'tasks.id', '=', 'timesheets.task_id')
                 ->whereNull('timesheets.deleted_at')
                 ->whereRaw('submitor_id = ' . Auth::user()->id . $project . $date)
-                ->groupBy(['date', 'project_id', 'task_id']);
+                ->groupBy(['date', 'project_id', 'task_id','hours', 'minutes']);
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 
