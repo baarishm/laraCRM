@@ -65,14 +65,16 @@
                     <th>Project Name</th>
                     <th>Task Name</th>
                     <th>Time Spent</th>
+                    <th>Remove Row form this Sheet</th>
                 </tr>
             </thead>
             @if(!empty($records))
             @foreach($records as $record)
-            <tr>
-                <td>{{$record['project_name']}}</td>
-                <td>{{$record['task_name']}}</td>
-                <td>{{$record['hours']+($record['minutes']/60)}}</td>
+            <tr class="entry-row" data-value="{{$record->id}}">
+                <td>{{$record->project_name}}</td>
+                <td>{{$record->task_name}}</td>
+                <td>{{$record->hours+($record->minutes/60)}}</td>
+                <td><button class="btn btn-danger btn-xs remove-row"><i class="fa fa-times"></i></button></td>
             </tr>
             @endforeach
             @endif
@@ -100,49 +102,63 @@
                 {!! Form::open(['action' => 'LA\TimesheetsController@store', 'id' => 'timesheet-add-form']) !!}
                 <div id="entry_parent">
                     <div class="entry" id="1">
-                        @la_input($module, 'project_id')
-                        <div class="form-group">
-                            <label for="task_id">Task Name:</label>
-                            <select class="form-control" name="task_id">
-                                @foreach($tasks as $task)
-                                <option value="{{$task->task_id}}">{{$task->name}}</option>
-                                @endforeach
-                            </select>
+                        <div class="row">
+                            <div class="col-md-4">
+                                @la_input($module, 'project_id')
+                            </div>
+                            <div class="col-md-4">
+                                <div class="form-group">
+                                    <label for="task_id">Task Name:</label>
+                                    <select class="form-control" name="task_id">
+                                        @foreach($tasks as $task)
+                                        <option value="{{$task->task_id}}">{{$task->name}}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                @la_input($module, 'date')
+                            </div>
                         </div>
-                        @la_input($module, 'date')
-                        @la_input($module, 'hours')
-                        @la_input($module, 'minutes')
-                        @la_input($module, 'comments')
-                        @la_input($module, 'dependency')
-                        @la_input($module, 'dependency_for')
-                        @la_input($module, 'dependent_on')
-                        <div class="form-group">
-                            <label for="lead_id">Lead Name:</label>
-                            <select class="form-control" name="lead_id">
-                                @foreach($leads as $lead)
-                                <option value="{{$lead->lead_id}}" data-mail = "{{$lead->lead_email}}">{{$lead->lead_name}}</option>
-                                @endforeach
-                            </select>
+                        <div class="row">
+                            <div class="col-md-4">
+                                @la_input($module, 'hours')
+                            </div>
+                            <div class="col-md-4">
+                                @la_input($module, 'minutes')
+                            </div>
+                            <div class ="col-md-4">
+                                @la_input($module, 'comments')
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label for="manager_id">Manager Name:</label>
-                            <select class="form-control" name="manager_id">
-                                @foreach($managers as $manager)
-                                <option value="{{$manager->manager_id}}" data-mail = "{{$manager->manager_email}}">{{$manager->manager_name}}</option>
-                                @endforeach
-                            </select>
+                        <div class="hide">
+                            @la_input($module, 'dependency')
+                            @la_input($module, 'dependency_for')
+                            @la_input($module, 'dependent_on')
+                            <div class="form-group">
+                                <label for="lead_id">Lead Name:</label>
+                                <select class="form-control" name="lead_id">
+                                    @foreach($leads as $lead)
+                                    <option value="{{$lead->lead_id}}" data-mail = "{{$lead->lead_email}}">{{$lead->lead_name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="manager_id">Manager Name:</label>
+                                <select class="form-control" name="manager_id">
+                                    @foreach($managers as $manager)
+                                    <option value="{{$manager->manager_id}}" data-mail = "{{$manager->manager_email}}">{{$manager->manager_name}}</option>
+                                    @endforeach
+                                </select>
+                            </div>
                         </div>
                     </div>
                 </div>
-                <input type="hidden" name="lead_email" />
-                <input type="hidden" name="manager_email" />
-                <input type="hidden" name="project_name" />
-                <input type="hidden" name="task_name" />
                 <input type="hidden" name="submitor_id" value="<?php echo base64_encode(base64_encode(Auth::user()->id)); ?>" />
-                <input type="hidden" name="timesheet_token" value="<?php echo isset($token) ? $token : ''; ?>" />
+                <input type="hidden" name="task_removed" id="task_removed" value="{{$task_removed}}" />
                 <br>
                 <div class="form-group">
-                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success pull-right']) !!} 
+                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success pull-left']) !!} 
                 </div>
                 {!! Form::close() !!}
             </div>
@@ -158,7 +174,6 @@
 <script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
 <script>
 $(function () {
-    var total_entry = 1;
     $("#project-edit-form").validate({
 
     });
@@ -188,19 +203,6 @@ $(function () {
     });
     $('[name="dependency"][value="No"]').trigger('click');
 
-    //add lead and manager email in hidden boxes
-    $('select[name="manager_id"], select[name="manager_id"]').change(function () {
-        $('input[name="lead_email"]').val($('select[name="lead_id"] option:selected').attr('data-mail'));
-        $('input[name="manager_email"]').val($('select[name="manager_id"] option:selected').attr('data-mail'));
-    });
-    $('select[name="manager_id"], select[name="manager_id"]').trigger('change');
-
-    //add task and project names in hidden boxes
-    $('select[name="project_id"], select[name="task_id"]').change(function () {
-        $('input[name="task_name"]').val($('select[name="task_id"] option:selected').html());
-        $('input[name="project_name"]').val($('select[name="project_id"] option:selected').html());
-    });
-    $('select[name="project_id"], select[name="task_id"]').trigger('change');
 
     //initialize datatable
     $("#example1").DataTable({
@@ -215,11 +217,16 @@ $(function () {
     $('#send-mail').click(function (event) {
         event.preventDefault();
         $('div.overlay').show();
+        var entry_list = [];
+        $(".entry-row").each(function () {
+            entry_list.push($(this).attr('data-value'));
+        });
         $.ajax({
             url: '/sendEmailToLeadsAndManagers',
             type: 'GET',
             data: {
-                'token': $('[name="timesheet_token"]').val()
+                'entry_ids': entry_list,
+                'task_removed' : $('#task_removed').val()
             },
             success: function (data) {
                 $('div.overlay').hide();
@@ -227,7 +234,19 @@ $(function () {
                 window.location.href = '/admin/timesheets';
             }
         });
-    })
+    });
+
+    $('.remove-row').click(function () {
+        $("#task_removed").val($("#task_removed").val()+','+$(this).parents('tr').attr('data-value'));
+        $(this).parents('tr').remove();
+        if ($('#example1 tr').length == 1) {
+            $('#send-mail').hide();
+        } else {
+            $('#send-mail').show();
+        }
+    });
+    $('.date').data("DateTimePicker").minDate(moment().startOf('week'));
+    $('.date').data("DateTimePicker").maxDate(moment().endOf('week')).daysOfWeekDisabled([0, 6]);
 });
 </script>
 @endpush
