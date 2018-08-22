@@ -9,7 +9,7 @@ Apply For Leave
 
             <div class="form-group col-md-3">
                 <label for="Name">Employee Id:</label>
-                <input type="text" class="form-control" name="EmpId" autocomplete="off" id="EmpId" placeholder="EmpId" required >
+                <input type="text" class="form-control" name="EmpId" autocomplete="off" value="<?php echo Auth::user()->context_id; ?>" id="EmpId" placeholder="EmpId" required readonly>
             </div>
 
 

@@ -17,7 +17,7 @@ class LeaveMasterController extends Controller {
                 ->get();
         $data = compact('leaveMaster', 'id');
         $data['leaveMaster']->leave_type = $leave_types;
-        return view('edit', $data);
+        return view('la.leavemaster.edit', $data);
     }
 
     public function index() {
@@ -26,7 +26,7 @@ class LeaveMasterController extends Controller {
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                 ->whereNull('deleted_at')
                 ->get();
-        return view('index', ['leaveMaster' => $leaveMaster]);
+        return view('la.leavemaster.index', ['leaveMaster' => $leaveMaster]);
     }
 
     public function create() {
@@ -34,7 +34,7 @@ class LeaveMasterController extends Controller {
         $leave_types = DB::table('leave_types')
                 ->whereNull('deleted_at')
                 ->get();
-        return view('create', ['leave_types' => $leave_types]);
+        return view('la.leavemaster.create', ['leave_types' => $leave_types]);
     }
 
     public function show(Request $request, $id) {
@@ -44,7 +44,7 @@ class LeaveMasterController extends Controller {
                 ->where('leavemaster.id', $id)
                 ->whereNull('deleted_at')
                 ->first();
-        return view('ViewData', ['leaveMaster' => $leaveMaster]);
+        return view('la.leavemaster.ViewData', ['leaveMaster' => $leaveMaster]);
     }
 
     public function store(Request $request) {
