@@ -97,6 +97,10 @@ class TimesheetsController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
+            $lead_manager_id = DB::table('projects')->select(['lead_id', 'project_id'])->where('project_id', $request->project_id)->first();
+            $request->lead_id = $lead_manager_id->lead_id;
+            $request->manager_id = $lead_manager_id->manager_id;
+
             $request->submitor_id = base64_decode(base64_decode($request->submitor_id));
             $insert_id = Module::insert("Timesheets", $request);
 
@@ -321,7 +325,7 @@ class TimesheetsController extends Controller {
                             . "<td>" . $task->project_name . "</td>"
                             . "<td>" . $task->task_name . "</td>"
                             . "<td>" . ($task->hours + ($task->minutes / 60)) . "</td>"
-                            . "<td>" . date("d M Y",strtotime($task->date)) . "</td>"
+                            . "<td>" . date("d M Y", strtotime($task->date)) . "</td>"
                             . "</tr>";
                     $entry_id_in_email[] = $task->entry_id;
                 }

@@ -30,6 +30,7 @@ class CreateTimesheetsTable extends Migration
             ["dependent_on", "Dependent On", "Dropdown", false, "0", 0, 0, false, "@employees"],
             ["lead_id", "Lead Name", "Dropdown", false, "0", 0, 0, false, "@leads"],
             ["manager_id", "Manager Name", "Dropdown", false, "0", 0, 0, false, "@managers"],
+            ["mail_sent", "Mail Sent", "Integer", false, "", 0, 0, true],
         ]);
 		
 		/*
