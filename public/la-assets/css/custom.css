@@ -1,0 +1,21 @@
+
+table.custom-table {
+    width: 100%;
+    border-collapse:separate;
+    border:solid black 1px;
+    border-spacing: 2px;
+}
+
+table.custom-table td, th {
+    border-left:solid black 1px;
+    border-top:solid black 1px;
+}
+
+table.custom-table th {
+    background-color: #e1e1e2;
+    border-top: none;
+}
+
+table.custom-table td:first-child, table.custom-table th:first-child {
+    border-left: none;
+}

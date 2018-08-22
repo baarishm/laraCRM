@@ -47,10 +47,16 @@ class TimesheetsController extends Controller {
     public function index() {
         $module = Module::get('Timesheets');
         $this->custom_cols = ['submitor_id', 'project_id', 'date', 'Time Spent'];
+        $projects = DB::table('timesheets')
+                ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
+                ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
+                ->whereNull('projects.deleted_at')
+                ->get();
         if (Module::hasAccess($module->id)) {
             return View('la.timesheets.index', [
                 'show_actions' => $this->show_action,
                 'listing_cols' => $this->custom_cols,
+                'projects' => $projects,
                 'module' => $module
             ]);
         } else {
@@ -76,11 +82,11 @@ class TimesheetsController extends Controller {
                     ->leftJoin('users', 'users.context_id', '=', 'managers.employee_id')
                     ->whereNull('managers.deleted_at')
                     ->get();
-            $role_id = DB::table('role_user')->whereRaw('user_id = "'.Auth::user()->id.'"')->first();
+            $role_id = DB::table('role_user')->whereRaw('user_id = "' . Auth::user()->id . '"')->first();
             $tasks = DB::table('task_roles')
                     ->select(['name', 'task_id'])
                     ->leftJoin('tasks', 'tasks.id', '=', 'task_roles.task_id')
-                    ->whereRaw('role_id = ' . $role_id->role_id. ' or role_id = 0')
+                    ->whereRaw('role_id = ' . $role_id->role_id . ' or role_id = 0')
                     ->whereNull('tasks.deleted_at')
                     ->get();
             return view('la.timesheets.add', [
@@ -128,11 +134,11 @@ class TimesheetsController extends Controller {
                     ->select([DB::raw('users.name as manager_name'), DB::raw('managers.id AS manager_id'), DB::raw('users.email AS manager_email')])
                     ->leftJoin('users', 'users.id', '=', 'managers.employee_id')
                     ->get();
-            $role_id = DB::table('role_user')->whereRaw('user_id = "'.Auth::user()->id.'"')->first();
+            $role_id = DB::table('role_user')->whereRaw('user_id = "' . Auth::user()->id . '"')->first();
             $tasks = DB::table('task_roles')
                     ->select(['name', 'task_id'])
                     ->leftJoin('tasks', 'tasks.id', '=', 'task_roles.task_id')
-                    ->whereRaw('role_id = ' . $role_id->role_id. ' or role_id = 0')
+                    ->whereRaw('role_id = ' . $role_id->role_id . ' or role_id = 0')
                     ->whereNull('tasks.deleted_at')
                     ->get();
 //            echo "<pre>".$request->timesheet_token."<br>"; print_r($_SESSION[$request->timesheet_token]);die;
@@ -260,8 +266,8 @@ class TimesheetsController extends Controller {
      */
     public function dtajax(Request $request) {
         $project = '';
-        if ($request->project_search != '') {
-            $project = ' and projects.name like "%' . $request->project_search . '%"';
+        if ($request->project_search != 0) {
+            $project = ' and projects.id =' . $request->project_search;
         }
         $date = '';
         if ($request->date_search != '') {
