@@ -42,8 +42,25 @@
 <div class="box box-success">
     <!--<div class="box-header"></div>-->
     <div class="box-body">
-        <input type="text" id="date_search" placeholder="Search by Date" class="search">
-        <input type="text" id="project_search" placeholder="Search by Project Name" class="search">
+        <div class="row ">
+            <div class="col-md-2 pull-right">
+                <input type="text" id="date_search" placeholder="Search by Date" class="search">
+            </div>
+            
+            <div class="col-md-2 pull-right">
+                <select id="project_search" name="project_search">
+                    <option value="0" selected="selected" >Select Project Name</option>
+                    <?php
+                    if (!empty($projects)) {
+                        foreach ($projects as $value) {
+                            echo '<option value="' . $value->project_id . '">' . $value->project_name . '</option>';
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
+        </div>
+       <!-- <input type="text" id="project_search" placeholder="Search by Project Name" class="search">  -->
         <table id="example1" class="table table-bordered">
             <thead>
                 <tr class="success">
@@ -118,9 +135,11 @@ $(function () {
             @endif
     }
     );
-    $("#project_search, #date_search").on('keyup dp.change', function () {
+    $("#project_search, #date_search").on('change dp.change', function () {
         table.draw();
     });
+
+    $('#project_search').select2();
     $('input[type="search"][aria-controls="example1"]').hide();
 });
 </script>

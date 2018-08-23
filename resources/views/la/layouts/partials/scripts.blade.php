@@ -18,6 +18,8 @@
 <script src="{{ asset('la-assets/plugins/slimScroll/jquery.slimscroll.min.js') }}" type="text/javascript"></script>
 <script src="{{ asset('la-assets/js/custom.js') }}"></script>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>  
+ 
 
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.

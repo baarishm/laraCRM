@@ -97,8 +97,21 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::resource(config('laraadmin.adminRoute') . '/sidebar_menu_accesses', 'LA\Sidebar_Menu_AccessesController');
 	Route::get(config('laraadmin.adminRoute') . '/sidebar_menu_access_dt_ajax', 'LA\Sidebar_Menu_AccessesController@dtajax');
 
+	/* ================== Leaves_index ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
+	Route::post(config('laraadmin.adminRoute') . '/leaves/store', 'LA\LeaveMasterController@store');
+	/* ================== Sidebar_Menu_Leaves_ViewData ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
+	
 
 	/* ================== Task_Roles ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/task_roles', 'LA\Task_RolesController');
 	Route::get(config('laraadmin.adminRoute') . '/task_role_dt_ajax', 'LA\Task_RolesController@dtajax');
+
+
+
+
+	/* ================== Leave_Types ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/leave_types', 'LA\Leave_TypesController');
+	Route::get(config('laraadmin.adminRoute') . '/leave_type_dt_ajax', 'LA\Leave_TypesController@dtajax');
 });
