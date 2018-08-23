@@ -96,4 +96,9 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Sidebar_Menu_Accesses ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/sidebar_menu_accesses', 'LA\Sidebar_Menu_AccessesController');
 	Route::get(config('laraadmin.adminRoute') . '/sidebar_menu_access_dt_ajax', 'LA\Sidebar_Menu_AccessesController@dtajax');
+
+
+	/* ================== Task_Roles ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/task_roles', 'LA\Task_RolesController');
+	Route::get(config('laraadmin.adminRoute') . '/task_role_dt_ajax', 'LA\Task_RolesController@dtajax');
 });
