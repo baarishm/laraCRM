@@ -48,10 +48,16 @@ class TimesheetsController extends Controller {
         session(['task_removed' => '']);
         $module = Module::get('Timesheets');
         $this->custom_cols = [/* 'submitor_id', */ 'Id', 'project_id', 'task_id', 'date', 'Time Spent'];
+        $projects = DB::table('timesheets')
+                ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
+                ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
+                ->whereNull('projects.deleted_at')
+                ->get();
         if (Module::hasAccess($module->id)) {
             return View('la.timesheets.index', [
                 'show_actions' => $this->show_action,
                 'listing_cols' => $this->custom_cols,
+                'projects' => $projects,
                 'module' => $module
             ]);
         } else {
@@ -99,7 +105,6 @@ class TimesheetsController extends Controller {
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-
             $lead_manager_id = DB::table('projects')->select(['lead_id', 'manager_id'])->where('id', $request->project_id)->first();
             $insert_data = $request->all();
             unset($insert_data['task_removed']);
@@ -246,8 +251,8 @@ class TimesheetsController extends Controller {
      */
     public function dtajax(Request $request) {
         $project = '';
-        if ($request->project_search != '') {
-            $project = ' and projects.name like "%' . $request->project_search . '%"';
+        if ($request->project_search != 0) {
+            $project = ' and projects.id =' . $request->project_search;
         }
         $date = '';
         if ($request->date_search != '') {

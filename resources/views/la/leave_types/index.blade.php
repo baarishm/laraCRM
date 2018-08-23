@@ -1,15 +1,14 @@
 @extends("la.layouts.app")
 
-@section("contentheader_title", "Sidebar Menu Accesses")
-@section("contentheader_description", "Sidebar Menu Accesses listing")
-@section("section", "Sidebar Menu Accesses")
+@section("contentheader_title", "Leave Types")
+@section("contentheader_description", "Leave Types listing")
+@section("section", "Leave Types")
 @section("sub_section", "Listing")
-@section("htmlheader_title", "Sidebar Menu Accesses Listing")
+@section("htmlheader_title", "Leave Types Listing")
 
 @section("headerElems")
-@la_access("Sidebar_Menu_Accesses", "create")
-	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Sidebar Menu Access</button>
-	
+@la_access("Leave_Types", "create")
+	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Leave Type</button>
 @endla_access
 @endsection
 
@@ -46,22 +45,21 @@
 	</div>
 </div>
 
-@la_access("Sidebar_Menu_Accesses", "create")
+@la_access("Leave_Types", "create")
 <div class="modal fade" id="AddModal" role="dialog" aria-labelledby="myModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Add Sidebar Menu Access</h4>
+				<h4 class="modal-title" id="myModalLabel">Add Leave Type</h4>
 			</div>
-			{!! Form::open(['action' => 'LA\Sidebar_Menu_AccessesController@store', 'id' => 'sidebar_menu_access-add-form']) !!}
+			{!! Form::open(['action' => 'LA\Leave_TypesController@store', 'id' => 'leave_type-add-form']) !!}
 			<div class="modal-body">
 				<div class="box-body">
                     @la_form($module)
 					
 					{{--
-					@la_input($module, 'role_id')
-					@la_input($module, 'menu_id')
+					@la_input($module, 'name')
 					--}}
 				</div>
 			</div>
@@ -88,7 +86,7 @@ $(function () {
 	$("#example1").DataTable({
 		processing: true,
         serverSide: true,
-        ajax: "{{ url(config('laraadmin.adminRoute') . '/sidebar_menu_access_dt_ajax') }}",
+        ajax: "{{ url(config('laraadmin.adminRoute') . '/leave_type_dt_ajax') }}",
 		language: {
 			lengthMenu: "_MENU_",
 			search: "_INPUT_",
@@ -98,7 +96,7 @@ $(function () {
 		columnDefs: [ { orderable: false, targets: [-1] }],
 		@endif
 	});
-	$("#sidebar_menu_access-add-form").validate({
+	$("#leave_type-add-form").validate({
 		
 	});
 });
