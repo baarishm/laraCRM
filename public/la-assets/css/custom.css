@@ -19,3 +19,11 @@ table.custom-table th {
 table.custom-table td:first-child, table.custom-table th:first-child {
     border-left: none;
 }
+#datepicker {
+cursor: default;
+    background-color: #fff;
+}
+#datepickerto {
+cursor: default;
+    background-color: #fff;
+}
