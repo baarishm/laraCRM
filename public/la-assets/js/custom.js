@@ -3,6 +3,13 @@ $('document').ready(function () {
         $('.date').data('DateTimePicker').date(new Date()).format('DD MMM YYYY');
         $('.date>input').prop('autocomplete', 'off');
     }
+    if ($('.datepicker').length > 0) {
+        $(".datepicker").datepicker({
+            autoclose: true,
+            format: 'd M yyyy',
+            
+        });
+    }
 });
 
 

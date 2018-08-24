@@ -5,6 +5,7 @@ namespace App\Http\Controllers\LA;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LeaveMaster;
+use Auth;
 use DB;
 
 class LeaveMasterController extends Controller {
@@ -20,14 +21,33 @@ class LeaveMasterController extends Controller {
         return view('la.leavemaster.edit', $data);
     }
 
-    public function index() {
+    public function index(Request $request) {
+        $role_id = DB::table('roles')->where('display_name', 'Super Admin')->first();
+        $user_role_id = DB::table('role_user')->whereRaw('user_id = "' . Auth::user()->id . '"')->first();
+
+        $where = 'employees.deleted_at IS NULL ';
+        if ($role_id->id == $user_role_id->role_id) {
+            //manager
+            $view = 'Manager_index';
+        } else {
+            //other users
+            $view = 'index';
+            $where .= ' and leavemaster.EmpId = ' . Auth::user()->context_id;
+        }
+
         $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*')])
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
-                ->whereNull('deleted_at')
-                ->get();
-        return view('la.leavemaster.index', ['leaveMaster' => $leaveMaster]);
+                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+                ->whereRaw($where)
+               ->get();
+                  
+
+
+        return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster]);
     }
+
+
 
     public function create() {
 
@@ -69,7 +89,7 @@ class LeaveMasterController extends Controller {
         $leaveMaster->NoOfDays = $request->get('NoOfDays');
         $leaveMaster->LeaveReason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
-        //	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
+//	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
 
         $leaveMaster->save();
 
@@ -91,7 +111,7 @@ class LeaveMasterController extends Controller {
         $leaveMaster->NoOfDays = $request->get('NoOfDays');
         $leaveMaster->LeaveReason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
-        //	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
+//	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
         $leaveMaster->save();
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been Update');
     }

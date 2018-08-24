@@ -19,11 +19,14 @@ Edit Apply  Leave
 		  
           <div class="form-group col-md-4">
 		  <label for="StartDate" class="control-label">Start Date:</label>
-         <input type="text" class="form-control"id="datepicker" autocomplete="off" ng-model="startDate"  placeholder="FromDate" required name="FromDate" value="{{$leaveMaster->FromDate}}" />
+                   <input type="text" class="form-control datepicker" 
+                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="FromDate" required  readonly='true' value="{{$leaveMaster->FromDate}}" />
+                  
          </div>
 		  <div class="form-group col-md-4">
 		  <label for="text" class="control-label">End Date:</label>
-         <input type="text" class="form-control" id="datepickerto" autocomplete="off" name="ToDate"  placeholder="ToDate" required value="{{$leaveMaster->ToDate}}" ng-model="datepickerto" ng-change='checkErr(datepicker,datepickerto)' />	
+          
+           <input type="text" class="form-control datepicker" id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="ToDate" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' value="{{$leaveMaster->ToDate}}" />
          </div>
 		 <div class="form-group col-md-4">
             <label for="name">Number Of Days</label>
@@ -72,7 +75,7 @@ Edit Apply  Leave
 
 @push('scripts')
 
-<script type="text/javascript">  
+<!--<script type="text/javascript">  
 		 $(document).ready(function(){
 			 
 			
@@ -112,27 +115,68 @@ else
 	 }
 	
 			 }
-			$("#datepicker").datepicker({
-					autoclose: true,
-                 	format: 'yyyy-mm-dd',	
+				
 					
-			}).on('changeDate',function(e){
+			$("#datepickerto").datepicker().on('changeDate',function(e){
 				//$("#datepickerto").datepicker('setStartDate', e.date);
-						CalculateDiff(true);
-						 			});
-			
-			$("#datepickerto").datepicker({
-				
-
-					autoclose: true,   
-					format: 'yyyy-mm-dd'
-				
-			}).on('changeDate',function(){
 						CalculateDiff(false);
 						 			});
+			
+			
+				
+			
 		});
 
     
 	
-  </script>
+  </script>-->
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        // To calulate difference b/w two dates
+        function CalculateDiff(isstart)
+
+        {
+            if ($("#datepicker").val() != "" && $("#datepickerto").val() != "") {
+                var start = $("#datepicker").datepicker("getDate");
+
+                var end = $("#datepickerto").datepicker("getDate");
+
+                //   days = ((end - start) / (1000 * 60 * 60 * 24))+1;
+                //  $("#NoOfDays").val(days);
+
+                if (start <= end)
+
+                {
+                    days = ((end - start) / (1000 * 60 * 60 * 24)) + 1;
+                    $("#NoOfDays").val(days);
+
+
+
+
+                } else
+
+                {
+                    if (!isstart)
+                        alert(" End date not less then start date");
+                    $("#datepickerto").val('');
+                    $("#NoOfDays").val('');
+
+                }
+
+
+                // alert(Math.round(days));
+
+            }
+        }
+
+        $(".datepicker").datepicker().on('changeDate', function (e) {
+            CalculateDiff(false);
+        });
+    });
+
+
+</script>
+
 @endpush
