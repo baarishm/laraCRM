@@ -39,30 +39,30 @@
                 <?php
                 $menuItems = Dwij\Laraadmin\Models\Menu::where("parent", 0)->orderBy('hierarchy', 'asc')->get();
                 $role_id = DB::table('role_user')->select(['role_id'])->whereRaw('user_id = "' . Auth::user()->id . '"')->first();
-                $roleMenu = DB::table('sidebar_menu_accesses')->whereRaw('role_id = ' . $role_id->role_id)->pluck('menu_id');
+                $roleMenu = DB::table('sidebar_menu_accesses')->whereRaw('role_id = ' . $role_id->role_id. ' and deleted_at IS NULL')->pluck('menu_id');
                 ?>
-            @foreach ($menuItems as $menu)
-            @if($menu->type == "module")
-            <?php
-            $temp_module_obj = Module::get($menu->name);
-            ?>
-            @la_access($temp_module_obj->id)
-            @if(isset($module->id) && $module->name == $menu->name && in_array($menu->id, $roleMenu))
-            <?php echo LAHelper::print_menu($menu, true); ?>
-            @else
-            <?php if (in_array($menu->id, $roleMenu)) {
-                echo LAHelper::print_menu($menu);
-            } ?>
-            @endif
-            @endla_access
-            @else
-            <?php
-            if (in_array($menu->id, $roleMenu)) {
-                echo LAHelper::print_menu($menu);
-            }
-            ?>
-            @endif
-            @endforeach
+                @foreach ($menuItems as $menu)
+                    @if($menu->type == "module")
+                        <?php
+                        $temp_module_obj = Module::get($menu->name);
+                        ?>
+                        @la_access($temp_module_obj->id)
+                            @if(isset($module->id) && $module->name == $menu->name && in_array($menu->id, $roleMenu))
+                                <?php echo LAHelper::print_menu($menu, true); ?>
+                            @else
+                                <?php if (in_array($menu->id, $roleMenu)) {
+                                    echo LAHelper::print_menu($menu);
+                                } ?>
+                            @endif
+                        @endla_access
+                    @else
+                        <?php
+                        if (in_array($menu->id, $roleMenu)) {
+                            echo LAHelper::print_menu($menu);
+                        }
+                        ?>
+                    @endif
+                @endforeach
             <!-- LAMenus -->
 
         </ul><!-- /.sidebar-menu -->
