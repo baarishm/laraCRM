@@ -40,13 +40,14 @@ class Timesheet extends Model {
                 ->leftJoin('users', 'users.id', '=', 'managers.employee_id')
                 ->get();
 
-        $role_id = DB::table('role_user')->whereRaw('user_id = "' . Auth::user()->id . '"')->first();
+        $role_id = DB::table('employees')->whereRaw('id = "' . Auth::user()->context_id . '"')->first();
         $tasks = DB::table('task_roles')
                 ->select(['name', 'task_id'])
                 ->leftJoin('tasks', 'tasks.id', '=', 'task_roles.task_id')
-                ->whereRaw('role_id = ' . $role_id->role_id . ' or role_id = 0')
+                ->whereRaw('role_id = ' . $role_id->dept . ' or role_id = 0')
                 ->whereNull('tasks.deleted_at')
                 ->get();
+        
         $task_deleted = (session('task_removed') != '') ? " and timesheets.id NOT IN (" . trim(session('task_removed'), ',') . ")" : '';
         $notSubmitted = DB::table('timesheets')
                 ->select([DB::raw('projects.name as project_name'), DB::raw('tasks.name as task_name'), 'hours', 'minutes', 'date', 'timesheets.id'])

@@ -18,7 +18,7 @@ class CreateTaskRolesTable extends Migration
     public function up()
     {
         Module::generate("Task_roles", 'task_roles', 'role_id', 'fa-tasks', [
-            ["role_id", "Role Name", "Dropdown", false, "0", 0, 0, true, "@roles"],
+            ["role_id", "Department Name", "Dropdown", false, "0", 0, 0, true, "@departments"],
             ["task_id", "Task Name", "Dropdown", false, "0", 0, 0, true, "@tasks"],
         ]);
 		

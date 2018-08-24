@@ -37,7 +37,11 @@ class Employee extends Model {
             return "engineer";
         }
     }
-
+    
+    /**
+     * To get employees under a manager or lead
+     * @param string $approvalType  Manager or Lead
+     */
     public function getEngineersUnder($approvalType = 'Manager') {
         if ($approvalType == 'Manager') {
             return implode(',', DB::table('employees')->where('second_approver', Auth::user()->context_id)->whereNull('deleted_at')->pluck('id'));
