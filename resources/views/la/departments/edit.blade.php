@@ -1,14 +1,14 @@
 @extends("la.layouts.app")
 
 @section("contentheader_title")
-	<a href="{{ url(config('laraadmin.adminRoute') . '/departments') }}">Departments</a> :
+	<a href="{{ url(config('laraadmin.adminRoute') . '/departments') }}">Department</a> :
 @endsection
 @section("contentheader_description", $department->$view_col)
 @section("section", "Departments")
 @section("section_url", url(config('laraadmin.adminRoute') . '/departments'))
 @section("sub_section", "Edit")
 
-@section("htmlheader_title", "Department Edit : ".$department->$view_col)
+@section("htmlheader_title", "Departments Edit : ".$department->$view_col)
 
 @section("main-content")
 
@@ -34,8 +34,8 @@
 					
 					{{--
 					@la_input($module, 'name')
-					@la_input($module, 'tags')
 					@la_input($module, 'color')
+					@la_input($module, 'tags')
 					--}}
                     <br>
 					<div class="form-group">

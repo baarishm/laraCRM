@@ -96,7 +96,6 @@ Employee View
     <ul data-toggle="ajax-tab" class="nav nav-tabs profile" role="tablist">
         <li class=""><a href="{{ url(config('laraadmin.adminRoute') . '/employees') }}" data-toggle="tooltip" data-placement="right" title="Back to Employees"><i class="fa fa-chevron-left"></i></a></li>
         <li class="active"><a role="tab" data-toggle="tab" class="active" href="#tab-general-info" data-target="#tab-info"><i class="fa fa-bars"></i> General Info</a></li>
-<!--		<li class=""><a role="tab" data-toggle="tab" href="#tab-timeline" data-target="#tab-timeline"><i class="fa fa-clock-o"></i> Timeline</a></li>-->
         @if($employee->id == Auth::user()->id || Entrust::hasRole("SUPER_ADMIN"))
         <li class=""><a role="tab" data-toggle="tab" href="#tab-account-settings" data-target="#tab-account-settings"><i class="fa fa-key"></i> Account settings</a></li>
         @endif
@@ -171,7 +170,5 @@ Employee View
         </div>
         @endif
     </div>
-</div>
-</div>
 </div>
 @endsection
