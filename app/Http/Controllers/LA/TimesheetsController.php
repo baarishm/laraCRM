@@ -343,13 +343,13 @@ class TimesheetsController extends Controller {
         session(['task_removed' => '']);
         $re = DB::table('timesheets')
                 ->select([DB::raw('projects.name as project_name'), DB::raw('tasks.name as task_name'), DB::raw('employee_lead.email as lead_email'), DB::raw('employee_manager.email as manager_email'), DB::raw('timesheets.id as entry_id'), 'hours', 'minutes', 'date'])
-                ->whereRaw('date = "' . $_GET['date'] . '"')
+                ->whereRaw('date = "' . $_POST['date'] . '"')
                 ->leftJoin('projects', 'projects.id', '=', 'timesheets.project_id')
                 ->leftJoin('tasks', 'tasks.id', '=', 'timesheets.task_id')
                 ->leftJoin('employees as employee_lead', 'employee_lead.id', '=', 'timesheets.lead_id')
                 ->leftJoin('employees as employee_manager', 'employee_manager.id', '=', 'timesheets.manager_id');
-        if ($_GET['task_removed'] != '') {
-            $re = $re->whereRaw('timesheets.id NOT IN (' . trim($_GET['task_removed'], ',') . ')');
+        if ($_POST['task_removed'] != '') {
+            $re = $re->whereRaw('timesheets.id NOT IN (' . trim($_POST['task_removed'], ',') . ')');
         }
         $records = $re->get();
         $leads = [];
@@ -406,13 +406,13 @@ class TimesheetsController extends Controller {
 
     public function ajaxHoursWorked() {
         $timesheet = new Timesheet();
-        $hours = $timesheet->hoursWorked($_GET['date'], isset($_GET['task_removed']) ? $_GET['task_removed'] : '');
+        $hours = $timesheet->hoursWorked($_POST['date'], isset($_POST['task_removed']) ? $_POST['task_removed'] : '');
         return ($hours != '') ? $hours : '0';
     }
 
     public function ajaxDatesMailPending() {
         $timesheet = new Timesheet();
-        $dates = $timesheet->datesMailPending($_GET['task_removed']);
+        $dates = $timesheet->datesMailPending($_POST['task_removed']);
         $date_array = [];
         if (!empty($dates)) {
             foreach ($dates as $date) {

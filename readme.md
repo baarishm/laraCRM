@@ -57,12 +57,3 @@ Created by following http://laraadmin.com/docs/1.0/installation
                 <add accessType="Allow" users="?" />
             </authorization>
         </security>
-
--LAHelper class in vendor, update
-$role_id = DB::table('role_user')->select(['role_id'])->whereRaw('user_id = "' . Auth::user()->id . '"')->first();
-                $roleMenu = DB::table('sidebar_menu_accesses')->whereRaw('role_id = ' . $role_id->role_id. ' and deleted_at IS NULL')->pluck('menu_id');
-                
-                $str='';
-                if (in_array($menu->id, $roleMenu)){
-                    $str = '<li'.$treeview.' '.$active_str.'><a href="'.url(config("laraadmin.adminRoute") . '/' . $menu->url ) .'"><i class="fa '.$menu->icon.'"></i> <span>'.LAHelper::real_module_name($menu->name).'</span> '.$subviewSign.'</a>';
-                 }                 

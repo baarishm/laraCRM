@@ -241,9 +241,9 @@ $(function () {
     function send_timesheet_mail(date) {
         $('div.overlay').show();
         $.ajax({
-            method: "GET",
+            method: "POST",
             url: "/hoursWorked",
-            data: {date: date, task_removed: $('#task_removed').val()}
+            data: {date: date, task_removed: $('#task_removed').val(), _token : "{{ csrf_token() }}"}
         }).success(function (totalHours) {
             if (parseInt(totalHours) < 9) {
                 swal("Number of working hours for a day cannot be less than 9 hrs for a timesheet to be sent!");
@@ -252,10 +252,11 @@ $(function () {
             } else {
                 $.ajax({
                     url: '/sendEmailToLeadsAndManagers',
-                    type: 'GET',
+                    type: 'POST',
                     data: {
                         'task_removed': $('#task_removed').val(),
-                        'date': date
+                        'date': date,
+                        '_token' : "{{ csrf_token()}}"
                     },
                     success: function (data) {
                         $('div.overlay').hide();
@@ -272,9 +273,9 @@ $(function () {
 
         var mail_pending_dates = {};
         $.ajax({
-            method: "GET",
+            method: "POST",
             url: "/datesMailPending",
-            data: {'task_removed': $('#task_removed').val()},
+            data: {'task_removed': $('#task_removed').val(), _token : "{{ csrf_token() }}"},
             async: false
         }).success(function (dates) {
             mail_pending_dates = $.parseJSON(dates);
