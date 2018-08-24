@@ -65,5 +65,4 @@ $role_id = DB::table('role_user')->select(['role_id'])->whereRaw('user_id = "' .
                 $str='';
                 if (in_array($menu->id, $roleMenu)){
                     $str = '<li'.$treeview.' '.$active_str.'><a href="'.url(config("laraadmin.adminRoute") . '/' . $menu->url ) .'"><i class="fa '.$menu->icon.'"></i> <span>'.LAHelper::real_module_name($menu->name).'</span> '.$subviewSign.'</a>';
-                 }
-                 
+                 }                 
