@@ -48,12 +48,12 @@ class TimesheetsController extends Controller {
     public function index() {
         session(['task_removed' => '']);
         $module = Module::get('Timesheets');
-        $this->custom_cols = [/* 'submitor_id', */ 'Id', 'project_id', 'task_id', 'date', 'Time Spent (in hrs)', 'Mail Sent'];
 
         $role = Employee::employeeRole();
         if ($role == 'engineer') {
             $this->show_action = true;
         }
+        $this->custom_cols = [($role != 'engineer') ? 'submitor_id' : 'Id', 'project_id', 'task_id', 'date', 'Time Spent (in hrs)', 'Mail Sent'];
 
         $projects = DB::table('timesheets')
                 ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
@@ -265,11 +265,11 @@ class TimesheetsController extends Controller {
         if ($request->date_search != '') {
             $date = ' timesheets.date like "%' . $request->date_search . '%"';
         }
-        $this->custom_cols = ['timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Sent' ELSE 'Pending' end) as mail_sent")];
 
         $role = Employee::employeeRole();
-        $where = '';
+        $this->custom_cols = [($role != 'engineer') ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Sent' ELSE 'Pending' end) as mail_sent")];
 
+        $where = '';
         if ($role == 'superAdmin') {
             //no condition to be applied
         } else if ($role == 'manager') {
@@ -302,7 +302,7 @@ class TimesheetsController extends Controller {
         $values = $value->orderBy('timesheets.date', 'desc');
         $out = Datatables::of($values)->make();
         $data = $out->getData();
-        $col_arr = [/* 'submitor_id', */ 'id', 'project_id', 'task_id', 'date', 'hours', 'mail_sent'];
+        $col_arr = [($role != 'engineer') ? 'submitor_id' : 'id', 'project_id', 'task_id', 'date', 'hours', 'mail_sent'];
         $fields_popup = ModuleFields::getModuleFields('Timesheets');
         foreach ($fields_popup as $column => $val) {
             if (!in_array($column, $col_arr)) {
