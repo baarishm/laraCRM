@@ -18,11 +18,12 @@ use Collective\Html\FormFacade as Form;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Timesheet;
+use App\Models\Employee;
 use Mail;
 
 class TimesheetsController extends Controller {
 
-    public $show_action = true;
+    public $show_action = false;
     public $view_col = '';
     public $listing_cols = ['id', 'submitor_id', 'project_id', 'task_id', 'date', 'hours', 'minutes', 'comments', 'dependency', 'dependency_for', 'dependent_on', 'lead_id', 'manager_id'];
     public $custom_cols = ['id', 'submitor_id', 'project_id', 'task_id', 'date', 'hours', 'minutes', 'comments', 'dependency', 'dependency_for', 'dependent_on', 'lead_id', 'manager_id'];
@@ -48,6 +49,12 @@ class TimesheetsController extends Controller {
         session(['task_removed' => '']);
         $module = Module::get('Timesheets');
         $this->custom_cols = [/* 'submitor_id', */ 'Id', 'project_id', 'task_id', 'date', 'Time Spent (in hrs)', 'Mail Sent'];
+
+        $role = Employee::employeeRole();
+        if ($role == 'engineer') {
+            $this->show_action = true;
+        }
+
         $projects = DB::table('timesheets')
                 ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
                 ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
@@ -252,20 +259,47 @@ class TimesheetsController extends Controller {
     public function dtajax(Request $request) {
         $project = '';
         if ($request->project_search != 0) {
-            $project = ' and projects.id =' . $request->project_search;
+            $project = ' projects.id =' . $request->project_search;
         }
         $date = '';
         if ($request->date_search != '') {
-            $date = ' and timesheets.date like "%' . $request->date_search . '%"';
+            $date = ' timesheets.date like "%' . $request->date_search . '%"';
         }
         $this->custom_cols = ['timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Sent' ELSE 'Pending' end) as mail_sent")];
-        $values = DB::table('timesheets')
+
+        $role = Employee::employeeRole();
+        $where = '';
+
+        if ($role == 'superAdmin') {
+            //no condition to be applied
+        } else if ($role == 'manager') {
+            $people_under_manager = Employee::getEngineersUnder('Manager');
+            if ($people_under_manager = '')
+                $where = 'submitor_id IN (' . $people_under_manager . ')';
+        } else if ($role == 'lead') {
+            $people_under_lead = Employee::getEngineersUnder('Lead');
+            if ($people_under_lead = '')
+                $where = 'submitor_id IN (' . $people_under_lead . ')';
+        } else if ($role == 'engineer') {
+            $this->show_action = true;
+            $where = 'submitor_id = ' . Auth::user()->context_id;
+        }
+
+        $value = DB::table('timesheets')
                 ->select($this->custom_cols)
                 ->join('projects', 'projects.id', '=', 'timesheets.project_id')
                 ->join('tasks', 'tasks.id', '=', 'timesheets.task_id')
-                ->whereNull('timesheets.deleted_at')
-                ->whereRaw('submitor_id = ' . Auth::user()->context_id . $project . $date);
-//                ->groupBy(['date', 'project_id', 'task_id','hours', 'minutes']);
+                ->whereNull('timesheets.deleted_at');
+        if ($where != "") {
+            $value->whereRaw($where);
+        }
+        if ($project != "") {
+            $value->whereRaw($project);
+        }
+        if ($date != "") {
+            $value->whereRaw($date);
+        }
+        $values = $value->orderBy('timesheets.date', 'desc');
         $out = Datatables::of($values)->make();
         $data = $out->getData();
         $col_arr = [/* 'submitor_id', */ 'id', 'project_id', 'task_id', 'date', 'hours', 'mail_sent'];
