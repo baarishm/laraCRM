@@ -105,10 +105,10 @@
                 <div id="entry_parent">
                     <div class="entry" id="1">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 @la_input($module, 'project_id')
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="task_id">Task Name:</label>
                                     <select class="form-control" name="task_id">
@@ -118,19 +118,24 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                @la_input($module, 'date')
+<!--                        </div>
+                        <div class="row">-->
+                            <div class ="col-md-6">
+                                @la_input($module, 'comments')
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-2">
+                                @la_input($module, 'date')
+                            </div>
+                            <div class="col-md-2">
                                 @la_input($module, 'hours')
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 @la_input($module, 'minutes')
                             </div>
-                            <div class ="col-md-4">
-                                @la_input($module, 'comments')
+                            <div class ="col-md-6">
+                                @la_input($module, 'remarks')
                             </div>
                         </div>
                         <div class="hide">
@@ -274,7 +279,7 @@ $(function () {
         }).success(function (dates) {
             mail_pending_dates = $.parseJSON(dates);
         });
-        
+
         if (Object.keys(mail_pending_dates).length == 1) {
             send_timesheet_mail(Object.keys(mail_pending_dates)[0]);
         } else {

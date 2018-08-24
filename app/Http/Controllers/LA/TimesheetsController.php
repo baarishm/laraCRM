@@ -53,7 +53,7 @@ class TimesheetsController extends Controller {
         if ($role == 'engineer') {
             $this->show_action = true;
         }
-        $this->custom_cols = [($role != 'engineer') ? 'submitor_id' : 'Id', 'project_id', 'task_id', 'date', 'Time Spent (in hrs)', 'Mail Sent'];
+        $this->custom_cols = [($role != 'engineer') ? 'submitor_id' : 'Id', 'project_id', 'task_id', 'date', 'Time (in hrs)', 'Status'];
 
         $projects = DB::table('timesheets')
                 ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
@@ -267,7 +267,7 @@ class TimesheetsController extends Controller {
         }
 
         $role = Employee::employeeRole();
-        $this->custom_cols = [($role != 'engineer') ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Sent' ELSE 'Pending' end) as mail_sent")];
+        $this->custom_cols = [($role != 'engineer') ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Mail Sent' ELSE 'Pending' end) as mail_sent")];
 
         $where = '';
         if ($role == 'superAdmin') {

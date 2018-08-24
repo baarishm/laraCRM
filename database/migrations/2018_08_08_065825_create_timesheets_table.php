@@ -18,19 +18,20 @@ class CreateTimesheetsTable extends Migration
     public function up()
     {
         Module::generate("Timesheets", 'timesheets', 'project_id', 'fa-clock-o', [
+            ["remarks", "Remarks", "TextField", false, "", 0, 256, false],
             ["submitor_id", "Submitor Name", "Dropdown", false, "0", 0, 0, true, "@employees"],
             ["project_id", "Project Name", "Dropdown", false, "0", 0, 0, true, "@projects"],
             ["task_id", "Task Name", "Dropdown", false, "0", 0, 0, true, "@tasks"],
             ["date", "Date", "Date", false, "", 0, 0, true],
-            ["hours", "Hours Spent", "Dropdown", false, "0", 0, 0, true, ["1","2","3","4","5","6","7","8","9","10","11","12"]],
+            ["hours", "Hours Spent", "Dropdown", false, "0", 0, 0, true, ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"]],
             ["minutes", "Minutes Spent", "Dropdown", false, "0", 0, 0, true, ["00","30"]],
-            ["comments", "Comment", "Textarea", false, "", 0, 0, false],
+            ["comments", "Comment", "TextField", false, "", 0, 0, false],
+            ["mail_sent", "Mail Sent", "Dropdown", false, "", 0, 0, false, "	 ["No","Yes"]"],
             ["dependency", "Dependency", "Radio", false, "no", 0, 0, true, ["No","Yes"]],
             ["dependency_for", "Dependency For", "Textarea", false, "", 0, 0, false],
             ["dependent_on", "Dependent On", "Dropdown", false, "0", 0, 0, false, "@employees"],
-            ["lead_id", "Lead Name", "Dropdown", false, "0", 0, 0, false, "@leads"],
-            ["manager_id", "Manager Name", "Dropdown", false, "0", 0, 0, false, "@managers"],
-            ["mail_sent", "Mail Sent", "Integer", false, "", 0, 0, true],
+            ["lead_id", "Lead Name", "Dropdown", false, "0", 0, 0, false, "@employees"],
+            ["manager_id", "Manager Name", "Dropdown", false, "0", 0, 0, false, "@employees"],
         ]);
 		
 		/*
