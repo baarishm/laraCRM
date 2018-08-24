@@ -34,7 +34,7 @@
                     <th>{{ $module->fields[$col]['label'] or ucfirst($col) }}</th>
                     @endforeach
                     @if($show_actions)
-                    <th>Actions</th>
+                    <th style="width: 52px;">Actions</th>
                     @endif
                 </tr>
             </thead>
