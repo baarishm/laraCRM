@@ -188,9 +188,9 @@ $(function () {
             return false;
         } else {
             $.ajax({
-                method: "GET",
+                method: "POST",
                 url: "/hoursWorked",
-                data: {date: $('.date>input').val()}
+                data: {date: $('.date>input').val(), _token : "{{ csrf_token()}}"}
             }).success(function (totalHours) {
                 if (parseInt(totalHours) > 24) {
                     swal("Number of working hours for a day cannot exceed more than 24 hrs!");
