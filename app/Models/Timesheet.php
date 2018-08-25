@@ -91,7 +91,7 @@ class Timesheet extends Model {
 
         $date_q = DB::table($this->table)
                 ->select([DB::raw('Distinct(date) as date')])
-                ->whereRaw('mail_sent = 0');
+                ->whereRaw('mail_sent = 0 and submitor_id = '. Auth::user()->context_id);
         if ($rowsNotToBeIncluded != '') {
             $date_q = $date_q->whereRaw('id NOT IN (' . trim($rowsNotToBeIncluded, ',') . ')');
         }

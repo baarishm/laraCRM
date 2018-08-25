@@ -189,7 +189,7 @@ $(function () {
         } else {
             $.ajax({
                 method: "POST",
-                url: "/hoursWorked",
+                url: "{{ url('/hoursWorked') }}",
                 data: {date: $('.date>input').val(), _token : "{{ csrf_token()}}"}
             }).success(function (totalHours) {
                 if (parseInt(totalHours) > 24) {
@@ -242,7 +242,7 @@ $(function () {
         $('div.overlay').show();
         $.ajax({
             method: "POST",
-            url: "/hoursWorked",
+            url: "{{ url('/hoursWorked') }}",
             data: {date: date, task_removed: $('#task_removed').val(), _token : "{{ csrf_token() }}"}
         }).success(function (totalHours) {
             if (parseInt(totalHours) < 9) {
@@ -251,7 +251,7 @@ $(function () {
                 return false;
             } else {
                 $.ajax({
-                    url: '/sendEmailToLeadsAndManagers',
+                    url: "{{ url('/sendEmailToLeadsAndManagers') }}",
                     type: 'POST',
                     data: {
                         'task_removed': $('#task_removed').val(),
@@ -274,7 +274,7 @@ $(function () {
         var mail_pending_dates = {};
         $.ajax({
             method: "POST",
-            url: "/datesMailPending",
+            url: "{{ url('/datesMailPending') }}",
             data: {'task_removed': $('#task_removed').val(), _token : "{{ csrf_token() }}"},
             async: false
         }).success(function (dates) {
