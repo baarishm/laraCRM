@@ -18,6 +18,7 @@ class CreateEmployeesTable extends Migration
     public function up()
     {
         Module::generate("Employees", 'employees', 'name', 'fa-group', [
+            ["is_confirmed", "Confirmed", "Checkbox", false, "0", 0, 0, false],
             ["name", "Name", "Name", false, "", 5, 250, true],
             ["gender", "Gender", "Radio", false, "Male", 0, 0, true, ["Male","Female"]],
             ["mobile", "Mobile", "Mobile", false, "", 10, 20, true],

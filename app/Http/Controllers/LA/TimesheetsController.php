@@ -182,7 +182,6 @@ class TimesheetsController extends Controller {
 
                 $module->row = $timesheet;
                 $forward = Timesheet::leads_managers_tasks_notSubmitted();
-//                echo "<pre>"; print_r('here'); die;
                 return view('la.timesheets.edit', [
                             'module' => $module,
                             'view_col' => $this->view_col,
