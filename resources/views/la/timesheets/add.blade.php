@@ -299,9 +299,9 @@ $(function () {
     });
 
     //remove row from timesheet
-    $('.remove-row').click(function () {
+    $(document).on('click', '.remove-row', function () {
         $("#task_removed").val($("#task_removed").val() + ',' + $(this).parents('tr').attr('data-value'));
-        $(this).parents('tr').remove();
+        $(this).parents('tr').addClass('hide').remove();
         if ($('#example1 tr').length == 1) {
             $('#send-mail').hide();
         } else {

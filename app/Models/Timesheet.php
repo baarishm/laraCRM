@@ -73,6 +73,7 @@ class Timesheet extends Model {
     public function hoursWorked($date, $rowsNotToBeIncluded = '') {
         $hours_q = DB::table($this->table)
                 ->select([DB::raw('SUM(hours + minutes/60) as total_hours')])
+				->whereNull('deleted_at')
                 ->whereRaw('submitor_id = ' . Auth::user()->context_id)
                 ->whereRaw('date = "' . date('Y-m-d', strtotime($date)) . '"');
         if ($rowsNotToBeIncluded != '') {

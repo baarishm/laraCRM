@@ -125,8 +125,8 @@ $(function () {
     });
     $('[name="dependency"][value="No"]').trigger('click');
 
-    $('.date').data("DateTimePicker").minDate(moment().startOf('week'));
-    $('.date').data("DateTimePicker").maxDate(moment().endOf('week')).daysOfWeekDisabled([0, 6]);
+    $('.date').data("DateTimePicker").minDate(moment().subtract(1, 'days').millisecond(0).second(0).minute(0).hour(0));
+    $('.date').data("DateTimePicker").maxDate(moment()).daysOfWeekDisabled([0, 6]);
 });
 </script>
 @endpush
