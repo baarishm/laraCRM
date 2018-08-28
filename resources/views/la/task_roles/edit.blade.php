@@ -51,9 +51,7 @@
 @push('scripts')
 <script>
 $(function () {
-	$("#task_role-edit-form").validate({
-		
-	});
+	$('select[name="role_id"]').prepend("<option value='0' selected='selected'>Common</option>");
 });
 </script>
 @endpush

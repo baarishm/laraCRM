@@ -18,7 +18,7 @@ class CreateLeaveTypesTable extends Migration
     public function up()
     {
         Module::generate("Leave_types", 'leave_types', 'name', 'fa-calendar-minus-o', [
-            ["name", "Leave Type Name", "TextField", false, "", 0, 256, true],
+            ["name", "Leave Type Name", "TextField", true, "", 0, 256, true],
         ]);
 		
 		/*

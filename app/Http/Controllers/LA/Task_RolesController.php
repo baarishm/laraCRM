@@ -62,7 +62,14 @@ class Task_RolesController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        //
+        $module = Module::get('Task_Roles');
+        if (Module::hasAccess("Task_Roles", "create")) {
+            return view('la.task_roles.add', [
+                'module' => $module
+            ]);
+        } else {
+            return redirect(config('laraadmin.adminRoute') . "/");
+        }
     }
 
     /**
@@ -81,7 +88,17 @@ class Task_RolesController extends Controller {
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-
+			
+			$Task_Role = Task_Role::where('task_id', $request->task_id)
+							->where('role_id', $request->role_id)
+							->get();
+			
+			$taskRoleExists = $Task_Role->count();
+			
+			if($taskRoleExists > 0){
+				return redirect()->route(config('laraadmin.adminRoute') . '.task_roles.create')->withErrors(['message'=> 'Task already assigned to this role.']);
+			}
+			
             $insert_id = Module::insert("Task_Roles", $request);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.task_roles.index');
