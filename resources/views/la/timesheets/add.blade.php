@@ -192,7 +192,7 @@ $(function () {
                 url: "{{ url('/hoursWorked') }}",
                 data: {date: $('.date>input').val(), _token : "{{ csrf_token()}}"}
             }).success(function (totalHours) {
-                if (parseInt(totalHours) > 24) {
+                if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val()/60)) > 24) {
                     swal("Number of working hours for a day cannot exceed more than 24 hrs!");
                     return false;
                 } else {
@@ -261,7 +261,7 @@ $(function () {
                     success: function (data) {
                         $('div.overlay').hide();
                         alert(data);
-                        window.location.href = '/admin/timesheets';
+                        window.location.href = "{{ url('/admin/timesheets') }}";
                     }
                 });
             }
@@ -302,12 +302,17 @@ $(function () {
     $(document).on('click', '.remove-row', function () {
         $("#task_removed").val($("#task_removed").val() + ',' + $(this).parents('tr').attr('data-value'));
         $(this).parents('tr').addClass('hide').remove();
-        if ($('#example1 tr').length == 1) {
-            $('#send-mail').hide();
-        } else {
-            $('#send-mail').show();
-        }
+		if ($('#example1 tr').length == 1) {
+			$('ul.pagination li.paginate_button.active').prev('li.paginate_button').trigger('click');
+			if ($('#example1 tr').length == 1) {
+				$('#send-mail').hide();
+			} else {
+				$('#send-mail').show();
+			}
+		}
     });
+	
+
     $('.date').data("DateTimePicker").minDate(moment().subtract(1, 'days').millisecond(0).second(0).minute(0).hour(0));
     $('.date').data("DateTimePicker").maxDate(moment()).daysOfWeekDisabled([0, 6]);
 });

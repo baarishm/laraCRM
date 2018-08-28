@@ -102,9 +102,27 @@
 @push('scripts')
 <script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
 <script>
-$(function () {
-    $("#project-edit-form").validate({
-
+$(function () {    
+	
+	$("#timesheet-edit-form input[type='submit']").click(function (e) {
+        e.preventDefault();
+        if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
+            swal("Number of hours for a task cannot exceed more than 24 hrs!");
+            return false;
+        } else {
+            $.ajax({
+                method: "POST",
+                url: "{{ url('/hoursWorked') }}",
+                data: {date: $('.date>input').val(), _token : "{{ csrf_token()}}"}
+            }).success(function (totalHours) {
+                if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val()/60)) > 24) {
+                    swal("Number of working hours for a day cannot exceed more than 24 hrs!");
+                    return false;
+                } else {
+                    $('#timesheet-edit-form').submit();
+                }
+            });
+        }
     });
 
     //hide stuff on page load

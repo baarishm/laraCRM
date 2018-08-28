@@ -55,6 +55,7 @@ class Timesheet extends Model {
                 ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
                 ->whereRaw('submitor_id = ' . Auth::user()->context_id . " and mail_sent = 0 and timesheets.deleted_at IS NULL "
                         . $task_deleted)
+				->orderBy('date', 'desc')
                 ->get();
 
         return [
@@ -92,7 +93,8 @@ class Timesheet extends Model {
 
         $date_q = DB::table($this->table)
                 ->select([DB::raw('Distinct(date) as date')])
-                ->whereRaw('mail_sent = 0 and submitor_id = '. Auth::user()->context_id);
+				->orderBy('date', 'desc')
+                ->whereRaw('mail_sent = 0 and deleted_at IS NULL and submitor_id = '. Auth::user()->context_id);
         if ($rowsNotToBeIncluded != '') {
             $date_q = $date_q->whereRaw('id NOT IN (' . trim($rowsNotToBeIncluded, ',') . ')');
         }

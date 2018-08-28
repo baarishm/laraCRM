@@ -8,6 +8,10 @@ $('document').ready(function () {
 				date = new Date(child_input.val());
 			}
 			$(this).data('DateTimePicker').date(date).useStrict(true).keepInvalid(true);
+			$(this).on('paste keydown', function (e) {
+				e.preventDefault();
+				return false;
+			});
 			if(child_input.attr('name') == 'start_date' || child_input.attr('name') == 'end_date'){
 				$(this).on('dp.change', function(e){ 
 					if(new Date($('form input[name="start_date"]').val()) > new Date($('form input[name="end_date"]').val())){
