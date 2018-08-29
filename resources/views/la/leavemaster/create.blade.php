@@ -12,82 +12,83 @@ $_SESSION['csrf_token'] = $csrf_token;
 ?>
 Apply For Leave
 @endsection
+
 @section("main-content")
+@if(count($errors))
+<div class="form-group">
+    <div class="alert alert-danger">
+        <ul>
+            @foreach($errors->all() as $error)
+            <li>{{$error}}</li>
+            @endforeach
+        </ul>
+    </div>
+</div>
+@endif
+<div class="box entry-form">
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <form method="POST" action="{{url(config('laraadmin.adminRoute').'/leaves/store')}}" >
+                    <input type="hidden" name="_token" value="{{ csrf_token()}}">
 
-<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
-<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+                    <div class="row">
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+                        <div class="form-group col-md-3">
+                            <label for="Name">Employee Id:</label>
+                            <input type="text" class="form-control" name="EmpId" autocomplete="off" value="<?php echo Auth::user()->context_id; ?>" id="EmpId" placeholder="EmpId" required readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <!--            <label for="StartDate" class="control-label">Start Date:</label>-->
+                            <span for="StartDate" class="control-label" >Start Date*</span>
 
+                            <input type="text" class="form-control" 
+                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="From" required  readonly='true' />
+                        </div>
 
-<form method="POST" action="{{url(config('laraadmin.adminRoute').'/leaves/store')}}" >
-    <input type="hidden" name="_token" value="{{ csrf_token()}}">
+                        <div class="form-group col-md-3">
 
-    <div class="row">
+                            <!--            <label for="text" class="control-label">End Date:</label>-->
+                            <span for="text" class="control-label">End Date*</span>
 
-        <div class="form-group col-md-3">
-            <label for="Name">Employee Id:</label>
-            <input type="text" class="form-control" name="EmpId" autocomplete="off" value="<?php echo Auth::user()->context_id; ?>" id="EmpId" placeholder="EmpId" required readonly>
-        </div>
-        <div class="form-group col-md-3">
-            <!--            <label for="StartDate" class="control-label">Start Date:</label>-->
-            <span for="StartDate" class="control-label" >Start Date*</span>
+                            <input type="text" class="form-control " id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="To" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' />	
 
-            <input type="text" class="form-control" 
-                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="From" required  readonly='true' />
-        </div>
-
-        <div class="form-group col-md-3">
-
-            <!--            <label for="text" class="control-label">End Date:</label>-->
-            <span for="text" class="control-label">End Date*</span>
-
-            <input type="text" class="form-control " id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="To" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' />	
-
-        </div>
+                        </div>
 
 
-        <div class="form-group col-md-3">
-            <label for="Name">Number Of Days</label>
-            <input type="text" class="form-control" readonly="readonly" name="NoOfDays" id="NoOfDays" autocomplete="off" >
-            <!--<div style="margin:1%;" > </div> -->
-        </div>
-        <div class="form-group col-md-3">
-            <label for="Number">Leave Purpose</label>
+                        <div class="form-group col-md-3">
+                            <label for="Name">Number Of Days</label>
+                            <input type="text" class="form-control" readonly="readonly" name="NoOfDays" id="NoOfDays" autocomplete="off" >
+                            <!--<div style="margin:1%;" > </div> -->
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="Number">Leave Purpose</label>
 
-            <input type="text" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" required  >   
-        </div>
-        <div class="form-group col-md-3">
-            <label>Leave Type</label>
-            <select name="LeaveType" class="form-control" >
-                <?php
-                if (!empty($leave_types)) {
-                    foreach ($leave_types as $value) {
-                        echo '<option value="' . $value->id . '">' . $value->name . '</option>';
-                    }
-                }
-                ?>
+                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" required  >   
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Leave Type</label>
+                            <select name="LeaveType" class="form-control" >
+                                <?php
+                                if (!empty($leave_types)) {
+                                    foreach ($leave_types as $value) {
+                                        echo '<option value="' . $value->id . '">' . $value->name . '</option>';
+                                    }
+                                }
+                                ?>
 
-            </select>
-        </div>
-        <div class="col-md-3" style="margin-top: 25px;">
-            <button type="submit" class="btn btn-success"  onclick="this.disabled = true;this.value = 'Sending, please wait...';this.form.submit();">Submit</button>
+                            </select>
+                        </div>
+                        <div class="col-md-3" style="margin-top: 25px;">
+                            <button type="submit" class="btn btn-success"  onclick="this.disabled = true;this.value = 'Sending, please wait...';this.form.submit();">Submit</button>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
         </div>
     </div>
-    @if(count($errors))
-    <div class="form-group col-md-3">
-        <div class="alert alert-danger">
-            <ul>
-                @foreach($errors->all() as $error)
-                <li>{{$error}}</li>
-                @endforeach
-            </ul>
-        </div>
-    </div>
-    @endif
-
-</form>
-
+</div>
 
 @endsection
 

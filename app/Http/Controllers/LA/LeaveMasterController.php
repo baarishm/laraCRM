@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\LeaveMaster;
 use Auth;
 use DB;
+use Mail;
 
 class LeaveMasterController extends Controller {
 
@@ -47,8 +48,6 @@ class LeaveMasterController extends Controller {
                 ->whereRaw($where)
                 ->get();
 
-
-
         return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster]);
     }
 
@@ -82,19 +81,23 @@ class LeaveMasterController extends Controller {
         $leaveMaster = new LeaveMaster();
         $leaveMaster->EmpId = $request->get('EmpId');
 
-        $FromDate = date_create($request->get('FromDate'));
-        $format = date_format($FromDate, "Y-m-d");
-        $leaveMaster->FromDate = ($format);
+        $start_date = $request->get('FromDate');
+        $end_date = $request->get('ToDate');
 
+        $FromDate = date_create($request->get('FromDate'));
+        $FromDate = date_format($FromDate, "Y-m-d");
+        $leaveMaster->FromDate = ($FromDate);
         $ToDate = date_create($request->get('ToDate'));
-        $format = date_format($ToDate, "Y-m-d");
-        $leaveMaster->ToDate = ($format);
-        $leaveMaster->NoOfDays = $request->get('NoOfDays');
-        $leaveMaster->LeaveReason = $request->get('LeaveReason');
+        $ToDate = date_format($ToDate, "Y-m-d");
+        $leaveMaster->ToDate = ($ToDate);
+        $leaveMaster->NoOfDays = $days = $request->get('NoOfDays');
+        $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
 //	$leaveMaster->Approved=$request->get('Approved');
 
-        $leaveMaster->save();
+        if ($leaveMaster->save()) {
+            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
+        }
 
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been added');
     }
@@ -109,18 +112,23 @@ class LeaveMasterController extends Controller {
         $leaveMaster = LeaveMaster::find($id);
         $leaveMaster->EmpId = $request->get('EmpId');
 
+        $start_date = $request->get('FromDate');
+        $end_date = $request->get('ToDate');
+
         $FromDate = date_create($request->get('FromDate'));
         $format = date_format($FromDate, "Y-m-d");
         $leaveMaster->FromDate = ($format);
-
         $ToDate = date_create($request->get('ToDate'));
         $format = date_format($ToDate, "Y-m-d");
         $leaveMaster->ToDate = ($format);
-        $leaveMaster->NoOfDays = $request->get('NoOfDays');
-        $leaveMaster->LeaveReason = $request->get('LeaveReason');
+        $leaveMaster->NoOfDays = $days = $request->get('NoOfDays');
+        $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
 //	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
-        $leaveMaster->save();
+
+        if ($leaveMaster->save()) {
+            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
+        }
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been Update');
     }
 
@@ -142,6 +150,42 @@ class LeaveMasterController extends Controller {
         return "true";
     }
 
+    /**
+     * Send mail to Lead and manager in case of leave apply and update
+     * @param boolean $updated Record updated or inserted
+     * @param array $data contains 
+     * start_date
+     * end_date
+     * days
+     * reason
+     */
+    private function sendLeaveMail($updated = false, $data) {
+        $lead_manager = DB::table('employees')
+                ->select([DB::raw('employee_lead.email as lead_email'), DB::raw('employee_manager.email as manager_email'), DB::raw('employees.name as name')])
+                ->whereRaw('employees.id = ' . Auth::user()->context_id)
+                ->leftJoin('employees as employee_lead', 'employee_lead.id', '=', 'employees.first_approver')
+                ->leftJoin('employees as employee_manager', 'employee_manager.id', '=', 'employees.second_approver')
+                ->first();
+
+        $html = "Greetings of the day!<br><br>"
+                . "<b>" . ucfirst($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>."
+                . "<br><br>"
+                . "Regards,<br>"
+                . "Team Ganit Track Management";
+
+        $recipients['to'] = $lead_manager->lead_email;
+        $recipients['cc'] = $lead_manager->manager_email;
+
+        Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
+            $m->from('varsha.mittal@ganitsoftech.com', 'Leave Application From Portal');
+
+            $m->to($recipients['to'])
+                    ->cc($recipients['cc']) //need to add this recipent in mailgun
+                    ->subject('Leave Application of ' . Auth::user()->name . '!');
+        });
+        return true;
+    }
+
 //    public function Managerview(Request $request) {
 //        $role_id = DB::table('roles')->where('display_name', 'Super Admin')->first();
 //        $user_role_id = DB::table('role_user')->whereRaw('user_id = "' . Auth::user()->id . '"')->first();
@@ -157,9 +201,9 @@ class LeaveMasterController extends Controller {
 //        }
 //
 //        $leaveMaster = DB::table('leavemaster')
-//                ->select([DB::raw('leavemaster.FromDate AS leave_FromDate,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
-//                ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
-//                ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+//                ->select([DB::raw('leavemaster.FromDate AS leave_FromDate, leavemaster.*'), DB::raw('employees.name AS Employees_name')])
+//                ->leftJoin('leave_types', 'leavemaster.LeaveType', ' = ', 'leave_types.id')
+//                ->leftJoin('employees', 'employees.id', ' = ', 'leavemaster.EmpId')
 //                ->whereRaw($where)
 //                ->get();
 //
