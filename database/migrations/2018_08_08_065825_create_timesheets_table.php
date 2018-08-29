@@ -26,7 +26,7 @@ class CreateTimesheetsTable extends Migration
             ["hours", "Hours Spent", "Dropdown", false, "0", 0, 0, true, ["1","2","3","4","5","6","7","8","9","10","11","12","13","14","15","16","17","18","19","20","21","22","23","24"]],
             ["minutes", "Minutes Spent", "Dropdown", false, "0", 0, 0, true, ["00","30"]],
             ["comments", "Comment", "TextField", false, "", 0, 0, false],
-            ["mail_sent", "Mail Sent", "Dropdown", false, "", 0, 0, false, " ["No","Yes"]"],
+            ["mail_sent", "Mail Sent", "Dropdown", false, "", 0, 0, false, ["No","Yes"]],
             ["dependency", "Dependency", "Radio", false, "no", 0, 0, true, ["No","Yes"]],
             ["dependency_for", "Dependency For", "Textarea", false, "", 0, 0, false],
             ["dependent_on", "Dependent On", "Dropdown", false, "0", 0, 0, false, "@employees"],

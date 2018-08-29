@@ -85,6 +85,16 @@ class Sidebar_Menu_AccessesController extends Controller
 				return redirect()->back()->withErrors($validator)->withInput();
 			}
 			
+			$Sidebar_Menu_Access = Sidebar_Menu_Access::where('menu_id', $request->menu_id)
+							->where('role_id', $request->role_id)
+							->get();
+			
+			$Sidebar_Menu_Access_Exists = $Sidebar_Menu_Access->count();
+			
+			if($Sidebar_Menu_Access_Exists > 0){
+				return redirect()->route(config('laraadmin.adminRoute') . '.sidebar_menu_accesses.index')->withErrors(['message'=> 'Sidebar Access assigned to this role.']);
+			}
+			
 			$insert_id = Module::insert("Sidebar_Menu_Accesses", $request);
 			
 			return redirect()->route(config('laraadmin.adminRoute') . '.sidebar_menu_accesses.index');
@@ -236,7 +246,7 @@ class Sidebar_Menu_AccessesController extends Controller
 				}
 				
 				if(Module::hasAccess("Sidebar_Menu_Accesses", "delete")) {
-					$output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.sidebar_menu_accesses.destroy', $data->data[$i][0]], 'method' => 'delete', 'style'=>'display:inline']);
+					$output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.sidebar_menu_accesses.destroy', $data->data[$i][0]], 'method' => 'delete', 'style'=>'display:inline', 'class' => 'delete']);
 					$output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
 					$output .= Form::close();
 				}

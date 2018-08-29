@@ -105,10 +105,10 @@
                 <div id="entry_parent">
                     <div class="entry" id="1">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 @la_input($module, 'project_id')
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="task_id">Task Name:</label>
                                     <select class="form-control" name="task_id">
@@ -118,19 +118,24 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                @la_input($module, 'date')
+<!--                        </div>
+                        <div class="row">-->
+                            <div class ="col-md-6">
+                                @la_input($module, 'comments')
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-2">
+                                @la_input($module, 'date')
+                            </div>
+                            <div class="col-md-2">
                                 @la_input($module, 'hours')
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 @la_input($module, 'minutes')
                             </div>
-                            <div class ="col-md-4">
-                                @la_input($module, 'comments')
+                            <div class ="col-md-6">
+                                @la_input($module, 'remarks')
                             </div>
                         </div>
                         <div class="hide">
@@ -160,7 +165,7 @@
                 <input type="hidden" name="task_removed" id="task_removed" value="{{$task_removed}}" />
                 <br>
                 <div class="form-group">
-                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success pull-left']) !!} 
+                    {!! Form::submit( 'Add Entry', ['class'=>'btn btn-success pull-left']) !!} 
                 </div>
                 {!! Form::close() !!}
             </div>
@@ -183,11 +188,11 @@ $(function () {
             return false;
         } else {
             $.ajax({
-                method: "GET",
-                url: "/hoursWorked",
-                data: {date: $('.date>input').val()}
+                method: "POST",
+                url: "{{ url('/hoursWorked') }}",
+                data: {date: $('.date>input').val(), _token : "{{ csrf_token()}}"}
             }).success(function (totalHours) {
-                if (parseInt(totalHours) > 24) {
+                if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val()/60)) > 24) {
                     swal("Number of working hours for a day cannot exceed more than 24 hrs!");
                     return false;
                 } else {
@@ -236,9 +241,9 @@ $(function () {
     function send_timesheet_mail(date) {
         $('div.overlay').show();
         $.ajax({
-            method: "GET",
-            url: "/hoursWorked",
-            data: {date: date, task_removed: $('#task_removed').val()}
+            method: "POST",
+            url: "{{ url('/hoursWorked') }}",
+            data: {date: date, task_removed: $('#task_removed').val(), _token : "{{ csrf_token() }}"}
         }).success(function (totalHours) {
             if (parseInt(totalHours) < 9) {
                 swal("Number of working hours for a day cannot be less than 9 hrs for a timesheet to be sent!");
@@ -246,16 +251,17 @@ $(function () {
                 return false;
             } else {
                 $.ajax({
-                    url: '/sendEmailToLeadsAndManagers',
-                    type: 'GET',
+                    url: "{{ url('/sendEmailToLeadsAndManagers') }}",
+                    type: 'POST',
                     data: {
                         'task_removed': $('#task_removed').val(),
-                        'date': date
+                        'date': date,
+                        '_token' : "{{ csrf_token()}}"
                     },
                     success: function (data) {
                         $('div.overlay').hide();
                         alert(data);
-                        window.location.href = '/admin/timesheets';
+                        window.location.href = "{{ url('/admin/timesheets') }}";
                     }
                 });
             }
@@ -267,14 +273,14 @@ $(function () {
 
         var mail_pending_dates = {};
         $.ajax({
-            method: "GET",
-            url: "/datesMailPending",
-            data: {'task_removed': $('#task_removed').val()},
+            method: "POST",
+            url: "{{ url('/datesMailPending') }}",
+            data: {'task_removed': $('#task_removed').val(), _token : "{{ csrf_token() }}"},
             async: false
         }).success(function (dates) {
             mail_pending_dates = $.parseJSON(dates);
         });
-        
+
         if (Object.keys(mail_pending_dates).length == 1) {
             send_timesheet_mail(Object.keys(mail_pending_dates)[0]);
         } else {
@@ -293,15 +299,20 @@ $(function () {
     });
 
     //remove row from timesheet
-    $('.remove-row').click(function () {
+    $(document).on('click', '.remove-row', function () {
         $("#task_removed").val($("#task_removed").val() + ',' + $(this).parents('tr').attr('data-value'));
-        $(this).parents('tr').remove();
-        if ($('#example1 tr').length == 1) {
-            $('#send-mail').hide();
-        } else {
-            $('#send-mail').show();
-        }
+        $(this).parents('tr').addClass('hide').remove();
+		if ($('#example1 tr').length == 1) {
+			$('ul.pagination li.paginate_button.active').prev('li.paginate_button').trigger('click');
+			if ($('#example1 tr').length == 1) {
+				$('#send-mail').hide();
+			} else {
+				$('#send-mail').show();
+			}
+		}
     });
+	
+
     $('.date').data("DateTimePicker").minDate(moment().subtract(1, 'days').millisecond(0).second(0).minute(0).hour(0));
     $('.date').data("DateTimePicker").maxDate(moment()).daysOfWeekDisabled([0, 6]);
 });

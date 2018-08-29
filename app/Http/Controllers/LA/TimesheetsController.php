@@ -53,7 +53,7 @@ class TimesheetsController extends Controller {
         if ($role == 'engineer') {
             $this->show_action = true;
         }
-        $this->custom_cols = [($role != 'engineer') ? 'submitor_id' : 'Id', 'project_id', 'task_id', 'date', 'Time Spent (in hrs)', 'Mail Sent'];
+        $this->custom_cols = [($role != 'engineer') ? 'submitor_id' : 'Id', 'project_id', 'task_id', 'date', 'Time (in hrs)', 'Status'];
 
         $projects = DB::table('timesheets')
                 ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
@@ -182,7 +182,6 @@ class TimesheetsController extends Controller {
 
                 $module->row = $timesheet;
                 $forward = Timesheet::leads_managers_tasks_notSubmitted();
-//                echo "<pre>"; print_r('here'); die;
                 return view('la.timesheets.edit', [
                             'module' => $module,
                             'view_col' => $this->view_col,
@@ -267,7 +266,7 @@ class TimesheetsController extends Controller {
         }
 
         $role = Employee::employeeRole();
-        $this->custom_cols = [($role != 'engineer') ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Sent' ELSE 'Pending' end) as mail_sent")];
+        $this->custom_cols = [($role != 'engineer') ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Mail Sent' ELSE 'Pending' end) as mail_sent")];
 
         $where = '';
         if ($role == 'superAdmin') {
@@ -309,7 +308,7 @@ class TimesheetsController extends Controller {
                 unset($fields_popup[$column]);
             }
         }
-//echo "<pre>"; print_r($fields_popup); die;
+
         for ($i = 0; $i < count($data->data); $i++) {
             for ($j = 0; $j < count($this->custom_cols); $j++) {
                 $col = $col_arr[$j];
@@ -328,7 +327,7 @@ class TimesheetsController extends Controller {
                 }
 
                 if (Module::hasAccess("Timesheets", "delete")) {
-                    $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.timesheets.destroy', $data->data[$i][0]], 'method' => 'delete', 'style' => 'display:inline']);
+                    $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.timesheets.destroy', $data->data[$i][0]], 'method' => 'delete', 'style' => 'display:inline', 'class' => 'delete']);
                     $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
                     $output .= Form::close();
                 }
@@ -339,17 +338,23 @@ class TimesheetsController extends Controller {
         return $out;
     }
 
+    public function downloadTimesheet() {
+        return view('la.timesheets.downloadTimesheet');
+    }
+
+    /* Ajax Functions */
+
     public function sendEmailToLeadsAndManagers(Request $request) {
         session(['task_removed' => '']);
         $re = DB::table('timesheets')
                 ->select([DB::raw('projects.name as project_name'), DB::raw('tasks.name as task_name'), DB::raw('employee_lead.email as lead_email'), DB::raw('employee_manager.email as manager_email'), DB::raw('timesheets.id as entry_id'), 'hours', 'minutes', 'date'])
-                ->whereRaw('date = "' . $_GET['date'] . '"')
+                ->whereRaw('date = "' . $_POST['date'] . '" and submitor_id = ' . Auth::user()->context_id . " and timesheets.deleted_at IS NULL")
                 ->leftJoin('projects', 'projects.id', '=', 'timesheets.project_id')
                 ->leftJoin('tasks', 'tasks.id', '=', 'timesheets.task_id')
                 ->leftJoin('employees as employee_lead', 'employee_lead.id', '=', 'timesheets.lead_id')
                 ->leftJoin('employees as employee_manager', 'employee_manager.id', '=', 'timesheets.manager_id');
-        if ($_GET['task_removed'] != '') {
-            $re = $re->whereRaw('timesheets.id NOT IN (' . trim($_GET['task_removed'], ',') . ')');
+        if ($_POST['task_removed'] != '') {
+            $re = $re->whereRaw('timesheets.id NOT IN (' . trim($_POST['task_removed'], ',') . ')');
         }
         $records = $re->get();
         $leads = [];
@@ -406,13 +411,13 @@ class TimesheetsController extends Controller {
 
     public function ajaxHoursWorked() {
         $timesheet = new Timesheet();
-        $hours = $timesheet->hoursWorked($_GET['date'], isset($_GET['task_removed']) ? $_GET['task_removed'] : '');
+        $hours = $timesheet->hoursWorked($_POST['date'], isset($_POST['task_removed']) ? $_POST['task_removed'] : '');
         return ($hours != '') ? $hours : '0';
     }
 
     public function ajaxDatesMailPending() {
         $timesheet = new Timesheet();
-        $dates = $timesheet->datesMailPending($_GET['task_removed']);
+        $dates = $timesheet->datesMailPending($_POST['task_removed']);
         $date_array = [];
         if (!empty($dates)) {
             foreach ($dates as $date) {
@@ -422,4 +427,10 @@ class TimesheetsController extends Controller {
         return json_encode(!empty($date_array) ? $date_array : '');
     }
 
+    public function ajaxExportTimeSheetToAuthority() {
+        //code to export excel
+        return true;
+    }
+
+    /* Ended Ajax Functions */
 }

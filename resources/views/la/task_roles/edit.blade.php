@@ -38,7 +38,7 @@
 					--}}
                     <br>
 					<div class="form-group">
-						{!! Form::submit( 'Update', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right"><a href="{{ url(config('laraadmin.adminRoute') . '/task_roles') }}">Cancel</a></button>
+						{!! Form::submit( 'Update', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/task_roles') }}">Cancel</a></button>
 					</div>
 				{!! Form::close() !!}
 			</div>
@@ -51,9 +51,7 @@
 @push('scripts')
 <script>
 $(function () {
-	$("#task_role-edit-form").validate({
-		
-	});
+	$('select[name="role_id"]').prepend("<option value='0' selected='selected'>Common</option>");
 });
 </script>
 @endpush

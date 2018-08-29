@@ -27,11 +27,11 @@
                 {!! Form::model($timesheet, ['route' => [config('laraadmin.adminRoute') . '.timesheets.update', $timesheet->id ], 'method'=>'PUT', 'id' => 'timesheet-edit-form']) !!}
                 <div id="entry_parent">
                     <div class="entry" id="1">
-                        <div class="row">
-                            <div class="col-md-4">
+                         <div class="row">
+                            <div class="col-md-3">
                                 @la_input($module, 'project_id')
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="task_id">Task Name:</label>
                                     <select class="form-control" name="task_id">
@@ -41,19 +41,24 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                @la_input($module, 'date')
+<!--                        </div>
+                        <div class="row">-->
+                            <div class ="col-md-6">
+                                @la_input($module, 'comments')
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-2">
+                                @la_input($module, 'date')
+                            </div>
+                            <div class="col-md-2">
                                 @la_input($module, 'hours')
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 @la_input($module, 'minutes')
                             </div>
-                            <div class ="col-md-4">
-                                @la_input($module, 'comments')
+                            <div class ="col-md-6">
+                                @la_input($module, 'remarks')
                             </div>
                         </div>
                         <div class="hide">
@@ -79,7 +84,7 @@
                         </div>
                     </div>
                 </div>
-                <input type="hidden" name="submitor_id" value="<?php echo base64_encode(base64_encode(Auth::user()->id)); ?>" />
+                <input type="hidden" name="submitor_id" value="<?php echo base64_encode(base64_encode(Auth::user()->context_id)); ?>" />
                 <br>
                 <div class="form-group">
                     {!! Form::submit( 'Submit', ['class'=>'btn btn-success pull-left']) !!} 
@@ -97,9 +102,27 @@
 @push('scripts')
 <script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
 <script>
-$(function () {
-    $("#project-edit-form").validate({
-
+$(function () {    
+	
+	$("#timesheet-edit-form input[type='submit']").click(function (e) {
+        e.preventDefault();
+        if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
+            swal("Number of hours for a task cannot exceed more than 24 hrs!");
+            return false;
+        } else {
+            $.ajax({
+                method: "POST",
+                url: "{{ url('/hoursWorked') }}",
+                data: {date: $('.date>input').val(), _token : "{{ csrf_token()}}"}
+            }).success(function (totalHours) {
+                if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val()/60)) > 24) {
+                    swal("Number of working hours for a day cannot exceed more than 24 hrs!");
+                    return false;
+                } else {
+                    $('#timesheet-edit-form').submit();
+                }
+            });
+        }
     });
 
     //hide stuff on page load
@@ -120,8 +143,8 @@ $(function () {
     });
     $('[name="dependency"][value="No"]').trigger('click');
 
-    $('.date').data("DateTimePicker").minDate(moment().startOf('week'));
-    $('.date').data("DateTimePicker").maxDate(moment().endOf('week')).daysOfWeekDisabled([0, 6]);
+    $('.date').data("DateTimePicker").minDate(moment().subtract(1, 'days').millisecond(0).second(0).minute(0).hour(0));
+    $('.date').data("DateTimePicker").maxDate(moment()).daysOfWeekDisabled([0, 6]);
 });
 </script>
 @endpush
