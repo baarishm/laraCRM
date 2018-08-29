@@ -308,7 +308,7 @@ class TimesheetsController extends Controller {
                 unset($fields_popup[$column]);
             }
         }
-//echo "<pre>"; print_r($fields_popup); die;
+
         for ($i = 0; $i < count($data->data); $i++) {
             for ($j = 0; $j < count($this->custom_cols); $j++) {
                 $col = $col_arr[$j];
@@ -338,11 +338,17 @@ class TimesheetsController extends Controller {
         return $out;
     }
 
+    public function downloadTimesheet() {
+        return view('la.timesheets.downloadTimesheet');
+    }
+
+    /* Ajax Functions */
+
     public function sendEmailToLeadsAndManagers(Request $request) {
         session(['task_removed' => '']);
         $re = DB::table('timesheets')
                 ->select([DB::raw('projects.name as project_name'), DB::raw('tasks.name as task_name'), DB::raw('employee_lead.email as lead_email'), DB::raw('employee_manager.email as manager_email'), DB::raw('timesheets.id as entry_id'), 'hours', 'minutes', 'date'])
-                ->whereRaw('date = "' . $_POST['date'] . '" and submitor_id = '. Auth::user()->context_id." and timesheets.deleted_at IS NULL")
+                ->whereRaw('date = "' . $_POST['date'] . '" and submitor_id = ' . Auth::user()->context_id . " and timesheets.deleted_at IS NULL")
                 ->leftJoin('projects', 'projects.id', '=', 'timesheets.project_id')
                 ->leftJoin('tasks', 'tasks.id', '=', 'timesheets.task_id')
                 ->leftJoin('employees as employee_lead', 'employee_lead.id', '=', 'timesheets.lead_id')
@@ -421,4 +427,10 @@ class TimesheetsController extends Controller {
         return json_encode(!empty($date_array) ? $date_array : '');
     }
 
+    public function ajaxExportTimeSheetToAuthority() {
+        //code to export excel
+        return true;
+    }
+
+    /* Ended Ajax Functions */
 }

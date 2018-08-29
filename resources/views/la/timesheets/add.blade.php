@@ -165,7 +165,7 @@
                 <input type="hidden" name="task_removed" id="task_removed" value="{{$task_removed}}" />
                 <br>
                 <div class="form-group">
-                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success pull-left']) !!} 
+                    {!! Form::submit( 'Add Entry', ['class'=>'btn btn-success pull-left']) !!} 
                 </div>
                 {!! Form::close() !!}
             </div>

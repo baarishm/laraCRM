@@ -93,6 +93,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
         Route::post("/sendEmailToLeadsAndManagers", 'LA\TimesheetsController@sendEmailToLeadsAndManagers');
         Route::post("/hoursWorked", 'LA\TimesheetsController@ajaxHoursWorked');
         Route::post("/datesMailPending", 'LA\TimesheetsController@ajaxDatesMailPending');
+        Route::post("/exportTimeSheetToAuthority", 'LA\TimesheetsController@ajaxExportTimeSheetToAuthority');
+        Route::get(config('laraadmin.adminRoute') . "/downloadTimesheet", 'LA\TimesheetsController@downloadTimesheet');
 
 
 	/* ================== Sidebar_Menu_Accesses ================== */
