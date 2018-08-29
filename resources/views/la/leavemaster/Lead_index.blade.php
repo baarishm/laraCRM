@@ -1,6 +1,6 @@
 @extends("la.layouts.app")
 @section("contentheader_title")
-Leave Manager Dashboard
+Leave Lead Dashboard
 @endsection
 @section("main-content")
 

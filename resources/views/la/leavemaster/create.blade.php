@@ -1,10 +1,28 @@
 @extends("la.layouts.app")
 @section("contentheader_title")
+
+<?php
+// start the session
+session_start();
+// form token 
+$csrf_token = uniqid();
+
+// create form token session variable and store generated id in it.
+$_SESSION['csrf_token'] = $csrf_token;
+?>
 Apply For Leave
 @endsection
 @section("main-content")
-<form method="POST" action="{{url(config('laraadmin.adminRoute').'/leaves/store')}}">
+
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.11.0/jquery-ui.js"></script>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.1.4/jquery.min.js"></script>
+
+
+<form method="POST" action="{{url(config('laraadmin.adminRoute').'/leaves/store')}}" >
     <input type="hidden" name="_token" value="{{ csrf_token()}}">
+
     <div class="row">
 
         <div class="form-group col-md-3">
@@ -12,17 +30,19 @@ Apply For Leave
             <input type="text" class="form-control" name="EmpId" autocomplete="off" value="<?php echo Auth::user()->context_id; ?>" id="EmpId" placeholder="EmpId" required readonly>
         </div>
         <div class="form-group col-md-3">
-            <label for="StartDate" class="control-label">Start Date:</label>
+            <!--            <label for="StartDate" class="control-label">Start Date:</label>-->
+            <span for="StartDate" class="control-label" >Start Date*</span>
 
-            <input type="text" class="form-control datepicker" 
-                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="FromDate" required  readonly='true' />
+            <input type="text" class="form-control" 
+                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="From" required  readonly='true' />
         </div>
 
         <div class="form-group col-md-3">
 
-            <label for="text" class="control-label">End Date:</label>
+            <!--            <label for="text" class="control-label">End Date:</label>-->
+            <span for="text" class="control-label">End Date*</span>
 
-            <input type="text" class="form-control datepicker" id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="ToDate" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' />	
+            <input type="text" class="form-control " id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="To" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' />	
 
         </div>
 
@@ -35,7 +55,7 @@ Apply For Leave
         <div class="form-group col-md-3">
             <label for="Number">Leave Purpose</label>
 
-            <input type="text" class="form-control" name="LeaveReason" autocomplete="off" placeholder="LeaveReason" required  >   
+            <input type="text" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" required  >   
         </div>
         <div class="form-group col-md-3">
             <label>Leave Type</label>
@@ -51,7 +71,7 @@ Apply For Leave
             </select>
         </div>
         <div class="col-md-3" style="margin-top: 25px;">
-            <button type="submit" class="btn btn-success">Submit</button>
+            <button type="submit" class="btn btn-success"  onclick="this.disabled = true;this.value = 'Sending, please wait...';this.form.submit();">Submit</button>
         </div>
     </div>
     @if(count($errors))
@@ -65,11 +85,14 @@ Apply For Leave
         </div>
     </div>
     @endif
+
 </form>
+
+
 @endsection
 
 @push('scripts')
-<script type="text/javascript">
+<!--<script type="text/javascript">
     $(document).ready(function () {
 
 
@@ -81,6 +104,9 @@ Apply For Leave
                 var start = $("#datepicker").datepicker("getDate");
 
                 var end = $("#datepickerto").datepicker("getDate");
+             
+
+                
 
                 //   days = ((end - start) / (1000 * 60 * 60 * 24))+1;
                 //  $("#NoOfDays").val(days);
@@ -88,6 +114,7 @@ Apply For Leave
                 if (start <= end)
 
                 {
+                   
                     days = ((end - start) / (1000 * 60 * 60 * 24)) + 1;
                     $("#NoOfDays").val(days);
 
@@ -111,6 +138,44 @@ Apply For Leave
         }
 
         $(".datepicker").datepicker().on('changeDate', function (e) {
+             CalculateDiff(false);
+        });
+    });
+
+
+</script>-->
+<script type="text/javascript">
+    $(document).ready(function () {
+
+
+        // To calulate difference b/w two dates
+        function CalculateDiff(isstart)
+        {
+            if ($("#datepicker").val() != "" && $("#datepickerto").val() != "") {
+                var start = $("#datepicker").datepicker("getDate");
+                var end = $("#datepickerto").datepicker("getDate");
+                days = ((end - start) / (1000 * 60 * 60 * 24)) + 1;
+                $("#NoOfDays").val(days);
+                // alert(Math.round(days));
+
+            }
+        }
+
+        $("#datepicker").datepicker({
+            autoclose: true,
+            format: 'd M yyyy',
+        }).on('changeDate', function (e) {
+            $("#datepickerto").datepicker('setStartDate', e.date);
+
+            CalculateDiff(true);
+        });
+        $("#datepickerto").datepicker({
+
+            autoclose: true,
+            format: 'd M yyyy'
+
+
+        }).on('changeDate', function () {
             CalculateDiff(false);
         });
     });

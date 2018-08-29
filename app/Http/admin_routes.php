@@ -102,6 +102,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Leaves_index ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
 	Route::post(config('laraadmin.adminRoute') . '/leaves/store', 'LA\LeaveMasterController@store');
+	Route::get('/approveLeave', 'LA\LeaveMasterController@ajaxApproveLeave');
+        
 	/* ================== Sidebar_Menu_Leaves_ViewData ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
 	
@@ -116,4 +118,6 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Leave_Types ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/leave_types', 'LA\Leave_TypesController');
 	Route::get(config('laraadmin.adminRoute') . '/leave_type_dt_ajax', 'LA\Leave_TypesController@dtajax');
+        
+       
 });

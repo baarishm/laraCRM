@@ -41,7 +41,6 @@ Leave Dashboard
 
         <tr>
         <thead>
-        <th >EmpId</th>
         <th >From Date</th>
         <th >To Date</th>
         <th >No Of Days</th>
@@ -61,20 +60,34 @@ Leave Dashboard
             @endphp
 
             <tr>
-                <td>{{$leaveMasterRow->EmpId}}</td>
+
                 <td>{{$FromDate}}</td>
                 <td>{{$ToDate}}</td>
                 <td>{{$leaveMasterRow->NoOfDays}}</td>
-                <td>{{$leaveMasterRow->leave_name}}</td>
-                <td>{{(($leaveMasterRow->Approved != '')? $leaveMasterRow->Approved : 'Pending' ) }}</td>
+                <td>{{(($leaveMasterRow->leave_name != '')? $leaveMasterRow->leave_name : "Not Specified" ) }}</td>
+                @if( $leaveMasterRow->Approved === 1)
+                    <td>Approved </td>
+                    @elseif( $leaveMasterRow->Approved === 0 )
+                    <td>Rejected</td>
+                    @else 
+                    <td>Pending </td>
+                    @endif
+          
+                @if($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0')
+                <td>
+                        <button type="button" class="btn" name="Approved" id="Approved" style="background: green" >done</button>
+                </td>
+                        @else($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL')
                 <td class="text-center">
                 
                     <form action="{{action('LA\LeaveMasterController@destroy', $leaveMasterRow->id)}}" method="post">
                         <input type="hidden" name="_token" value="{{ csrf_token()}}">
+                       
+                        
                      <a href="{{action('LA\LeaveMasterController@edit',$leaveMasterRow->id)}}" class="btn btn-warning "><i class="fa fa-edit"></i></a>
                         <input name="_method" type="hidden" value="DELETE" >
                         <button class="btn btn-danger pull-left" type="submit"><i class="fa fa-remove"></i></button>
-                        
+                    @endif
                     </form>
                 </td>
             </tr>
