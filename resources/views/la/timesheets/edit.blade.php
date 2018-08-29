@@ -1,6 +1,6 @@
 @extends("la.layouts.app")
 @section("contentheader_title")
-<a href="{{ url(config('laraadmin.adminRoute') . '/timesheets') }}">Timesheets</a> :
+<a href="{{ url(config('laraadmin.adminRoute') . '/timesheets') }}">Edit Timesheet Entry</a>
 @endsection
 @section("section", "Timesheets")
 @section("section_url", url(config('laraadmin.adminRoute') . '/timesheets'))
@@ -94,9 +94,6 @@
         </div>
     </div>
 </div>
-<div class="overlay">
-    <div class="loader"/>
-</div>
 @endsection
 
 @push('scripts')
@@ -113,7 +110,7 @@ $(function () {
             $.ajax({
                 method: "POST",
                 url: "{{ url('/hoursWorked') }}",
-                data: {date: $('.date>input').val(), _token : "{{ csrf_token()}}"}
+                data: {date: $('.date>input').val(), task_removed: {{ $timesheet->id}}, _token : "{{ csrf_token()}}"}
             }).success(function (totalHours) {
                 if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val()/60)) > 24) {
                     swal("Number of working hours for a day cannot exceed more than 24 hrs!");
@@ -126,7 +123,6 @@ $(function () {
     });
 
     //hide stuff on page load
-    $('div.overlay').hide();
     $('[for="dependency_for"], [for="dependent_on"]').parents('div.form-group').fadeOut('slow');
 
 

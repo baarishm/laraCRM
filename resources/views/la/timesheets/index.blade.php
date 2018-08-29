@@ -91,9 +91,6 @@
 <script>
 $(function () {
 
-    $('#date_search').datetimepicker({
-        format: 'Y-MM-DD'
-    });
     var groupColumn = 3;
     var table = $("#example1").DataTable({
     processing: true,

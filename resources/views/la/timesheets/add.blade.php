@@ -1,33 +1,5 @@
 @extends("la.layouts.app")
 <style>
-    div.overlay{
-        background: none repeat scroll 0 0 #00000026;
-        position: absolute;
-        display: block;
-        z-index: 1000001;
-        top: 0;
-        height: 100%;
-        width: 100%;
-        margin-top: 50px;
-    }
-    .loader {
-        position: relative;
-        border: 8px solid #7b7b7b;
-        border-top: 8px solid #fbfbfb;
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        animation: spin 2s linear infinite;
-        top: 280px;
-        left: 520px;
-    }
-
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-
     input[type="search"].form-control.input-sm{
         float : right;
         margin:5px;
@@ -38,7 +10,7 @@
 
 </style>
 @section("contentheader_title")
-<a href="{{ url(config('laraadmin.adminRoute') . '/timesheets') }}">Timesheets</a> :
+<a href="{{ url(config('laraadmin.adminRoute') . '/timesheets') }}">Add Timesheet Entry</a>
 @endsection
 @section("section", "Timesheets")
 @section("section_url", url(config('laraadmin.adminRoute') . '/timesheets'))
@@ -66,7 +38,7 @@
                     <th>Task Name</th>
                     <th>Time Spent(in hrs)</th>
                     <th>Date</th>
-                    <th>Remove Row form this Sheet</th>
+                    <th>Remove Row from this Sheet</th>
                 </tr>
             </thead>
             @if(!empty($records))
@@ -172,9 +144,6 @@
         </div>
     </div>
 </div>
-<div class="overlay">
-    <div class="loader"/>
-</div>
 @endsection
 
 @push('scripts')
@@ -204,7 +173,6 @@ $(function () {
 
     //hide stuff on page load
     $('.entry-form').hide();
-    $('div.overlay').hide();
     $('[for="dependency_for"], [for="dependent_on"]').parents('div.form-group').fadeOut('slow');
 
     //show entry form on add entry button click
@@ -239,7 +207,7 @@ $(function () {
 
     //send mail
     function send_timesheet_mail(date) {
-        $('div.overlay').show();
+        $('div.overlay').removeClass('hide');
         $.ajax({
             method: "POST",
             url: "{{ url('/hoursWorked') }}",
@@ -247,7 +215,7 @@ $(function () {
         }).success(function (totalHours) {
             if (parseInt(totalHours) < 9) {
                 swal("Number of working hours for a day cannot be less than 9 hrs for a timesheet to be sent!");
-                $('div.overlay').hide();
+                $('div.overlay').addClass('hide');
                 return false;
             } else {
                 $.ajax({
@@ -259,7 +227,7 @@ $(function () {
                         '_token' : "{{ csrf_token()}}"
                     },
                     success: function (data) {
-                        $('div.overlay').hide();
+                        $('div.overlay').addClass('hide');
                         alert(data);
                         window.location.href = "{{ url('/admin/timesheets') }}";
                     }

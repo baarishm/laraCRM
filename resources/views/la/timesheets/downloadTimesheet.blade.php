@@ -91,9 +91,6 @@
         </div>
     </div>
 </div>
-<div class="overlay hide">
-    <div class="loader"/>
-</div>
 @endsection
 
 @push('scripts')
