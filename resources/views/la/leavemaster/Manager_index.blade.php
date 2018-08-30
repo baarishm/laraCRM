@@ -117,7 +117,7 @@ Team Leave Dashboard
 
             }
             $.ajax({
-                url: '/approveLeave',
+                url: "{{ url('/approveLeave') }}",
                 type: 'GET',
                 data: {'approved': approved, 'id': $(button).attr('data-id')},
                 success: function (data) {
