@@ -93,58 +93,7 @@ Apply For Leave
 @endsection
 
 @push('scripts')
-<!--<script type="text/javascript">
-    $(document).ready(function () {
 
-
-        // To calulate difference b/w two dates
-        function CalculateDiff(isstart)
-
-        {
-            if ($("#datepicker").val() != "" && $("#datepickerto").val() != "") {
-                var start = $("#datepicker").datepicker("getDate");
-
-                var end = $("#datepickerto").datepicker("getDate");
-             
-
-                
-
-                //   days = ((end - start) / (1000 * 60 * 60 * 24))+1;
-                //  $("#NoOfDays").val(days);
-
-                if (start <= end)
-
-                {
-                   
-                    days = ((end - start) / (1000 * 60 * 60 * 24)) + 1;
-                    $("#NoOfDays").val(days);
-
-
-
-
-                } else
-
-                {
-                    if (!isstart)
-                        alert(" End date not less then start date");
-                    $("#datepickerto").val('');
-                    $("#NoOfDays").val('');
-
-                }
-
-
-                // alert(Math.round(days));
-
-            }
-        }
-
-        $(".datepicker").datepicker().on('changeDate', function (e) {
-             CalculateDiff(false);
-        });
-    });
-
-
-</script>-->
 <script type="text/javascript">
     $(document).ready(function () {
 
@@ -165,9 +114,14 @@ Apply For Leave
         $("#datepicker").datepicker({
             autoclose: true,
             format: 'd M yyyy',
-        }).on('changeDate', function (e) {
-            $("#datepickerto").datepicker('setStartDate', e.date);
+            maxDate: '+30D',
+            
 
+        }).on('changeDate', function (e) {
+             $("#datepickerto").val('');
+             $("#NoOfDays").val('');
+            $("#datepickerto").datepicker('setStartDate', e.date);
+            
             CalculateDiff(true);
         });
         $("#datepickerto").datepicker({
@@ -179,7 +133,8 @@ Apply For Leave
         }).on('changeDate', function () {
             CalculateDiff(false);
         });
-    });
+    }
+    );
 
 
 </script>
