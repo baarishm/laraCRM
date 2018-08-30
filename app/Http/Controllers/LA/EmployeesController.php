@@ -96,8 +96,11 @@ class EmployeesController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
+            $insert_data = $request->all();
+            $insert_data['date_hire'] = date('Y-m-d', strtotime($request->date_hire));
+            $insert_data['date_birth'] = date('Y-m-d', strtotime($request->date_birth));
             // Create Employee
-            $employee_id = Module::insert("Employees", $request);
+            $employee_id = Module::insert("Employees", $insert_data);
             // Create User
             $user = User::create([
                         'name' => $request->name,
@@ -206,8 +209,12 @@ class EmployeesController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
                 ;
             }
+            
+            $update_data = $request->all();
+            $update_data['date_hire'] = date('Y-m-d', strtotime($request->date_hire));
+            $update_data['date_birth'] = date('Y-m-d', strtotime($request->date_birth));
 
-            $insert_id = Module::updateRow("Employees", $request, $id);
+            $insert_id = Module::updateRow("Employees", $update_data, $id);
 
             // Update User
             $user = User::where('context_id', $insert_id)->first();

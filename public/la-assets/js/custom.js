@@ -29,6 +29,14 @@ $('document').ready(function () {
         $('.date>input').prop('autocomplete', 'off');
         $('[name="date_birth"]').parents('.date').data('DateTimePicker').minDate(moment().subtract(70, 'years')).maxDate(moment().subtract(18, 'years'));
         $('[name="date_hire"]').parents('.date').data('DateTimePicker').minDate(moment('2016-08-29')).maxDate(moment());
+        $('.date').on('dp.change', function (e) {
+            if (($(this).children('[name="date_hire"]').length > 0) || ($(this).children('[name="date_birth"]').length > 0)) {
+                if (new Date($('[name="date_hire"]').val()) < new Date($('[name="date_birth"]').val())) {
+                    swal('Date of Birth cannot be after Date of Joining');
+                    $(this).children('input').val('');
+                }
+            }
+        });
     }
 
     if ($('.datepicker').length > 0) {
