@@ -5,6 +5,7 @@ namespace App\Http\Controllers\LA;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LeaveMaster;
+use App\Models\Employee;
 use Auth;
 use DB;
 
@@ -27,17 +28,24 @@ class LeaveMasterController extends Controller {
     }
 
     public function index(Request $request) {
-        $role_id = DB::table('roles')->where('display_name', 'Super Admin')->first();
-        $user_role_id = DB::table('role_user')->whereRaw('user_id = "' . Auth::user()->id . '"')->first();
 
+        $role = Employee::employeeRole();
         $where = 'employees.deleted_at IS NULL ';
-        if ($role_id->id == $user_role_id->role_id) {
-            //manager
-            $view = 'Manager_index';
-        } else {
+
+        if ($role == 'engineer') {
             //other users
             $view = 'index';
             $where .= ' and leavemaster.EmpId = ' . Auth::user()->context_id;
+        } else {
+            if ($role == "manager" || $role == "lead") {
+                $engineersUnder = Employee::getEngineersUnder(ucfirst($role));
+                if ($engineersUnder != '') {
+                    $where .= ' and leavemaster.EmpId IN (' . $engineersUnder . ')';
+                } else {
+                    $where .= ' and leavemaster.EmpId = ""';
+                }
+            }
+            $view = 'Manager_index';
         }
 
         $leaveMaster = DB::table('leavemaster')
@@ -47,9 +55,7 @@ class LeaveMasterController extends Controller {
                 ->whereRaw($where)
                 ->get();
 
-
-
-        return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster]);
+        return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role]);
     }
 
     public function create() {
@@ -142,29 +148,99 @@ class LeaveMasterController extends Controller {
         return "true";
     }
 
-//    public function Managerview(Request $request) {
-//        $role_id = DB::table('roles')->where('display_name', 'Super Admin')->first();
-//        $user_role_id = DB::table('role_user')->whereRaw('user_id = "' . Auth::user()->id . '"')->first();
-//
-//        $where = 'employees.deleted_at IS NULL ';
-//        if ($role_id->id == $user_role_id->role_id) {
-//            //manager
-//            $view = 'Manager_view';
-//        } else {
-//            //other users
-//            $view = 'Lead_view';
-//            $where .= ' and leavemaster.EmpId = ' . Auth::user()->context_id;
-//        }
-//
-//        $leaveMaster = DB::table('leavemaster')
-//                ->select([DB::raw('leavemaster.FromDate AS leave_FromDate,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
-//                ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
-//                ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
-//                ->whereRaw($where)
-//                ->get();
-//
-//
-//}
+    public function Teamindex(Request $request) {
+        $role = Employee::employeeRole();
+        $where = 'employees.deleted_at IS NULL ';
+        if ($role == "manager" || $role == "lead") {
+            //manager  
+            $engineersUnder = Employee::getEngineersUnder(($role == "manager") ? "Manager" : "Lead");
+            if ($engineersUnder != '')
+                $where .= " and EmpId IN( " . $engineersUnder . " )";
+            else
+                $where .= " and EmpId IN( '' )";
+            $view = 'Manager_index';
+        } else {
+            //other users
+            $view = 'Manager_index';
+            $where .= 'and leavemaster.EmpId = ' . Auth::user()->context_id;
+        }
+
+        $leaveMaster = DB::table('leavemaster')
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
+                ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
+                ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+                ->whereRaw($where)
+                ->get();
+
+        return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role]);
+    }
+
+    public function ajaxDateSearch(Request $request) {
+
+        $role = Employee::employeeRole();
+        $where = 'employees.deleted_at IS NULL ';
+        if ($request->date != null && $request->date != "") {
+            if ($request->date == 'P') {
+                $filter_date = date('Y-m-d', strtotime(' -1 day'));
+            } else if ($request->date == 'T') {
+                $filter_date = date('Y-m-d');
+            }else if ($request->date == 'N'){
+                $filter_date = date('Y-m-d', strtotime(' +1 day'));
+            }
+            $where .= 'and leavemaster.FromDate <= "' . $filter_date . '" and leavemaster.ToDate >= "' . $filter_date . '"';
+        }
+
+        if ($role == "manager" || $role == "lead") {
+            $engineersUnder = Employee::getEngineersUnder(ucfirst($role));
+            if ($engineersUnder != '') {
+                $where .= ' and leavemaster.EmpId IN (' . $engineersUnder . ')';
+            } else {
+                $where .= ' and leavemaster.EmpId = ""';
+            }
+        }
+
+        $leaveMaster = DB::table('leavemaster')
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
+                ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
+                ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+                ->whereRaw($where)
+                ->get();
+
+        $html = "";
+
+        foreach ($leaveMaster as $leaveMasterRow) {
+            $html .= '<tr id="ps">
+
+                    <td>' . $leaveMasterRow->Employees_name . '</td>
+
+                    <td>' . $leaveMasterRow->FromDate . '</td>
+                    <td>' . $leaveMasterRow->ToDate . '</td>
+                    <td>' . $leaveMasterRow->NoOfDays . '</td>
+                    <td>' . (($leaveMasterRow->leave_name != '') ? $leaveMasterRow->leave_name : "Not Specified" ) . '</td> 
+
+                 <td>';
+            $html .= '<span  id="btn2" data-toggle="popover" title="' . $leaveMasterRow->LeaveReason . '" data-content="Default popover">Leave Reason ..</span>';
+            $html .= '</td>
+                   
+                    <td class="text-center">';
+            if ($leaveMasterRow->Approved == '1') {
+                $html .= '<span class="text-success">Approved</span>';
+            } else if ($leaveMasterRow->Approved == '0') {
+                $html .= '<span class="text-danger">Rejected</span>';
+            } else {
+                $html .= '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);">Approve</button>';
+                $html .= '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+            }
+
+
+            $html .= ' </td>
+
+                </tr>';
+        }
+
+        return json_encode(['html' => $html, 'day' => $request->date]);
+    }
+
 }
 
 ?>

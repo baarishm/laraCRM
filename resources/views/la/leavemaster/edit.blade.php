@@ -86,6 +86,8 @@ Edit Apply  Leave
                  	format: 'd M yyyy',	
 					
 			}).on('changeDate',function(e){
+                             $("#datepickerto").val('');
+                             $("#NoOfDays").val('');
 				$("#datepickerto").datepicker('setStartDate', e.date);
 						CalculateDiff(true);
 						 			});
