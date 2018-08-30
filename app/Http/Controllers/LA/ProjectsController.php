@@ -183,7 +183,7 @@ class ProjectsController extends Controller {
             $update_data['start_date'] = date('Y-m-d', strtotime($request->start_date));
             $update_data['end_date'] = date('Y-m-d', strtotime($request->end_date));
 			
-            echo $insert_id = Module::updateRow("Projects", $update_data, $id); die;
+            $insert_id = Module::updateRow("Projects", $update_data, $id);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.projects.index');
         } else {
