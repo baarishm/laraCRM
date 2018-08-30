@@ -55,7 +55,7 @@ return [
     |
     */
 
-    'from' => ['address' => 'varsha.mittal@ganitsoftech.com', 'name' => 'Ganit Softech'],
+    'from' => ['address' => 'webmaster@ganitsoftech.com', 'name' => 'Ganit Track System'],
 
     /*
     |--------------------------------------------------------------------------
