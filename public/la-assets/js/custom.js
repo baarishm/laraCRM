@@ -27,6 +27,8 @@ $('document').ready(function () {
             }
         });
         $('.date>input').prop('autocomplete', 'off');
+        $('[name="date_birth"]').parents('.date').data('DateTimePicker').minDate(moment().subtract(70, 'years')).maxDate(moment().subtract(18, 'years'));
+        $('[name="date_hire"]').parents('.date').data('DateTimePicker').minDate(moment('2016-08-29')).maxDate(moment());
     }
 
     if ($('.datepicker').length > 0) {
@@ -78,6 +80,16 @@ $('document').ready(function () {
             $('div.overlay').addClass('hide');
         }
     }, 1500);
+
+    $('[name="mobile"], [name="mobile2"]').attr('maxlength', '10');
+    $('[name="mobile"], [name="mobile2"]').keypress(function (e) {
+        var charCode = (e.which) ? e.which : e.keyCode;
+        if ((charCode >= 48 && charCode <= 57)) {
+            return true;
+        } else {
+            return false;
+        }
+    });
 });
 
 

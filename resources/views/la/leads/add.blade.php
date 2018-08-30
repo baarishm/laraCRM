@@ -1,7 +1,7 @@
 @extends("la.layouts.app")
 
 @section("contentheader_title")
-<a href="{{ url(config('laraadmin.adminRoute') . '/managers') }}">Managers</a> :
+<a href="{{ url(config('laraadmin.adminRoute') . '/managers') }}">Lead</a> :
 @endsection
 @section("section", "Managers")
 @section("section_url", url(config('laraadmin.adminRoute') . '/managers'))

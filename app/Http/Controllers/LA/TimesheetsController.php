@@ -396,8 +396,6 @@ class TimesheetsController extends Controller {
                 $recipients['cc'] = $manager_email;
                 if (
                         Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
-                            $m->from(Auth::user()->email, 'Ganit Timesheet From Portal');
-
                             $m->to($recipients['to'])
                                     ->cc($recipients['cc']) //need to add this recipent in mailgun
                                     ->subject('Timesheet of ' . Auth::user()->name . '!');

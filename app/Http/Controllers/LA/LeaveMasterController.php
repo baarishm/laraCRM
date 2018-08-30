@@ -177,8 +177,6 @@ class LeaveMasterController extends Controller {
         $recipients['cc'] = $lead_manager->manager_email;
 
         Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
-            $m->from('varsha.mittal@ganitsoftech.com', 'Leave Application From Portal');
-
             $m->to($recipients['to'])
                     ->cc($recipients['cc']) //need to add this recipent in mailgun
                     ->subject('Leave Application of ' . Auth::user()->name . '!');

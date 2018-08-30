@@ -95,10 +95,11 @@ $(function () {
 		language: {
 			lengthMenu: "_MENU_",
 			search: "_INPUT_",
-			searchPlaceholder: "Search"
+			searchPlaceholder: "Search Project By Name"
 		},
+		columnDefs: [ {"searchable": false, "targets": [5,6]}],
 		@if($show_actions)
-		columnDefs: [ { orderable: false, targets: [-1] }],
+		columnDefs: [ { orderable: false, targets: [-1] }, {"searchable": false, "targets": [5,6]}],
 		@endif
 	});
 	$("#project-add-form").validate({
