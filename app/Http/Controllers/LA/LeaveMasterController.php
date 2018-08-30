@@ -33,6 +33,28 @@ class LeaveMasterController extends Controller {
         $role = Employee::employeeRole();
         $where = 'employees.deleted_at IS NULL ';
 
+        if ($role == 'superAdmin') {
+            $view = 'Manager_index';
+        } else {
+            $view = 'index';
+            $where .= ' and leavemaster.EmpId = ' . Auth::user()->context_id;
+        }
+
+        $leaveMaster = DB::table('leavemaster')
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
+                ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
+                ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+                ->whereRaw($where)
+                ->get();
+
+        return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role]);
+    }
+    
+    public function teamMemberIndex(Request $request) {
+
+        $role = Employee::employeeRole();
+        $where = 'employees.deleted_at IS NULL ';
+
         if ($role == 'engineer') {
             //other users
             $view = 'index';
