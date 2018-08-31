@@ -100,8 +100,9 @@ $(function () {
             url:"{{ url(config('laraadmin.adminRoute') . '/timesheet_dt_ajax') }}",
                     type : 'get',
                     data:function(d){
-                    d.project_search = $('#project_search').val();
+                            d.project_search = $('#project_search').val();
                             d.date_search = $('#date_search').val();
+                            d.teamMember = "{{$teamMember}}";
                     }
             },
             language: {

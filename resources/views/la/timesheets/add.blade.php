@@ -27,45 +27,6 @@
     </ul>
 </div>
 @endif
-<!-- for Last records details -->
-<div class="box box-success">
-    <!--<div class="box-header"></div>-->
-    <div class="box-body">
-        <table id="example1" class="table table-bordered">
-            <thead>
-                <tr class="success">
-                    <th>Project Name</th>
-                    <th>Task Name</th>
-                    <th>Time Spent(in hrs)</th>
-                    <th>Date</th>
-                    <th>Remove Row from this Sheet</th>
-                </tr>
-            </thead>
-            @if(!empty($records))
-            @foreach($records as $record)
-            <tr class="entry-row" data-value="{{$record->id}}">
-                <td>{{$record->project_name}}</td>
-                <td>{{$record->task_name}}</td>
-                <td>{{$record->hours+($record->minutes/60)}}</td>
-                <td>{{date('d M Y',strtotime($record->date))}}</td>
-                <td><button class="btn btn-danger btn-xs remove-row"><i class="fa fa-times"></i></button></td>
-            </tr>
-            @endforeach
-            @endif
-            <tbody>
-
-            </tbody>
-        </table>
-    </div>
-</div>
-<!-- End -->
-<!-- Buttons to add form or to send email -->
-<div class="form-group">
-    <a href="#" class="btn btn-success " id ="add-entry">Add Entry</a>
-    @if(!empty($records))
-    <a href="#" class="btn btn-primary" id="send-mail">Send Timesheet Email</a>
-    @endif
-</div>
 <div class="box entry-form">
     <div class="box-header">
 
@@ -85,13 +46,13 @@
                                     <label for="task_id">Task Name:</label>
                                     <select class="form-control" name="task_id">
                                         @foreach($tasks as $task)
-                                        <option value="{{$task->task_id}}">{{$task->name}}</option>
+                                        <option data-name="{{$task->name}}" value="{{$task->task_id}}">{{$task->name}}</option>
                                         @endforeach
                                     </select>
                                 </div>
                             </div>
-<!--                        </div>
-                        <div class="row">-->
+                            <!--                        </div>
+                                                    <div class="row">-->
                             <div class ="col-md-6">
                                 @la_input($module, 'comments')
                             </div>
@@ -159,9 +120,9 @@ $(function () {
             $.ajax({
                 method: "POST",
                 url: "{{ url('/hoursWorked') }}",
-                data: {date: $('.date>input').val(), _token : "{{ csrf_token()}}"}
+                data: {type: 'day', date: $('.date>input').val(), _token: "{{ csrf_token()}}"}
             }).success(function (totalHours) {
-                if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val()/60)) > 24) {
+                if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val() / 60)) > 24) {
                     swal("Number of working hours for a day cannot exceed more than 24 hrs!");
                     return false;
                 } else {
@@ -172,7 +133,6 @@ $(function () {
     });
 
     //hide stuff on page load
-    $('.entry-form').hide();
     $('[for="dependency_for"], [for="dependent_on"]').parents('div.form-group').fadeOut('slow');
 
     //show entry form on add entry button click
@@ -205,84 +165,21 @@ $(function () {
         },
     });
 
-    //send mail
-    function send_timesheet_mail(date) {
-        $('div.overlay').removeClass('hide');
-        $.ajax({
-            method: "POST",
-            url: "{{ url('/hoursWorked') }}",
-            data: {date: date, task_removed: $('#task_removed').val(), _token : "{{ csrf_token() }}"}
-        }).success(function (totalHours) {
-            if (parseInt(totalHours) < 9) {
-                swal("Number of working hours for a day cannot be less than 9 hrs for a timesheet to be sent!");
-                $('div.overlay').addClass('hide');
-                return false;
-            } else {
-                $.ajax({
-                    url: "{{ url('/sendEmailToLeadsAndManagers') }}",
-                    type: 'POST',
-                    data: {
-                        'task_removed': $('#task_removed').val(),
-                        'date': date,
-                        '_token' : "{{ csrf_token()}}"
-                    },
-                    success: function (data) {
-                        $('div.overlay').addClass('hide');
-                        alert(data);
-                        window.location.href = "{{ url('/admin/timesheets') }}";
-                    }
-                });
-            }
-        });
-    }
 
-    $('#send-mail').click(async function (event) {
-        event.preventDefault();
-
-        var mail_pending_dates = {};
-        $.ajax({
-            method: "POST",
-            url: "{{ url('/datesMailPending') }}",
-            data: {'task_removed': $('#task_removed').val(), _token : "{{ csrf_token() }}"},
-            async: false
-        }).success(function (dates) {
-            mail_pending_dates = $.parseJSON(dates);
-        });
-
-        if (Object.keys(mail_pending_dates).length == 1) {
-            send_timesheet_mail(Object.keys(mail_pending_dates)[0]);
+    $('[name="date"]').parent('.date').on('dp.change', function (e) {
+        console.log(new Date($(this).children('input').val()));
+        console.log(new Date());
+        if (new Date($(this).children('input').val()) > new Date()) {
+            $('select[name="task_id"] option').addClass('hide');
+            $('select[name="task_id"]').find('option[data-name="Leave"]').removeClass('hide').attr('selected', true);
         } else {
-            swal({
-                title: 'Select date for which you need to send timesheet.',
-                input: 'radio',
-                inputOptions: mail_pending_dates
-            }).then(function (result) {
-                if (result.value) {
-                    send_timesheet_mail(result.value);
-                } else {
-                    swal({type: 'error', text: "Please select one date!"});
-                }
-            });
+            $('select[name="task_id"] option').removeClass('hide');
         }
     });
 
-    //remove row from timesheet
-    $(document).on('click', '.remove-row', function () {
-        $("#task_removed").val($("#task_removed").val() + ',' + $(this).parents('tr').attr('data-value'));
-        $(this).parents('tr').addClass('hide').remove();
-		if ($('#example1 tr').length == 1) {
-			$('ul.pagination li.paginate_button.active').prev('li.paginate_button').trigger('click');
-			if ($('#example1 tr').length == 1) {
-				$('#send-mail').hide();
-			} else {
-				$('#send-mail').show();
-			}
-		}
-    });
-	
-
-    $('.date').data("DateTimePicker").minDate(moment().subtract(1, 'days').millisecond(0).second(0).minute(0).hour(0));
-    $('.date').data("DateTimePicker").maxDate(moment()).daysOfWeekDisabled([0, 6]);
+    $('.date').data("DateTimePicker").minDate(moment().subtract(7, 'days').millisecond(0).second(0).minute(0).hour(0));
+    $('.date').data("DateTimePicker").daysOfWeekDisabled([0]);
+//    $('.date').data("DateTimePicker").maxDate(moment());
 });
 </script>
 @endpush
