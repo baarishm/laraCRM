@@ -322,14 +322,16 @@ class TimesheetsController extends Controller {
 
             if ($this->show_action) {
                 $output = '';
-                if (Module::hasAccess("Timesheets", "edit")) {
-                    $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/timesheets/' . $data->data[$i][0] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
-                }
+                if ($data->data[$i][count($this->custom_cols) - 1] != 'Mail Sent') {
+                    if (Module::hasAccess("Timesheets", "edit")) {
+                        $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/timesheets/' . $data->data[$i][0] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
+                    }
 
-                if (Module::hasAccess("Timesheets", "delete")) {
-                    $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.timesheets.destroy', $data->data[$i][0]], 'method' => 'delete', 'style' => 'display:inline', 'class' => 'delete']);
-                    $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
-                    $output .= Form::close();
+                    if (Module::hasAccess("Timesheets", "delete")) {
+                        $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.timesheets.destroy', $data->data[$i][0]], 'method' => 'delete', 'style' => 'display:inline', 'class' => 'delete']);
+                        $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
+                        $output .= Form::close();
+                    }
                 }
                 $data->data[$i][] = (string) $output;
             }
@@ -347,12 +349,13 @@ class TimesheetsController extends Controller {
     public function sendEmailToLeadsAndManagers(Request $request) {
         session(['task_removed' => '']);
         $re = DB::table('timesheets')
-                ->select([DB::raw('projects.name as project_name'), DB::raw('tasks.name as task_name'), DB::raw('employee_lead.email as lead_email'), DB::raw('employee_manager.email as manager_email'), DB::raw('timesheets.id as entry_id'), 'hours', 'minutes', 'date'])
+                ->select([DB::raw('projects.name as project_name'), DB::raw('tasks.name as task_name'), DB::raw('employee_lead.email as lead_email'), DB::raw('employee_manager.email as manager_email'), DB::raw('GROUP_CONCAT(timesheets.id) as entry_id'), DB::raw('SUM(((hours*60)+minutes)/60) as time'), 'date'])
                 ->whereRaw('date = "' . $_POST['date'] . '" and submitor_id = ' . Auth::user()->context_id . " and timesheets.deleted_at IS NULL")
                 ->leftJoin('projects', 'projects.id', '=', 'timesheets.project_id')
                 ->leftJoin('tasks', 'tasks.id', '=', 'timesheets.task_id')
                 ->leftJoin('employees as employee_lead', 'employee_lead.id', '=', 'timesheets.lead_id')
-                ->leftJoin('employees as employee_manager', 'employee_manager.id', '=', 'timesheets.manager_id');
+                ->leftJoin('employees as employee_manager', 'employee_manager.id', '=', 'timesheets.manager_id')
+                ->groupBy(['timesheets.project_id', 'timesheets.task_id']);
         if ($_POST['task_removed'] != '') {
             $re = $re->whereRaw('timesheets.id NOT IN (' . trim($_POST['task_removed'], ',') . ')');
         }
@@ -361,50 +364,53 @@ class TimesheetsController extends Controller {
         foreach ($records as $record) {
             $leads[$record->lead_email][$record->manager_email][] = $record;
         }
-
         //lead loop
-        foreach ($leads as $lead_email => $managers) {
-            //manager loop
-            foreach ($managers as $manager_email => $tasks) {
-                $html = 'Hello,'
-                        . '<br>'
-                        . 'Timesheet of ' . Auth::user()->name . ' is as under: <br><br>'
-                        . '<table border="1" style="width: 100%">'
-                        . '<thead>'
-                        . '<tr>'
-                        . '<th>Name</th>'
-                        . '<th>Project</th>'
-                        . '<th>Task</th>'
-                        . '<th>Time Spent</th>'
-                        . '<th>Date</th>'
-                        . '</tr>'
-                        . '</thead>';
-                //task loop
-                $entry_id_in_email = [];
-                foreach ($tasks as $task) {
-                    $html .= "<tr>"
-                            . "<td>" . Auth::user()->name . "</td>"
-                            . "<td>" . $task->project_name . "</td>"
-                            . "<td>" . $task->task_name . "</td>"
-                            . "<td>" . ($task->hours + ($task->minutes / 60)) . "</td>"
-                            . "<td>" . date("d M Y", strtotime($task->date)) . "</td>"
-                            . "</tr>";
-                    $entry_id_in_email[] = $task->entry_id;
-                }
-                $html .= "</table>";
-                $recipients['to'] = $lead_email;
-                $recipients['cc'] = $manager_email;
-                if (
-                        Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
-                            $m->to($recipients['to'])
-                                    ->cc($recipients['cc']) //need to add this recipent in mailgun
-                                    ->subject('Timesheet of ' . Auth::user()->name . '!');
-                        })) {
-                    DB::table('timesheets')->whereIn('id', $entry_id_in_email)->update(['mail_sent' => '1']);
-                }
-            }
-            echo "Mail sent successfully!";
+//        foreach ($leads as $lead_email => $managers) {
+        //manager loop
+//            foreach ($managers as $manager_email => $tasks) {
+        $html = 'Hello,'
+                . '<br>'
+                . 'Timesheet of ' . Auth::user()->name . ' is as under: <br><br>'
+                . '<table border="1" style="width: 100%">'
+                . '<thead>'
+                . '<tr>'
+                . '<th>Name</th>'
+                . '<th>Project</th>'
+                . '<th>Task</th>'
+                . '<th>Time Spent (in hrs)</th>'
+                . '<th>Date</th>'
+                . '</tr>'
+                . '</thead>';
+        //task loop
+//        $entry_id_in_email = [];
+        $entry_id_in_email = '';
+//            foreach ($tasks as $task) {
+        foreach ($records as $id => $task) {
+            $html .= "<tr>"
+                    . "<td>" . Auth::user()->name . "</td>"
+                    . "<td>" . $task->project_name . "</td>"
+                    . "<td>" . $task->task_name . "</td>"
+                    . "<td>" . $task->time . "</td>"
+                    . "<td>" . date("d M Y", strtotime($task->date)) . "</td>"
+                    . "</tr>";
+            $entry_id_in_email .= $task->entry_id . ",";
         }
+        $html .= "</table>";
+        $recipients['to'] = 'ashok.chand@ganitsoft.com';
+        $recipients['cc'] = ['rajesh.sharma@ganitsoft.com', 'varsha.mittal@ganitsoftech.com'];
+//            $recipients['to'] = $lead_email;
+//            $recipients['cc'] = $manager_email;
+        if (
+                Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
+                    $m->to($recipients['to'])
+                            ->cc($recipients['cc']) //need to add this recipent in mailgun
+                            ->subject('Timesheet of ' . Auth::user()->name . '!');
+                })) {
+            DB::table('timesheets')->whereIn('id', (explode(',', trim($entry_id_in_email, ','))))->update(['mail_sent' => '1']);
+        }
+//        }
+//        }
+        echo "Mail sent successfully!";
     }
 
     public function ajaxHoursWorked() {
