@@ -43,7 +43,7 @@ Team Leave Dashboard
                 $Approved=$leaveMasterRow->Approved;
                 @endphp
 
-                <tr id="ps">
+                <tr>
 
                     <td>{{$leaveMasterRow->Employees_name}}</td>
 
@@ -126,8 +126,6 @@ Team Leave Dashboard
 
                 }
             });
-            var element = $('#ps');
-            element.classList.add("mystyle");
             var vid = $(button).attr('data-id');
             $('[data-id=' + vid + ']').attr('disabled', 'disabled');
 
