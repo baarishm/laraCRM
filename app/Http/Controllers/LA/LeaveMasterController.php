@@ -126,7 +126,7 @@ class LeaveMasterController extends Controller {
 //	$leaveMaster->Approved=$request->get('Approved');
 
         if ($leaveMaster->save()) {
-            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
+//            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
         }
 
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been added');
@@ -157,7 +157,7 @@ class LeaveMasterController extends Controller {
 //	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
 
         if ($leaveMaster->save()) {
-            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
+//            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
         }
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been Update');
     }
