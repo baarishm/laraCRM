@@ -20,7 +20,7 @@ Edit Apply  Leave
             <div class="col-md-10 col-md-offset-1">
 
 
-                <form method="post" action="{{action('LA\LeaveMasterController@update', $leaveMaster - > id)}}">
+                <form method="post" action="{{action('LA\LeaveMasterController@update', $leaveMaster -> id)}}">
 
                     <input type="hidden" name="_token" value="{{ csrf_token()}}">
                     <input name="_method" type="hidden" value="PATCH">
@@ -28,29 +28,29 @@ Edit Apply  Leave
 
                         <div class="form-group col-md-4">
                             <label for="name">Employee Id:</label>
-                            <input type="text" class ="form-control" autocomplete="off" readonly="readonly" name="EmpId" value="{{$leaveMaster - > EmpId}}">
+                            <input type="text" class ="form-control" autocomplete="off" readonly="readonly" name="EmpId" value="{{$leaveMaster -> EmpId}}">
                         </div>
 
 
                         <div class="form-group col-md-4">
                             <label for="StartDate" class="control-label">Start Date:</label>
                             <input type="text" class="form-control " 
-                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="FromDate" required  readonly='true' value="{{$leaveMaster - > FromDate}}" />
+                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="FromDate" required  readonly='true' value="{{$leaveMaster -> FromDate}}" />
 
                         </div>
                         <div class="form-group col-md-4">
                             <label for="text" class="control-label">End Date:</label>
 
-                            <input type="text" class="form-control" id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="ToDate" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' value="{{$leaveMaster - > ToDate}}" />
+                            <input type="text" class="form-control" id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="ToDate" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' value="{{$leaveMaster -> ToDate}}" />
                         </div>
                         <div class="form-group col-md-4">
                             <label for="name">Number Of Days</label>
-                            <input type="text" class="form-control" name="NoOfDays" autocomplete="off" readonly="readonly" id="NoOfDays" value="{{$leaveMaster - > NoOfDays}}">
+                            <input type="text" class="form-control" name="NoOfDays" autocomplete="off" readonly="readonly" id="NoOfDays" value="{{$leaveMaster -> NoOfDays}}">
                         </div>
                         <div class="form-group col-md-4">
                             <label for="number">Leave Purpose</label>
 
-                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required value="{{$leaveMaster - > LeaveReason}}"> 
+                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required value="{{$leaveMaster -> LeaveReason}}"> 
                         </div>
                         <div class="form-group col-md-4">
                             <label>Leave Type</label>
