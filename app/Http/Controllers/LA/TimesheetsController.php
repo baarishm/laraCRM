@@ -322,14 +322,16 @@ class TimesheetsController extends Controller {
 
             if ($this->show_action) {
                 $output = '';
-                if (Module::hasAccess("Timesheets", "edit")) {
-                    $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/timesheets/' . $data->data[$i][0] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
-                }
+                if ($data->data[$i][count($this->custom_cols) - 1] != 'Mail Sent') {
+                    if (Module::hasAccess("Timesheets", "edit")) {
+                        $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/timesheets/' . $data->data[$i][0] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
+                    }
 
-                if (Module::hasAccess("Timesheets", "delete")) {
-                    $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.timesheets.destroy', $data->data[$i][0]], 'method' => 'delete', 'style' => 'display:inline', 'class' => 'delete']);
-                    $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
-                    $output .= Form::close();
+                    if (Module::hasAccess("Timesheets", "delete")) {
+                        $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.timesheets.destroy', $data->data[$i][0]], 'method' => 'delete', 'style' => 'display:inline', 'class' => 'delete']);
+                        $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
+                        $output .= Form::close();
+                    }
                 }
                 $data->data[$i][] = (string) $output;
             }
