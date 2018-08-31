@@ -30,7 +30,7 @@ Team Leave Dashboard
             <th>No Of Days</th>
             <th>Leave Type</th>
             <th>Purpose</th>
-            <th style="width: 103px; text-align:center;">Action</th>
+            <th style="width:155px; text-align:center;">Action</th>
             </thead>
             </tr>
 
@@ -63,8 +63,10 @@ Team Leave Dashboard
                         @elseif($Approved=='0')
                         <span class="text-danger">Rejected</span>
                         @else
-                        <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);"   >Approve</button>
+                        <div class="">
+                        <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);">Approve</button>
                         <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+                        </div>
                         @endif
 
 

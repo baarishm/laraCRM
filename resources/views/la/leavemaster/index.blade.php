@@ -73,10 +73,14 @@ Leave Dashboard
                     <td>Pending </td>
                     @endif
           
-                @if($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0')
+                @if($leaveMasterRow->Approved == '1') 
                 <td>
-                        <button type="button" class="btn" name="Approved" id="Approved" style="background: green" >done</button>
+                        <span  class="text-success">Approved</span>
                 </td>
+               @elseif($leaveMasterRow->Approved == '0')
+               
+                <td>
+                        <span   class="text-danger" >Rejected</span>
                         @else($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL')
                 <td class="text-center">
                 
