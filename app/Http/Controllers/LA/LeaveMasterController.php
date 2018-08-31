@@ -203,8 +203,8 @@ class LeaveMasterController extends Controller {
                 . "Regards,<br>"
                 . "Team Ganit Track Management";
 
-        $recipients['to'] = $lead_manager->lead_email;
-        $recipients['cc'] = $lead_manager->manager_email;
+        $recipients['to'] = ['ashok.chand@ganitsoft.com'];
+        $recipients['cc'] = [$lead_manager->lead_email, $lead_manager->manager_email];
 
         Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
             $m->to($recipients['to'])

@@ -99,14 +99,18 @@ class EmployeesController extends Controller {
             $insert_data = $request->all();
             $insert_data['date_hire'] = date('Y-m-d', strtotime($request->date_hire));
             $insert_data['date_birth'] = date('Y-m-d', strtotime($request->date_birth));
+            $insert_data['is_confirmed'] = ($request->is_confirmed) ? 1 : 0;
+            $insert_data['name'] = ucwords($request->name);
+            unset($insert_data['role']);
+            unset($insert_data['is_confirmed_hidden']);
             // Create Employee
-            $employee_id = Module::insert("Employees", $insert_data);
+            $employee = Employee::create($insert_data);
             // Create User
             $user = User::create([
                         'name' => $request->name,
                         'email' => $request->email,
                         'password' => bcrypt('123456'),
-                        'context_id' => $employee_id,
+                        'context_id' => $employee->id,
                         'type' => "Employee",
             ]);
 
@@ -209,15 +213,18 @@ class EmployeesController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
                 ;
             }
-            
+
             $update_data = $request->all();
             $update_data['date_hire'] = date('Y-m-d', strtotime($request->date_hire));
             $update_data['date_birth'] = date('Y-m-d', strtotime($request->date_birth));
-
-            $insert_id = Module::updateRow("Employees", $update_data, $id);
+            $update_data['is_confirmed'] = ($request->is_confirmed) ? 1 : 0;
+            $update_data['name'] = ucwords($request->name);
+            unset($update_data['role']);
+            unset($update_data['is_confirmed_hidden']);
+            $insert_id = Employee::find($id)->update($update_data);
 
             // Update User
-            $user = User::where('context_id', $insert_id)->first();
+            $user = User::where('context_id', $id)->first();
             $user->name = $request->name;
             $user->email = $request->email;
             $user->save();
