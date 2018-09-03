@@ -11,6 +11,11 @@ Leave Dashboard
         <p>{{ \Session::get('success') }}</p>
     </div><br />
 
+    @elseif (\Session::has('error'))
+    <div class="alert alert-error">
+        <p>{{ \Session::get('error') }}</p>
+    </div><br />
+
     @endif
     <div class="row">
 

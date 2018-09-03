@@ -49,7 +49,7 @@ class LeaveMasterController extends Controller {
 
         return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role]);
     }
-    
+
     public function teamMemberIndex(Request $request) {
 
         $role = Employee::employeeRole();
@@ -107,13 +107,10 @@ class LeaveMasterController extends Controller {
             'LeaveReason' => 'required',
         ]);
 
-
         $leaveMaster = new LeaveMaster();
         $leaveMaster->EmpId = $request->get('EmpId');
-
         $start_date = $request->get('FromDate');
         $end_date = $request->get('ToDate');
-
         $FromDate = date_create($request->get('FromDate'));
         $FromDate = date_format($FromDate, "Y-m-d");
         $leaveMaster->FromDate = ($FromDate);
@@ -124,6 +121,20 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
 //	$leaveMaster->Approved=$request->get('Approved');
+        
+        //check existance        
+        $LeaveRecord = LeaveMaster::where('EmpId', $request->get('EmpId'))
+                ->where('FromDate', $FromDate)
+                ->where('ToDate', $ToDate)
+                ->whereNull('Approved')
+                ->where('withdraw', '')
+                ->get();
+
+        $LeaveRecordExists = $LeaveRecord->count();
+
+        if ($LeaveRecordExists > 0) {
+            return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error','You have already applied leave for these dates.');
+        }
 
         if ($leaveMaster->save()) {
 //            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
