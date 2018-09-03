@@ -110,7 +110,7 @@ $(function () {
             $.ajax({
                 method: "POST",
                 url: "{{ url('/hoursWorked') }}",
-                data: {date: $('.date>input').val(), task_removed: {{ $timesheet->id}}, _token : "{{ csrf_token()}}"}
+                data: {type: 'day', date: $('.date>input').val(), task_removed: {{ $timesheet->id}}, _token : "{{ csrf_token()}}"}
             }).success(function (totalHours) {
                 if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val()/60)) > 24) {
                     swal("Number of working hours for a day cannot exceed more than 24 hrs!");

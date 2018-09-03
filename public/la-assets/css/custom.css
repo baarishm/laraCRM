@@ -56,7 +56,51 @@ div.overlay{
     100% { transform: rotate(360deg); }
 }
 
+/*Timesheet Add page*/
+
+input[type="search"].form-control.input-sm{
+    float : right;
+    margin:5px;
+    border:none;
+    border-bottom: 1px solid #9a9999;
+    font-weight: 400;
+}
+
+table#entry_table{
+    width : 100%;
+}
+
+table#entry_table thead.entry-header th{
+    border: none;
+    padding: 10px;
+    text-align: center;
+}
+
+table#entry_table tr.entry-row td{
+    padding: 10px;
+}
+
+table#entry_table tr.recent-entry td{
+    padding: 12px;
+}
+
+table#entry_table tr.recent-entry td button.update-entry{
+    margin-right: 5px;
+}
+
+div.dropdown-menu tr td{
+    padding : 2px !important;
+}
+
+/* End Timesheet Add */
+.fa{
+    font-size : 14px;
+}
 
 .fa-times{
     font-size : 18px;
+}
+
+.required{
+    color : red;
 }
