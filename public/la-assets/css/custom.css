@@ -104,3 +104,12 @@ div.dropdown-menu tr td{
 .required{
     color : red;
 }
+
+.fa-refresh{
+    margin-top: 15px; 
+    color: skyblue;
+    font-size: 20px;
+}
+.fa-refresh:hover{
+    color: #7bb4cc;
+}
