@@ -42,7 +42,7 @@ Apply For Leave
                             <!--            <label for="StartDate" class="control-label">Start Date:</label>-->
                             <span for="StartDate" class="control-label" >Start Date*</span>
 
-                            <input type="text" class="form-control" 
+                            <input type="text" value="{{ old('FromDate')}}" class="form-control" 
                                    id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="From" required  readonly='true' />
                         </div>
 
@@ -51,20 +51,20 @@ Apply For Leave
                             <!--            <label for="text" class="control-label">End Date:</label>-->
                             <span for="text" class="control-label">End Date*</span>
 
-                            <input type="text" class="form-control " id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="To" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' />	
+                            <input type="text" value="{{ old('ToDate')}}" class="form-control " id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="To" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' />	
 
                         </div>
 
 
                         <div class="form-group col-md-3">
                             <label for="Name">Number Of Days</label>
-                            <input type="text" class="form-control" readonly="readonly" name="NoOfDays" id="NoOfDays" autocomplete="off" >
+                            <input type="text" value="{{ old('NoOfDays')}}" class="form-control" readonly="readonly" name="NoOfDays" id="NoOfDays" autocomplete="off" >
                             <!--<div style="margin:1%;" > </div> -->
                         </div>
                         <div class="form-group col-md-3">
                             <label for="Number">Leave Purpose</label>
 
-                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" required  >   
+                            <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" required  >   
                         </div>
                         <div class="form-group col-md-3">
                             <label>Leave Type</label>
@@ -97,52 +97,52 @@ Apply For Leave
 <script type="text/javascript">
     $(document).ready(function () {
 
-         
+
 
         // To calulate difference b/w two dates
         function CalculateDiff(isstart)
-        {       
+        {
             if ($("#datepicker").val() != "" && $("#datepickerto").val() != "") {
                 var start = $("#datepicker").datepicker("getDate");
                 var end = $("#datepickerto").datepicker("getDate");
-                
-                if (end < start)
-        return 0;
-    
-    // Calculate days between dates
-    var millisecondsPerDay = 86400 * 1000; // Day in milliseconds
-    start.setHours(0,0,0,1);  // Start just after midnight
-    end.setHours(23,59,59,999);  // End just before midnight
-    var diff = end - start;  // Milliseconds between datetime objects    
-    var days = Math.ceil(diff / millisecondsPerDay);
-    
-    // Subtract two weekend days for every week in between
-    var weeks = Math.floor(days / 7);
-    days = days - (weeks * 2);
 
-    // Handle special cases
-    var start = start.getDay();
-    var end = end.getDay();
-    
-    // Remove weekend not previously removed.   
-    if (start - end > 1)         
-        days = days - 2;      
-    
-    // Remove start day if span starts on Sunday but ends before Saturday
-    if (start == 0 && end != 6)
-        days = days - 1  
-            
-    // Remove end day if span ends on Saturday but starts after Sunday
-    if (end == 6 && start != 0)
-        days = days - 1  
-    
-       $("#NoOfDays").val(days);    
+                if (end < start)
+                    return 0;
+
+                // Calculate days between dates
+                var millisecondsPerDay = 86400 * 1000; // Day in milliseconds
+                start.setHours(0, 0, 0, 1);  // Start just after midnight
+                end.setHours(23, 59, 59, 999);  // End just before midnight
+                var diff = end - start;  // Milliseconds between datetime objects    
+                var days = Math.ceil(diff / millisecondsPerDay);
+
+                // Subtract two weekend days for every week in between
+                var weeks = Math.floor(days / 7);
+                days = days - (weeks * 2);
+
+                // Handle special cases
+                var start = start.getDay();
+                var end = end.getDay();
+
+                // Remove weekend not previously removed.   
+                if (start - end > 1)
+                    days = days - 2;
+
+                // Remove start day if span starts on Sunday but ends before Saturday
+                if (start == 0 && end != 6)
+                    days = days - 1
+
+                // Remove end day if span ends on Saturday but starts after Sunday
+                if (end == 6 && start != 0)
+                    days = days - 1
+
+                $("#NoOfDays").val(days);
                 // alert(Math.round(days));
 
             }
-        } 
-        
-        
+        }
+
+
 //        function CalculateDiff(isstart)
 //        {
 //            if ($("#datepicker").val() != "" && $("#datepickerto").val() != "") {
@@ -158,19 +158,18 @@ Apply For Leave
         $("#datepicker").datepicker({
             autoclose: true,
             format: 'd M yyyy',
-             startDate: '-20d',
-             endDate: '+60d',
-               todayHighlight: 'true',
-            
+            startDate: '-20d',
+            endDate: '+60d',
+            todayHighlight: 'true',
 
         }).on('changeDate', function (e) {
-             $("#datepickerto").val('');
-             $("#NoOfDays").val('');
-              
-           $("#datepickerto").datepicker('setStartDate', e.date);
-          
-           
-           CalculateDiff(true);
+            $("#datepickerto").val('');
+            $("#NoOfDays").val('');
+
+            $("#datepickerto").datepicker('setStartDate', e.date);
+
+
+            CalculateDiff(true);
         });
         $("#datepickerto").datepicker({
 
@@ -178,9 +177,8 @@ Apply For Leave
             format: 'd M yyyy',
             todayHighlight: 'true',
 
-
         }).on('changeDate', function () {
-           
+
             CalculateDiff(false);
         });
     }
