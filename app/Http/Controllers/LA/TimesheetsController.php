@@ -19,6 +19,7 @@ use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Timesheet;
 use App\Models\Employee;
+use App\Models\Project;
 use Mail;
 
 class TimesheetsController extends Controller {
@@ -116,6 +117,7 @@ class TimesheetsController extends Controller {
                 'leads' => $forward['leads'],
                 'managers' => $forward['managers'],
                 'tasks' => $forward['tasks'],
+                'projects' => Project::whereNull('deleted_at')->get(),
                 'records' => $forward['notSubmitted'],
                 'task_removed' => '',
             ]);
@@ -170,9 +172,15 @@ class TimesheetsController extends Controller {
 
             $insert_data['submitor_id'] = base64_decode(base64_decode($request->submitor_id));
             $insert_data['date'] = date('Y-m-d', strtotime($request->date));
-            $insert_id = Timesheet::create($insert_data);
+
+            $insert_row = Timesheet::create($insert_data);
 
             $forward = Timesheet::leads_managers_tasks_notSubmitted();
+
+            if ($request->ajax()) {
+                return $insert_row->id;
+            }
+
             return view('la.timesheets.add', [
                 'module' => $module,
                 'leads' => $forward['leads'],
@@ -276,7 +284,9 @@ class TimesheetsController extends Controller {
             $update_data['submitor_id'] = base64_decode(base64_decode($request->submitor_id));
             $update_data['date'] = date('Y-m-d', strtotime($request->date));
             $update_id = Timesheet::find($id)->update($update_data);
-
+            if ($request->ajax()) {
+                return $id;
+            }
             return redirect()->route(config('laraadmin.adminRoute') . '.timesheets.index');
         } else {
             return redirect(config('laraadmin.adminRoute') . "/");
@@ -289,10 +299,14 @@ class TimesheetsController extends Controller {
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id) {
+    public function destroy($id, Request $request) {
         if (Module::hasAccess("Timesheets", "delete")) {
             Timesheet::find($id)->delete();
-
+            
+            if($request->ajax()){
+                return "Deleted!";
+            }
+            
             // Redirecting to index() method
             return redirect()->route(config('laraadmin.adminRoute') . '.timesheets.index');
         } else {
@@ -316,7 +330,7 @@ class TimesheetsController extends Controller {
         }
 
         $role = Employee::employeeRole();
-        $this->custom_cols = [($role != 'engineer') ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Mail Sent' ELSE 'Pending' end) as mail_sent")];
+        $this->custom_cols = [($role != 'engineer') ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Mail Sent' ELSE 'Submitted' end) as mail_sent")];
 
         $where = 'submitor_id = ' . Auth::user()->context_id;
         if ($request->teamMember) {
@@ -466,7 +480,7 @@ class TimesheetsController extends Controller {
                 Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
                     $m->to($recipients['to'])
                             ->cc($recipients['cc']) //need to add this recipent in mailgun
-                            ->subject('Timesheet of ' . Auth::user()->name );
+                            ->subject('Timesheet of ' . Auth::user()->name);
                 })) {
             DB::table('timesheets')->whereIn('id', (explode(',', trim($entry_id_in_email, ','))))->update(['mail_sent' => '1']);
         }

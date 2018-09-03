@@ -6,7 +6,7 @@ $('document').ready(function () {
     });
     if ($('.date').length > 0) {
         $('.date').each(function () {
-            $(this).data('DateTimePicker').format('DD MMM YYYY').widgetPositioning({vertical: 'top'});
+            $(this).data('DateTimePicker').format('DD MMM YYYY').widgetPositioning({vertical: 'auto'});
             var date = new Date();
             var child_input = $(this).find('input');
             if (child_input.val() != '') {
@@ -115,4 +115,13 @@ Date.prototype.toShortFormat = function () {
     var year = this.getFullYear();
 
     return "" + day + " " + month_names[month_index] + " " + year;
+}
+
+function validateFields(el) {
+  var isValid = true;
+  el.each(function() {
+    if ( $(this).val() === '' )
+        isValid = false;
+  });
+  return isValid;
 }
