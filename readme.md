@@ -57,3 +57,9 @@ Created by following http://laraadmin.com/docs/1.0/installation
                 <add accessType="Allow" users="?" />
             </authorization>
         </security>
+
+- For excel export
+    * composer required yajra/laravel-datables-oracle : "~6.29.3"
+    * composer required phpoffice/phpspreadsheet
+    * composer required maatwebsite/excel
+    * php artisan vendor:publish
