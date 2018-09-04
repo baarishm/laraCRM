@@ -106,6 +106,18 @@
 				<label>Default Email Address</label>
 				<input type="text" class="form-control" placeholder="To send emails to others via SMTP" maxlength="100" name="default_email" value="{{$configs->default_email}}">
 			</div>
+			<div class="form-group">
+				<label>Number of days applicable for leave before Today's Date</label>
+				<input type="number" class="form-control" placeholder="Enter number of days" min="1" max="150" name="before_days_leave" value="{{$configs->before_days_leave}}">
+			</div>
+			<div class="form-group">
+				<label>Number of days applicable for leave after Today's Date</label>
+				<input type="number" class="form-control" placeholder="Enter number of days" min="1" max="150" name="after_days_leave" value="{{$configs->after_days_leave}}">
+			</div>
+			<div class="form-group">
+				<label>Number of leaves at a time</label>
+				<input type="text" class="form-control" placeholder="To send emails to others via SMTP" mmin="1" axl="90" name="number_of_leaves" value="{{$configs->number_of_leaves}}">
+			</div>
 		</div><!-- /.box-body -->
 		<div class="box-footer">
 			<button type="submit" class="btn btn-primary">Save</button>

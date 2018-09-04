@@ -91,6 +91,17 @@ class RolesController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
+            $row = Role::where('name', $request->name)
+                    ->orWhere('display_name', $request->display_name)
+                    ->onlyTrashed()
+                    ->get();
+
+            $Exists = $row->count();
+            
+            if ($Exists > 0) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.roles.create')->withErrors(['message' => 'Role with this name or display name already exists but is soft deleted. Please contact Admin to revoke it.']);
+            }
+
             $request->name = str_replace(" ", "_", strtoupper(trim($request->name)));
 
             $insert_id = Module::insert("Roles", $request);
