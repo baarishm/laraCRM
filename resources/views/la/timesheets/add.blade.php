@@ -97,16 +97,18 @@ $(document).ready(function () {
     //form submition
     $(document).on('click', 'button.submit-form', function () {
         var send_data = {
+            _token: "{{ csrf_token() }}",
             project_id: $('select#project_id').val(),
             task_id: $('select#task_id').val(),
             date: $('#date').val(),
             comments: $('#comments').val(),
             hours: $('#hours').val(),
             minutes: $('#minutes').val(),
-            _token: "{{ csrf_token() }}",
-            submitor_id: $('#submitor_id').val()
+            submitor_id: $('#submitor_id').val(),
         };
         var saved_data = {
+            _method: "POST",
+            _token: "{{ csrf_token() }}",
             project_id: $('select#project_id').val(),
             task_id: $('select#task_id').val(),
             project_name: $('select#project_id option:selected').attr('data-name'),
@@ -114,8 +116,7 @@ $(document).ready(function () {
             date: $('#date').val(),
             comments: $('#comments').val(),
             hours: $('#hours').val(),
-            minutes: $('#minutes').val(),
-            _token: "{{ csrf_token() }}"
+            minutes: $('#minutes').val()
         };
         var el = $(this);
 
@@ -123,9 +124,10 @@ $(document).ready(function () {
             var url = "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}";
             var method = "POST";
             if (el.hasClass('update-entry-db')) {
-                url = "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}" + "/" + el.attr('data-value');
+                url = "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}" + "/" + el.attr('data-value') + "?_method=PUT";
                 method = "PUT";
             }
+            saved_data['_method'] = method;
             if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
                 swal("Number of hours for a task cannot exceed more than 24 hrs!");
                 return false;
@@ -143,7 +145,7 @@ $(document).ready(function () {
                             return false;
                         } else {
                             $.ajax({
-                                method: method,
+                                method: "POST",
                                 url: url,
                                 data: send_data,
                                 success: function (id) {
@@ -159,7 +161,7 @@ $(document).ready(function () {
                 }
             }
         } else if (el.hasClass('update-entry')) {
-            if($('tr.entry-row button.submit-form').hasClass('update-entry-db')){
+            if ($('tr.entry-row button.submit-form').hasClass('update-entry-db')) {
                 swal('Submit last row first!');
                 return false;
             }
@@ -167,9 +169,9 @@ $(document).ready(function () {
         } else if (el.hasClass('delete-entry')) {
             var parent_row = el.parents('tr.recent-entry');
             $.ajax({
-                method: 'DELETE',
+                method: 'POST',
                 url: "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}" + "/" + el.attr('data-value'),
-                data: {_token: "{{ csrf_token() }}", id: el.attr('data-value'), ajax: true},
+                data: {_token: "{{ csrf_token() }}", id: el.attr('data-value'), ajax: true, _method: 'DELETE'},
                 success: function () {
                     parent_row.remove();
                     swal('Row deleted successfully!');
