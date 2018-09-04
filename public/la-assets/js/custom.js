@@ -1,7 +1,7 @@
 $('document').ready(function () {
 
     $('#date_search').datetimepicker({
-        format: 'Y-MM-DD',
+        format: 'DD MMM YYYY',
         minDate: moment('2016-08-29')
     });
     if ($('.date').length > 0) {
