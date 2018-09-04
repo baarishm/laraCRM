@@ -133,6 +133,7 @@ $(document).ready(function () {
                 return false;
             } else {
                 if (validateFields($('[required]'))) {
+                    $('div.overlay').removeClass('hide');
                     $.ajax({
                         method: "POST",
                         url: "{{ url('/hoursWorked') }}",
@@ -141,6 +142,7 @@ $(document).ready(function () {
                         condition = (parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val() / 60));
 
                         if (condition > 24) {
+                            $('div.overlay').addClass('hide');
                             swal("Number of working hours for a day cannot exceed more than 24 hrs!");
                             return false;
                         } else {
@@ -152,6 +154,7 @@ $(document).ready(function () {
                                     update_row(saved_data, id, removeable_options);
                                     $('tr.entry-row').find('.submit-form').addClass('add-entry').removeClass('update-entry-db').attr('data-value', '');
                                     $('.add-entry').find('i').removeClass('fa-edit').addClass('fa-plus');
+                                    $('div.overlay').addClass('hide');
                                 }
                             });
                         }
@@ -168,11 +171,13 @@ $(document).ready(function () {
             show_update_row(el);
         } else if (el.hasClass('delete-entry')) {
             var parent_row = el.parents('tr.recent-entry');
+            $('div.overlay').removeClass('hide');
             $.ajax({
                 method: 'POST',
                 url: "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}" + "/" + el.attr('data-value'),
                 data: {_token: "{{ csrf_token() }}", id: el.attr('data-value'), ajax: true, _method: 'DELETE'},
                 success: function () {
+                    $('div.overlay').addClass('hide');
                     parent_row.remove();
                     swal('Row deleted successfully!');
                 }
