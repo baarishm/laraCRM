@@ -326,7 +326,11 @@ class TimesheetsController extends Controller {
         }
         $date = '';
         if ($request->date_search != '') {
-            $date = ' timesheets.date like "%' . $request->date_search . '%"';
+            $date = ' timesheets.date like "%' . date('Y-m-d', strtotime($request->date_search)) . '%"';
+        }
+        $week = ' timesheets.date >= "' . date('Y-m-d', strtotime('last Monday')) . '" and timesheets.date <= "'. date('Y-m-d', strtotime('last Saturday')) . '"';
+        if ($request->week_search != '') {
+            $week = ' timesheets.date >= "' . date('Y-m-d',strtotime("Monday", strtotime('this week '.$request->week_search.' week'))) . '" and timesheets.date <= "'. date('Y-m-d',strtotime("Saturday", strtotime('this week '.$request->week_search.' week'))) . '"';
         }
 
         $role = Employee::employeeRole();
@@ -365,7 +369,11 @@ class TimesheetsController extends Controller {
         if ($date != "") {
             $value->whereRaw($date);
         }
+        if ($week != "") {
+            $value->whereRaw($week);
+        }
         $values = $value->orderBy('timesheets.date', 'desc');
+        
         $out = Datatables::of($values)->make();
         $data = $out->getData();
         $col_arr = [($role != 'engineer') ? 'submitor_id' : 'id', 'project_id', 'task_id', 'date', 'hours', 'mail_sent'];
@@ -524,7 +532,7 @@ class TimesheetsController extends Controller {
                         ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
                         ->leftJoin('tasks', 'timesheets.task_id', '=', 'tasks.id')
                         ->leftJoin('employees', 'timesheets.submitor_id', '=', 'employees.id')
-                        ->groupBy('date', 'timesheets.submitor_id','timesheets.project_id', 'timesheets.task_id')
+                        ->groupBy('date', 'timesheets.submitor_id', 'timesheets.project_id', 'timesheets.task_id')
                         ->orderBy(DB::raw("STR_TO_DATE(date,'%Y-%m-%d')"), 'desc')
                         ->get()->toArray();
 
