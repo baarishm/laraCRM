@@ -302,11 +302,11 @@ class TimesheetsController extends Controller {
     public function destroy($id, Request $request) {
         if (Module::hasAccess("Timesheets", "delete")) {
             Timesheet::find($id)->delete();
-            
-            if($request->ajax()){
+
+            if ($request->ajax()) {
                 return "Deleted!";
             }
-            
+
             // Redirecting to index() method
             return redirect()->route(config('laraadmin.adminRoute') . '.timesheets.index');
         } else {
@@ -407,6 +407,9 @@ class TimesheetsController extends Controller {
         return $out;
     }
 
+    /**
+     * Export timesheet function
+     */
     public function downloadTimesheet() {
         return view('la.timesheets.downloadTimesheet');
     }
@@ -507,9 +510,35 @@ class TimesheetsController extends Controller {
         return json_encode(!empty($date_array) ? $date_array : '');
     }
 
-    public function ajaxExportTimeSheetToAuthority() {
+    /** Excel Export of timesheet
+     * @param request $request Inputs from ajax
+     * @return file a file downloaded
+     * @author Varsha Mittal <varsha.mittal@ganitsoftec.com>
+     */
+    public function ajaxExportTimeSheetToAuthority(Request $request) {
         //code to export excel
-        return true;
+        $sheet_data = Timesheet::
+                        select([DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
+                        ->where('date', '>=', date('Y-m-d', strtotime($request->start_date)))
+                        ->where('date', '<=', date('Y-m-d', strtotime($request->end_date)))
+                        ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
+                        ->leftJoin('tasks', 'timesheets.task_id', '=', 'tasks.id')
+                        ->leftJoin('employees', 'timesheets.submitor_id', '=', 'employees.id')
+                        ->groupBy('date','timesheets.project_id', 'timesheets.task_id', 'timesheets.submitor_id')
+                        ->orderBy(DB::raw("STR_TO_DATE(date,'%Y-%m-%d')"), 'desc')
+                        ->get()->toArray();
+
+        $file = \Excel::create('Timesheet_' . date('d M Y'), function($excel) use ($sheet_data) {
+                    $excel->sheet('Timesheets', function($sheet) use ($sheet_data) {
+                        $sheet->fromArray($sheet_data);
+                    });
+                });
+        $file = $file->string('xlsx');
+        $response = array(
+            'name' => 'Timesheet_' . date('d M Y'), //no extention needed
+            'file' => "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," . base64_encode($file) //mime type of used format
+        );
+        return response()->json($response);
     }
 
     /* Ended Ajax Functions */
