@@ -9,6 +9,7 @@ use App\Models\Employee;
 use Auth;
 use DB;
 use Mail;
+use Dwij\Laraadmin\Models\LAConfigs;
 
 class LeaveMasterController extends Controller {
 
@@ -86,7 +87,7 @@ class LeaveMasterController extends Controller {
         $leave_types = DB::table('leave_types')
                 ->whereNull('deleted_at')
                 ->get();
-        return view('la.leavemaster.create', ['leave_types' => $leave_types]);
+        return view('la.leavemaster.create', ['leave_types' => $leave_types, 'before_days' => LAConfigs::getByKey('before_days_leave'), 'after_days' => LAConfigs::getByKey('after_days_leave'), 'number_of_leaves' => LAConfigs::getByKey('number_of_leaves')]);
     }
 
     public function show(Request $request, $id) {

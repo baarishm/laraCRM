@@ -125,9 +125,9 @@
                 <!-- Menu Body -->
                 @role("SUPER_ADMIN")
                 <li class="user-body">
-                    <div class="col-xs-6 text-center mb10">
+<!--                    <div class="col-xs-6 text-center mb10">
                         <a href="{{ url(config('laraadmin.adminRoute') . '/lacodeeditor') }}"><i class="fa fa-code"></i> <span>Editor</span></a>
-                    </div>
+                    </div>-->
                     <div class="col-xs-6 text-center mb10">
                         <a href="{{ url(config('laraadmin.adminRoute') . '/modules') }}"><i class="fa fa-cubes"></i> <span>Modules</span></a>
                     </div>
@@ -137,9 +137,9 @@
                     <div class="col-xs-6 text-center mb10">
                         <a href="{{ url(config('laraadmin.adminRoute') . '/la_configs') }}"><i class="fa fa-cogs"></i> <span>Configure</span></a>
                     </div>
-                    <div class="col-xs-6 text-center">
+<!--                    <div class="col-xs-6 text-center">
                         <a href="{{ url(config('laraadmin.adminRoute') . '/backups') }}"><i class="fa fa-hdd-o"></i> <span>Backups</span></a>
-                    </div>
+                    </div>-->
                 </li>
                 @endrole
                 <!-- Menu Footer-->
