@@ -1,7 +1,7 @@
 $('document').ready(function () {
 
     $('#date_search').datetimepicker({
-        format: 'Y-MM-DD',
+        format: 'DD MMM YYYY',
         minDate: moment('2016-08-29')
     });
     if ($('.date').length > 0) {
@@ -19,9 +19,12 @@ $('document').ready(function () {
             });
             if (child_input.attr('name') == 'start_date' || child_input.attr('name') == 'end_date') {
                 $(this).on('dp.change', function (e) {
-                    if (new Date($('form input[name="start_date"]').val()) > new Date($('form input[name="end_date"]').val())) {
-                        swal('Start date has to be smaller than end date!');
-                        child_input.val('');
+                    var start_date = $('input[name="start_date"]').val();
+                    if (start_date != '') {
+                        $('[name="end_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date(start_date)));
+                    }
+                    if (new Date($('input[name="start_date"]').val()) > new Date($('input[name="end_date"]').val())) {
+                        $('input[name="end_date"]').val('');
                     }
                 });
             }
@@ -118,10 +121,10 @@ Date.prototype.toShortFormat = function () {
 }
 
 function validateFields(el) {
-  var isValid = true;
-  el.each(function() {
-    if ( $(this).val() === '' )
-        isValid = false;
-  });
-  return isValid;
+    var isValid = true;
+    el.each(function () {
+        if ($(this).val() === '')
+            isValid = false;
+    });
+    return isValid;
 }

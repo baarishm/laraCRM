@@ -135,7 +135,13 @@ Apply For Leave
                 // Remove end day if span ends on Saturday but starts after Sunday
                 if (end == 6 && start != 0)
                     days = days - 1
-
+                if(days > '{{ $number_of_leaves }}'){
+                    swal('You cannot take more than {{ $number_of_leaves }} leaves at a time!');
+                    $('button[type="submit"]').attr('disabled', true);
+                }
+                else{
+                    $('button[type="submit"]').attr('disabled', false);
+                }
                 $("#NoOfDays").val(days);
                 // alert(Math.round(days));
 
@@ -158,8 +164,8 @@ Apply For Leave
         $("#datepicker").datepicker({
             autoclose: true,
             format: 'd M yyyy',
-            startDate: '-20d',
-            endDate: '+60d',
+            startDate: '-{{ $before_days }}d',
+            endDate: '+{{ $after_days }}d',
             todayHighlight: 'true',
 
         }).on('changeDate', function (e) {

@@ -26,7 +26,7 @@
     <div class="box-body">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                {!! Form::open(['action' => 'LA\LeadsController@store', 'id' => 'lead-add-form']) !!}
+                {!! Form::open(['action' => 'LA\ManagersController@store', 'id' => 'lead-add-form']) !!}
                 @la_form($module)
 
                 {{--
