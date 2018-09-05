@@ -171,10 +171,7 @@ Apply For Leave
         }).on('changeDate', function (e) {
             $("#datepickerto").val('');
             $("#NoOfDays").val('');
-
-            $("#datepickerto").datepicker('setStartDate', e.date);
-
-
+            $("#datepickerto").datepicker('setStartDate', e.date).datepicker("setDate", e.date );
             CalculateDiff(true);
         });
         $("#datepickerto").datepicker({
