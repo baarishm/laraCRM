@@ -190,11 +190,11 @@ class LeadsController extends Controller {
 
             $row = Lead::where('employee_id', $request->employee_id)
                     ->withTrashed()
-                    ->get();
+                    ->pluck('id');
 
             $Exists = $row->count();
 
-            if ($Exists > 0) {
+            if ($Exists > 0 && !in_array($id, $row->toArray())) {
                 return redirect()->route(config('laraadmin.adminRoute') . '.leads.edit', ['id' => $id])->withErrors(['message' => 'Lead already exists. Please check or contact Admin to revoke it.']);
             }
 
