@@ -170,7 +170,6 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
 //	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
-        
         //check
         $LeaveRecord = LeaveMaster::where('EmpId', $request->get('EmpId'))
                 ->where('FromDate', $FromDate)
@@ -204,6 +203,13 @@ class LeaveMasterController extends Controller {
             $update_field['RejectedBy'] = Auth::user()->context_id;
         }
         $leavemaster = DB::table('leavemaster')->where('id', $_GET['id'])->update($update_field);
+        if ($leavemaster->approved && $leavemaster->ApprovedBy != '') {
+            $leavemaster = DB::table('employees')->where('id', $leavemaster->EmpId)->decrement('available_leaves', $_GET['days']);
+        }
+        else if (!$leavemaster->approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
+            $leavemaster = DB::table('employees')->where('id', $leavemaster->EmpId)->increment('available_leaves', $_GET['days']);
+        }
+        
         return "true";
     }
 
@@ -244,6 +250,7 @@ class LeaveMasterController extends Controller {
     public function Teamindex(Request $request) {
         $role = Employee::employeeRole();
         $where = 'employees.deleted_at IS NULL ';
+        $view = 'Manager_index';
         if ($role == "manager" || $role == "lead") {
             //manager  
             $engineersUnder = Employee::getEngineersUnder(($role == "manager") ? "Manager" : "Lead");
@@ -251,10 +258,8 @@ class LeaveMasterController extends Controller {
                 $where .= " and EmpId IN( " . $engineersUnder . " )";
             else
                 $where .= " and EmpId IN( '' )";
-            $view = 'Manager_index';
         } else {
             //other users
-            $view = 'Manager_index';
             $where .= 'and leavemaster.EmpId = ' . Auth::user()->context_id;
         }
 
@@ -333,7 +338,7 @@ class LeaveMasterController extends Controller {
 
         return json_encode(['html' => $html, 'day' => $request->date]);
     }
-    
+
     /**
      * Withdraw a Leave
      */
@@ -341,6 +346,7 @@ class LeaveMasterController extends Controller {
         DB::table('leavemaster')->where('id', $request->id)->update(['withdraw' => 1]);
         return 'withdrawn';
     }
+
 }
 
 ?>

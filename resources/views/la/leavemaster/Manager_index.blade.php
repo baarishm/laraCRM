@@ -70,8 +70,12 @@ Team Leave Dashboard
                         @else
                        
                         <div class="">
-                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);">Approve</button>
-                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+                            @if($Approved=='0' || $Approved=='')
+                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" data-days='{{{{$leaveMasterRow->NoOfDays}}}}'>Approve</button>
+                            @endif
+                            @if($Approved=='1' || $Approved=='')
+                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" data-days='{{{{$leaveMasterRow->NoOfDays}}}}'>Reject</button> 
+                            @endif
                         </div>
                       
                         @endif
@@ -129,7 +133,7 @@ Team Leave Dashboard
             $.ajax({
                 url: "{{ url('/approveLeave') }}",
                 type: 'GET',
-                data: {'approved': approved, 'id': $(button).attr('data-id')},
+                data: {'approved': approved, 'id': $(button).attr('data-id'), 'days' : $(button).attr('data-days')},
                 success: function (data) {
                     swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
                
