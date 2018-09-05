@@ -1,11 +1,25 @@
 $('document').ready(function () {
+    //hide overlay
     $('div.overlay').addClass('hide');
+
+    //date search
     $('#date_search').datetimepicker({
         format: 'DD MMM YYYY',
         minDate: moment('2016-08-29')
     });
+    //stop keyboard entry
+    $('#date_search').on('paste keydown', function (e) {
+        var charCode = (e.which) ? e.which : e.keyCode;
+        if(charCode != 8){
+            e.preventDefault();
+            return false;
+        }
+    });
+
+    //date inputs
     if ($('.date').length > 0) {
         $('.date').each(function () {
+            //show view till year
             $(this).on('dp.show dp.update', function () {
                 $(".datepicker-years .picker-switch").removeAttr('title')
                         .css('cursor', 'default')
@@ -14,17 +28,25 @@ $('document').ready(function () {
                             e.stopPropagation();
                         });
             });
+
+            //format and position
             $(this).data('DateTimePicker').format('DD MMM YYYY').widgetPositioning({vertical: 'auto'});
+
+            //fill in old date or today's date
             var date = new Date();
             var child_input = $(this).find('input');
             if (child_input.val() != '') {
                 date = new Date(child_input.val());
             }
             $(this).data('DateTimePicker').date(date).useStrict(true).keepInvalid(true);
+
+            //stop keyboard entry
             $(this).on('paste keydown', function (e) {
                 e.preventDefault();
                 return false;
             });
+
+            //start date and end date validation
             if (child_input.attr('name') == 'start_date' || child_input.attr('name') == 'end_date') {
                 $(this).on('dp.change', function (e) {
                     var start_date = $('input[name="start_date"]').val();
@@ -37,7 +59,10 @@ $('document').ready(function () {
                 });
             }
         });
+
         $('.date>input').prop('autocomplete', 'off');
+
+        //dob n doj validation
         if ($('[name="date_birth"]').length > 0)
             $('[name="date_birth"]').parents('.date').data('DateTimePicker').minDate(moment().subtract(70, 'years')).maxDate(moment().subtract(18, 'years'));
         if ($('[name="date_hire"]').length > 0)
@@ -52,6 +77,7 @@ $('document').ready(function () {
         });
     }
 
+    //datepicker initialization
     if ($('.datepicker').length > 0) {
         $(".datepicker").datepicker({
             autoclose: true,
@@ -60,6 +86,7 @@ $('document').ready(function () {
         });
     }
 
+    //cancel button redirection updated
     if ($('.cancel-button').length > 0) {
         $('.cancel-button').click(function (e) {
             e.preventDefault();
@@ -67,6 +94,7 @@ $('document').ready(function () {
         });
     }
 
+    //mobile number validation
     $('[name="mobile"], [name="mobile2"]').attr('maxlength', '10');
     $('[name="mobile"], [name="mobile2"]').keypress(function (e) {
         var charCode = (e.which) ? e.which : e.keyCode;
@@ -113,7 +141,7 @@ function validateFields(el) {
 
 //functions defined
 function binding() {
-    
+
     //For delete button issue
     $('div.overlay').removeClass('hide');
     setTimeout(function () {

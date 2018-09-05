@@ -376,7 +376,7 @@ class TimesheetsController extends Controller {
         
         $out = Datatables::of($values)->make();
         $data = $out->getData();
-        $col_arr = [($role != 'engineer') ? 'submitor_id' : 'id', 'project_id', 'task_id', 'date', 'hours', 'mail_sent'];
+        $col_arr = [($request->teamMember) ? 'submitor_id' : 'id', 'project_id', 'task_id', 'date', 'hours', 'mail_sent'];
         $fields_popup = ModuleFields::getModuleFields('Timesheets');
         foreach ($fields_popup as $column => $val) {
             if (!in_array($column, $col_arr)) {

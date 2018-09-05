@@ -60,7 +60,7 @@ class Employee extends Model {
     public static function updateRole($roleName = 'LEAD', $emp_id = 0) {
         $role_array = collect(DB::table('roles')->whereNull('deleted_at')->get())->keyBy('name');
         $user_id = DB::table('user')->whereRaw('context_id = "' . $emp_id . '"')->first();
-        DB::table('role_user')->update(['role_id' => $role_array[strtoupper($roleName)]->id])->where('user_id', $user_id->id);
+        DB::table('role_user')->where('user_id', $user_id->id)->update(['role_id' => $role_array[strtoupper($roleName)]->id]);
     }
 
 }

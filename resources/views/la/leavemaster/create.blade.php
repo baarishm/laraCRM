@@ -43,7 +43,7 @@ Apply For Leave
                             <span for="StartDate" class="control-label" >Start Date*</span>
 
                             <input type="text" value="{{ old('FromDate')}}" class="form-control" 
-                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="From" required  readonly='true' />
+                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="From" readonly='true' />
                         </div>
 
                         <div class="form-group col-md-3">
@@ -51,7 +51,7 @@ Apply For Leave
                             <!--            <label for="text" class="control-label">End Date:</label>-->
                             <span for="text" class="control-label">End Date*</span>
 
-                            <input type="text" value="{{ old('ToDate')}}" class="form-control " id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="To" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' />	
+                            <input type="text" value="{{ old('ToDate')}}" class="form-control " id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="To" autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' />	
 
                         </div>
 
@@ -64,7 +64,7 @@ Apply For Leave
                         <div class="form-group col-md-3">
                             <label for="Number">Leave Purpose</label>
 
-                            <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" required maxlength="180"  >   
+                            <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" maxlength="180"  >   
                         </div>
                         <div class="form-group col-md-3">
                             <label>Leave Type</label>
@@ -137,6 +137,7 @@ Apply For Leave
                     days = days - 1
                 if(days > '{{ $number_of_leaves }}'){
                     swal('You cannot take more than {{ $number_of_leaves }} leaves at a time!');
+                    $('#datepickerto').val('');
                     $('button[type="submit"]').attr('disabled', true);
                 }
                 else{
