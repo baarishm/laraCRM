@@ -211,11 +211,11 @@ class RolesController extends Controller {
             $row = Role::where('name', $request->name)
                     ->orWhere('display_name', $request->display_name)
                     ->withTrashed()
-                    ->get();
+                    ->pluck('id');
 
             $Exists = $row->count();
 
-            if ($Exists > 0) {
+            if ($Exists > 0 && !in_array($id, $row->toArray())) {
                 return redirect()->route(config('laraadmin.adminRoute') . '.roles.edit', ['id' => $id])->withErrors(['message' => 'Role with this name or display name already exists. Please check or contact Admin to revoke it.']);
             }
 

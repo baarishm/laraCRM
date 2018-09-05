@@ -186,13 +186,13 @@ class Task_RolesController extends Controller {
                 ;
             }
 
-            $Task_Role = Task_Role::where('task_id', $request->task_id)
+            $row = Task_Role::where('task_id', $request->task_id)
                     ->where('role_id', $request->role_id)
-                    ->get();
+                    ->pluck('id');
 
-            $taskRoleExists = $Task_Role->count();
+            $Exists = $row->count();
 
-            if ($taskRoleExists > 0) {
+            if ($Exists > 0 && !in_array($id, $row->toArray())) {
                 return redirect()->route(config('laraadmin.adminRoute') . '.task_roles.edit', ['id' => $id])->withErrors(['message' => 'Task already assigned to this role.']);
             }
 

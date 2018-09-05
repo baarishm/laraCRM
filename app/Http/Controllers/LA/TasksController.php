@@ -188,11 +188,11 @@ class TasksController extends Controller {
 
             $row = Task::where('name', $request->name)
                     ->withTrashed()
-                    ->get();
+                    ->pluck('id');
 
             $Exists = $row->count();
 
-            if ($Exists > 0) {
+            if ($Exists > 0 && !in_array($id, $row->toArray())) {
                 return redirect()->route(config('laraadmin.adminRoute') . '.tasks.edit', ['id' => $id])->withErrors(['message' => 'Task with this name already exists. Please check or contact Admin to revoke it.']);
             }
 

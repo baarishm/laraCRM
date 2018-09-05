@@ -189,11 +189,11 @@ class ManagersController extends Controller {
             
             $row = Manager::where('employee_id', $request->employee_id)
                     ->withTrashed()
-                    ->get();
+                    ->pluck('id');
 
             $Exists = $row->count();
 
-            if ($Exists > 0) {
+            if ($Exists > 0 && !in_array($id, $row->toArray())) {
                 return redirect()->route(config('laraadmin.adminRoute') . '.managers.edit', ['id' => $id])->withErrors(['message' => 'Manager already exists. Please check or contact Admin to revoke it.']);
             }
             
