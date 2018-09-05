@@ -192,11 +192,11 @@ class ProjectsController extends Controller {
 
             $row = Project::where('name', $request->name)
                     ->withTrashed()
-                    ->get();
+                    ->pluck('id');
 
             $Exists = $row->count();
 
-            if ($Exists > 0) {
+            if ($Exists > 0 && !in_array($id, $row->toArray())) {
                 return redirect()->route(config('laraadmin.adminRoute') . '.projects.edit' , ['id' => $id])->withErrors(['message' => 'Project with this name already exists. Please check or contact Admin to revoke it.']);
             }
 
