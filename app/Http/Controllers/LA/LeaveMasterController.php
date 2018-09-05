@@ -44,24 +44,6 @@ class LeaveMasterController extends Controller {
         }
         $empdetail = Employee::where('id', Auth::user()->context_id)
                 ->first();
-        
-//        if ($leaveMasterRow->Approved == '1') {
-//               DB::table('employees')
-//               ->where('id', Auth::user()->context_id)
-//              ->update(['available_leaves' => '(available_leaves)-(1)']);
-//            } 
-//            else  
-//                {
-//                DB::table('employees')
-//               ->where('id', Auth::user()->context_id)
-//           ->update(['total_leaves' => '(total_leaves)']);
-//            } 
-        
-//        if($Approved== '1'){
-//        DB::table('employees')
-//        ->where('id', Auth::user()->context_id)
-//        ->update(['available_leaves' => '(available_leaves)-(1)']);
-//        }
        
         $leaveMaster = DB::table('leavemaster')
                 ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves')])
