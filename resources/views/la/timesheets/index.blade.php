@@ -65,7 +65,7 @@
             <thead>
                 <tr class="success">
                     @foreach( $listing_cols as $col )
-                    <th>{{ $module->fields[$col]['label'] or ucfirst($col) }}</th>
+                    <th style="width:10%">{{ $module->fields[$col]['label'] or ucfirst($col) }}</th>
                     @endforeach
                     @if($show_actions)
                     <th>Actions</th>
@@ -121,17 +121,32 @@ $(function () {
             if (last !== group) {
                     var date_to_show = new Date(group);
             $(rows).eq(i).before(
-                    '<tr class="group"><td colspan="5">' + date_to_show.toShortFormat() + '</td></tr>'
+                    '<tr class="group"><td colspan="6">' + date_to_show.toShortFormat() + '</td></tr>'
                     );
                     last = group;
             }
             });
             },
             "columnDefs": [
-            { "visible": false, "targets": groupColumn }
+            { "visible": false, "targets": groupColumn },
+            { "width": "7%", "targets": 0 },
+            { "width": "7%", "targets": 1 },
+            { "width": "7%", "targets": 2 },
+            { "width": "5%", "targets": 3 },
+            { "width": "4%", "targets": 4 }
             ],
             @if ($show_actions)
-                columnDefs: [ { orderable: false, targets: [ - 1] }, { "visible": false, "targets": groupColumn }],
+                columnDefs: [ 
+                { orderable: false, targets: [ - 1] }, 
+                { "visible": false, "targets": groupColumn },
+                { "width": "7%", "targets": 0 },
+                { "width": "25%", "targets": 1 },
+                { "width": "25%", "targets": 2 },
+                { "width": "25%", "targets": 3 },
+                { "width": "4%", "targets": 4 },
+                { "width": "10%", "targets": 5 },
+                { "width": "10%", "targets": 6 }
+                ],
             @endif
     }
     );

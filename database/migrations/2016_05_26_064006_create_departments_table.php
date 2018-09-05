@@ -4,7 +4,6 @@
  * Help: http://laraadmin.com
  */
 
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 use Dwij\Laraadmin\Models\Module;
@@ -19,9 +18,9 @@ class CreateDepartmentsTable extends Migration
     public function up()
     {
         Module::generate("Departments", 'departments', 'name', 'fa-tags', [
-            ["name", "Name", "Name", true, "", 1, 250, true],
-            ["tags", "Tags", "Taginput", false, [], 0, 0, false],
-            ["color", "Color", "String", false, "", 0, 50, true],
+            ["name", "Name", "TextField", false, "", 0, 256, true],
+            ["color", "Color", "TextField", false, "#000000", 0, 256, false],
+            ["tags", "Tags", "TextField", false, "", 0, 256, false],
         ]);
 		
 		/*

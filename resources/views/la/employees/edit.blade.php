@@ -46,6 +46,7 @@
 					@la_input($module, 'second_approver')
 					@la_input($module, 'dept')
 					@la_input($module, 'date_hire')
+					@la_input($module, 'is_confirmed')
 					--}}
                                         <div class="form-group">
                                             <label for="role">Role* :</label>
@@ -64,7 +65,7 @@
                                         </div>
                     <br>
 					<div class="form-group">
-						{!! Form::submit( 'Update', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right"><a href="{{ url(config('laraadmin.adminRoute') . '/employees') }}">Cancel</a></button>
+						{!! Form::submit( 'Update', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/employees') }}">Cancel</a></button>
 					</div>
 				{!! Form::close() !!}
 			</div>

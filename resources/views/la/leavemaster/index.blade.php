@@ -4,7 +4,7 @@ Leave Dashboard
 @endsection
 @section("main-content")
 
-<div class="container">
+<div class="">
     <br />
     @if (\Session::has('success'))
     <div class="alert alert-success">
@@ -35,19 +35,18 @@ Leave Dashboard
 
         </div>
     </div>
-
-    <table class="table table-striped">
+    <div class="card" style="background: #FFF">
+    <table class="table table-striped table-bordered">
 
 
         <tr>
         <thead>
-        <th style="width: 10px;">EmpId</th>
-        <th style="width: 20px;">From Date</th>
-        <th style="width: 20px;">To Date</th>
-        <th style="width: 10px;">Total Day</th>
-        <th style="width: 20px;">Leave Type</th>
-        <th style="width: 10px;">Leave Status</th>
-        <th style="width: 10px;" >Action</th>  
+        <th >From Date</th>
+        <th >To Date</th>
+        <th >No Of Days</th>
+        <th >Leave Type</th>
+        <th >Leave Status</th>
+        <th style="width: 103px; text-align:center;" >Action</th>  
         </thead>
         </tr>
 
@@ -55,31 +54,46 @@ Leave Dashboard
 
             @foreach($leaveMaster as $leaveMasterRow)
             @php
-            $FromDate=date('Y-m-d', strtotime($leaveMasterRow->FromDate));
-            $ToDate=date('Y-m-d', strtotime($leaveMasterRow->ToDate));
+            $FromDate=date('d M Y',  strtotime($leaveMasterRow->FromDate));
+            $ToDate=date('d M Y',  strtotime($leaveMasterRow->ToDate));
 
             @endphp
 
             <tr>
-                <td>{{$leaveMasterRow->EmpId}}</td>
+
                 <td>{{$FromDate}}</td>
                 <td>{{$ToDate}}</td>
                 <td>{{$leaveMasterRow->NoOfDays}}</td>
-                <td>{{$leaveMasterRow->leave_name}}</td>
-                <td>{{(($leaveMasterRow->Approved != '')? $leaveMasterRow->Approved : 'Pending' ) }}</td>
-                <td><a href="{{action('LA\LeaveMasterController@show',$leaveMasterRow->id)}}" class="btn btn-warning "><i class="fa fa-eye"></i></a>
+                <td>{{(($leaveMasterRow->leave_name != '')? $leaveMasterRow->leave_name : "Not Specified" ) }}</td>
+                @if( $leaveMasterRow->Approved === 1)
+                    <td>Approved </td>
+                    @elseif( $leaveMasterRow->Approved === 0 )
+                    <td>Rejected</td>
+                    @else 
+                    <td>Pending </td>
+                    @endif
+          
+                @if($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0')
+                <td>
+                        <button type="button" class="btn" name="Approved" id="Approved" style="background: green" >done</button>
+                </td>
+                        @else($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL')
+                <td class="text-center">
                 
                     <form action="{{action('LA\LeaveMasterController@destroy', $leaveMasterRow->id)}}" method="post">
                         <input type="hidden" name="_token" value="{{ csrf_token()}}">
+                       
+                        
+                     <a href="{{action('LA\LeaveMasterController@edit',$leaveMasterRow->id)}}" class="btn btn-warning "><i class="fa fa-edit"></i></a>
                         <input name="_method" type="hidden" value="DELETE" >
                         <button class="btn btn-danger pull-left" type="submit"><i class="fa fa-remove"></i></button>
-                        
+                    @endif
                     </form>
                 </td>
             </tr>
             @endforeach
         </tbody>
-    </table>
+    </table></div>
 </div>
 
 @endsection

@@ -58,7 +58,7 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	
 	/* ================== Employees ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/employees', 'LA\EmployeesController');
-	Route::get(config('laraadmin.adminRoute') . '/employee_dt_ajax', 'LA\EmployeesController@dtajax');
+	Route::post(config('laraadmin.adminRoute') . '/employee_dt_ajax', 'LA\EmployeesController@dtajax');
 	Route::post(config('laraadmin.adminRoute') . '/change_password/{id}', 'LA\EmployeesController@change_password');
 	
 	/* ================== Organizations ================== */
@@ -90,7 +90,11 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Timesheets ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/timesheets', 'LA\TimesheetsController');
 	Route::get(config('laraadmin.adminRoute') . '/timesheet_dt_ajax', 'LA\TimesheetsController@dtajax');
-        Route::get("/sendEmailToLeadsAndManagers", 'LA\TimesheetsController@sendEmailToLeadsAndManagers');
+        Route::post("/sendEmailToLeadsAndManagers", 'LA\TimesheetsController@sendEmailToLeadsAndManagers');
+        Route::post("/hoursWorked", 'LA\TimesheetsController@ajaxHoursWorked');
+        Route::post("/datesMailPending", 'LA\TimesheetsController@ajaxDatesMailPending');
+        Route::post("/exportTimeSheetToAuthority", 'LA\TimesheetsController@ajaxExportTimeSheetToAuthority');
+        Route::get(config('laraadmin.adminRoute') . "/downloadTimesheet", 'LA\TimesheetsController@downloadTimesheet');
 
 
 	/* ================== Sidebar_Menu_Accesses ================== */
@@ -100,6 +104,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Leaves_index ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
 	Route::post(config('laraadmin.adminRoute') . '/leaves/store', 'LA\LeaveMasterController@store');
+	Route::get('/approveLeave', 'LA\LeaveMasterController@ajaxApproveLeave');
+        
 	/* ================== Sidebar_Menu_Leaves_ViewData ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
 	
@@ -114,4 +120,6 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Leave_Types ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/leave_types', 'LA\Leave_TypesController');
 	Route::get(config('laraadmin.adminRoute') . '/leave_type_dt_ajax', 'LA\Leave_TypesController@dtajax');
+        
+       
 });

@@ -64,7 +64,8 @@
                 <tr class="success">
                     <th>Project Name</th>
                     <th>Task Name</th>
-                    <th>Time Spent</th>
+                    <th>Time Spent(in hrs)</th>
+                    <th>Date</th>
                     <th>Remove Row form this Sheet</th>
                 </tr>
             </thead>
@@ -74,6 +75,7 @@
                 <td>{{$record->project_name}}</td>
                 <td>{{$record->task_name}}</td>
                 <td>{{$record->hours+($record->minutes/60)}}</td>
+                <td>{{date('d M Y',strtotime($record->date))}}</td>
                 <td><button class="btn btn-danger btn-xs remove-row"><i class="fa fa-times"></i></button></td>
             </tr>
             @endforeach
@@ -103,10 +105,10 @@
                 <div id="entry_parent">
                     <div class="entry" id="1">
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 @la_input($module, 'project_id')
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-3">
                                 <div class="form-group">
                                     <label for="task_id">Task Name:</label>
                                     <select class="form-control" name="task_id">
@@ -116,19 +118,24 @@
                                     </select>
                                 </div>
                             </div>
-                            <div class="col-md-4">
-                                @la_input($module, 'date')
+<!--                        </div>
+                        <div class="row">-->
+                            <div class ="col-md-6">
+                                @la_input($module, 'comments')
                             </div>
                         </div>
                         <div class="row">
-                            <div class="col-md-4">
+                            <div class="col-md-2">
+                                @la_input($module, 'date')
+                            </div>
+                            <div class="col-md-2">
                                 @la_input($module, 'hours')
                             </div>
-                            <div class="col-md-4">
+                            <div class="col-md-2">
                                 @la_input($module, 'minutes')
                             </div>
-                            <div class ="col-md-4">
-                                @la_input($module, 'comments')
+                            <div class ="col-md-6">
+                                @la_input($module, 'remarks')
                             </div>
                         </div>
                         <div class="hide">
@@ -154,11 +161,11 @@
                         </div>
                     </div>
                 </div>
-                <input type="hidden" name="submitor_id" value="<?php echo base64_encode(base64_encode(Auth::user()->id)); ?>" />
+                <input type="hidden" name="submitor_id" value="<?php echo base64_encode(base64_encode(Auth::user()->context_id)); ?>" />
                 <input type="hidden" name="task_removed" id="task_removed" value="{{$task_removed}}" />
                 <br>
                 <div class="form-group">
-                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success pull-left']) !!} 
+                    {!! Form::submit( 'Add Entry', ['class'=>'btn btn-success pull-left']) !!} 
                 </div>
                 {!! Form::close() !!}
             </div>
@@ -174,8 +181,25 @@
 <script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
 <script>
 $(function () {
-    $("#project-edit-form").validate({
-
+    $("#timesheet-add-form input[type='submit']").click(function (e) {
+        e.preventDefault();
+        if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
+            swal("Number of hours for a task cannot exceed more than 24 hrs!");
+            return false;
+        } else {
+            $.ajax({
+                method: "POST",
+                url: "{{ url('/hoursWorked') }}",
+                data: {date: $('.date>input').val(), _token : "{{ csrf_token()}}"}
+            }).success(function (totalHours) {
+                if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val()/60)) > 24) {
+                    swal("Number of working hours for a day cannot exceed more than 24 hrs!");
+                    return false;
+                } else {
+                    $('#timesheet-add-form').submit();
+                }
+            });
+        }
     });
 
     //hide stuff on page load
@@ -214,38 +238,82 @@ $(function () {
     });
 
     //send mail
-    $('#send-mail').click(function (event) {
-        event.preventDefault();
+    function send_timesheet_mail(date) {
         $('div.overlay').show();
-        var entry_list = [];
-        $(".entry-row").each(function () {
-            entry_list.push($(this).attr('data-value'));
-        });
         $.ajax({
-            url: '/sendEmailToLeadsAndManagers',
-            type: 'GET',
-            data: {
-                'entry_ids': entry_list,
-                'task_removed' : $('#task_removed').val()
-            },
-            success: function (data) {
+            method: "POST",
+            url: "{{ url('/hoursWorked') }}",
+            data: {date: date, task_removed: $('#task_removed').val(), _token : "{{ csrf_token() }}"}
+        }).success(function (totalHours) {
+            if (parseInt(totalHours) < 9) {
+                swal("Number of working hours for a day cannot be less than 9 hrs for a timesheet to be sent!");
                 $('div.overlay').hide();
-                alert(data);
-                window.location.href = '/admin/timesheets';
+                return false;
+            } else {
+                $.ajax({
+                    url: "{{ url('/sendEmailToLeadsAndManagers') }}",
+                    type: 'POST',
+                    data: {
+                        'task_removed': $('#task_removed').val(),
+                        'date': date,
+                        '_token' : "{{ csrf_token()}}"
+                    },
+                    success: function (data) {
+                        $('div.overlay').hide();
+                        alert(data);
+                        window.location.href = "{{ url('/admin/timesheets') }}";
+                    }
+                });
             }
         });
-    });
+    }
 
-    $('.remove-row').click(function () {
-        $("#task_removed").val($("#task_removed").val()+','+$(this).parents('tr').attr('data-value'));
-        $(this).parents('tr').remove();
-        if ($('#example1 tr').length == 1) {
-            $('#send-mail').hide();
+    $('#send-mail').click(async function (event) {
+        event.preventDefault();
+
+        var mail_pending_dates = {};
+        $.ajax({
+            method: "POST",
+            url: "{{ url('/datesMailPending') }}",
+            data: {'task_removed': $('#task_removed').val(), _token : "{{ csrf_token() }}"},
+            async: false
+        }).success(function (dates) {
+            mail_pending_dates = $.parseJSON(dates);
+        });
+
+        if (Object.keys(mail_pending_dates).length == 1) {
+            send_timesheet_mail(Object.keys(mail_pending_dates)[0]);
         } else {
-            $('#send-mail').show();
+            swal({
+                title: 'Select date for which you need to send timesheet.',
+                input: 'radio',
+                inputOptions: mail_pending_dates
+            }).then(function (result) {
+                if (result.value) {
+                    send_timesheet_mail(result.value);
+                } else {
+                    swal({type: 'error', text: "Please select one date!"});
+                }
+            });
         }
     });
-    $('.date').data("DateTimePicker").minDate(moment().subtract('days', 1).millisecond(0).second(0).minute(0).hour(0));
+
+    //remove row from timesheet
+    $(document).on('click', '.remove-row', function () {
+        $("#task_removed").val($("#task_removed").val() + ',' + $(this).parents('tr').attr('data-value'));
+        $(this).parents('tr').addClass('hide').remove();
+		if ($('#example1 tr').length == 1) {
+			$('ul.pagination li.paginate_button.active').prev('li.paginate_button').trigger('click');
+			if ($('#example1 tr').length == 1) {
+				$('#send-mail').hide();
+			} else {
+				$('#send-mail').show();
+			}
+		}
+    });
+	
+
+    $('.date').data("DateTimePicker").minDate(moment().subtract(1, 'days').millisecond(0).second(0).minute(0).hour(0));
     $('.date').data("DateTimePicker").maxDate(moment()).daysOfWeekDisabled([0, 6]);
 });
 </script>

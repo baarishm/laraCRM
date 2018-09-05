@@ -253,7 +253,7 @@ class EmployeesController extends Controller {
                 ->leftJoin('users', 'users.context_id', '=', 'employees.id')
                 ->leftJoin('role_user', 'role_user.user_id', '=', 'users.id')
                 ->leftJoin('roles', 'roles.id', '=', 'role_user.role_id')
-                ->select($this->index_listing_cols)
+                ->select(['employees.id as id', 'employees.name as name', 'roles.display_name as Role', 'gender', 'mobile', 'employees.email as email', DB::raw('DATE_FORMAT(date_birth,\'%d %b %Y\') as date_birth'), 'first_approver', 'second_approver', DB::raw('DATE_FORMAT(date_hire,\'%d %b %Y\') as date_hire')])
                 ->whereNull('employees.deleted_at');
         $out = Datatables::of($values)->make();
         $data = $out->getData();
@@ -281,7 +281,7 @@ class EmployeesController extends Controller {
                 }
 
                 if (Module::hasAccess("Employees", "delete")) {
-                    $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.employees.destroy', $data->data[$i][0]], 'method' => 'delete', 'style' => 'display:inline']);
+                    $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.employees.destroy', $data->data[$i][0]], 'method' => 'delete', 'style' => 'display:inline', 'class' => 'delete']);
                     $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
                     $output .= Form::close();
                 }
