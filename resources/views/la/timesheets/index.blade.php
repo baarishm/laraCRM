@@ -105,7 +105,7 @@ $(function () {
     var table = $("#example1").DataTable({
     processing: true,
             serverSide: true,
-            searchable: false,
+            searching: false,
             ajax: {
             url:"{{ url(config('laraadmin.adminRoute') . '/timesheet_dt_ajax') }}",
                     type : 'get',

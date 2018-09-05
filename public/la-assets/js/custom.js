@@ -10,7 +10,7 @@ $('document').ready(function () {
     //stop keyboard entry
     $('#date_search').on('paste keydown', function (e) {
         var charCode = (e.which) ? e.which : e.keyCode;
-        if(charCode != 8){
+        if (charCode != 8) {
             e.preventDefault();
             return false;
         }
@@ -51,10 +51,10 @@ $('document').ready(function () {
                 $(this).on('dp.change', function (e) {
                     var start_date = $('input[name="start_date"]').val();
                     if (start_date != '') {
-                        $('[name="end_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date(start_date))).date(start_date);
+                        $('[name="end_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date(start_date)));
                     }
                     if (new Date($('input[name="start_date"]').val()) > new Date($('input[name="end_date"]').val())) {
-                        $('input[name="end_date"]').val('');
+                        $('input[name="end_date"]').parents('.date').data('DateTimePicker').date(start_date);
                     }
                 });
             }
@@ -105,9 +105,16 @@ $('document').ready(function () {
         }
     });
 
-    //hide overlay
+    //show overlay
     $('form button[type="submit"], form input[type="submit"]').on('click', function () {
         $('div.overlay').removeClass('hide');
+    });
+
+    //hide overlay
+    $('button[type="submit"], input[type="submit"]').on('click', function () {
+        if (!$(this).closest('form')[0].checkValidity()) {
+            $('div.overlay').addClass('hide');
+        }
     });
 
     $('#example1').on('search.dt page.dt length.dt', function () {
