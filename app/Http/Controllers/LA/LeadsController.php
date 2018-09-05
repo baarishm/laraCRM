@@ -18,6 +18,7 @@ use Collective\Html\FormFacade as Form;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Lead;
+use App\Models\Employee;
 
 class LeadsController extends Controller {
 
@@ -89,7 +90,18 @@ class LeadsController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
+            $row = Lead::where('employee_id', $request->employee_id)
+                    ->withTrashed()
+                    ->get();
+
+            $Exists = $row->count();
+
+            if ($Exists > 0) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.leads.create')->withErrors(['message' => 'Lead already exists. Please check or contact Admin to revoke it.']);
+            }
+
             $insert_id = Module::insert("Leads", $request);
+            Employee::updateRole('LEAD', $request->employee_id);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.leads.index');
         } else {
@@ -176,7 +188,18 @@ class LeadsController extends Controller {
                 ;
             }
 
+            $row = Lead::where('employee_id', $request->employee_id)
+                    ->withTrashed()
+                    ->get();
+
+            $Exists = $row->count();
+
+            if ($Exists > 0) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.leads.edit', ['id' => $id])->withErrors(['message' => 'Lead already exists. Please check or contact Admin to revoke it.']);
+            }
+
             $insert_id = Module::updateRow("Leads", $request, $id);
+            Employee::updateRole('LEAD', $request->employee_id);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.leads.index');
         } else {

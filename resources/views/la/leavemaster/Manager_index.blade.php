@@ -70,8 +70,8 @@ Team Leave Dashboard
                         @else
                        
                         <div class="">
-                        <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id;  ?> onclick="myfunction(this);" >Approve</button>
-                        <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);">Approve</button>
+                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
                         </div>
                       
                         @endif
@@ -131,18 +131,15 @@ Team Leave Dashboard
                 type: 'GET',
                 data: {'approved': approved, 'id': $(button).attr('data-id')},
                 success: function (data) {
-                    console.log(data);
                     swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
                
                 }
             });
             var vid = $(button).attr('data-id');
-            $('[data-id=' + vid + ']').attr('disabled', 'disabled');
-
-            // $("button").data("data-id").attr('disabled', 'disabled');
-
-
+            $(button).parent('td').html((approved) ? '<span class="text-success">Approved</span>' : '<span class="text-danger">Rejected</span>');
+            $('[data-id=' + vid + ']').remove();
         }
+        
         $(function () {
             $('.days').click(function () {
                 var elem_id = $(this).attr('id');

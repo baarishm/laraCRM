@@ -1,11 +1,19 @@
 $('document').ready(function () {
-
+    $('div.overlay').addClass('hide');
     $('#date_search').datetimepicker({
         format: 'DD MMM YYYY',
         minDate: moment('2016-08-29')
     });
     if ($('.date').length > 0) {
         $('.date').each(function () {
+            $(this).on('dp.show dp.update', function () {
+                $(".datepicker-years .picker-switch").removeAttr('title')
+                        .css('cursor', 'default')
+                        .css('background', 'inherit')
+                        .on('click', function (e) {
+                            e.stopPropagation();
+                        });
+            });
             $(this).data('DateTimePicker').format('DD MMM YYYY').widgetPositioning({vertical: 'auto'});
             var date = new Date();
             var child_input = $(this).find('input');
@@ -21,7 +29,7 @@ $('document').ready(function () {
                 $(this).on('dp.change', function (e) {
                     var start_date = $('input[name="start_date"]').val();
                     if (start_date != '') {
-                        $('[name="end_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date(start_date)));
+                        $('[name="end_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date(start_date))).date(start_date);
                     }
                     if (new Date($('input[name="start_date"]').val()) > new Date($('input[name="end_date"]').val())) {
                         $('input[name="end_date"]').val('');
@@ -48,7 +56,7 @@ $('document').ready(function () {
         $(".datepicker").datepicker({
             autoclose: true,
             format: 'd M yyyy',
-
+            maxViewMode: 2,
         });
     }
 
@@ -58,9 +66,58 @@ $('document').ready(function () {
             window.location.href = $(this).find('a').attr('href');
         });
     }
+
+    $('[name="mobile"], [name="mobile2"]').attr('maxlength', '10');
+    $('[name="mobile"], [name="mobile2"]').keypress(function (e) {
+        var charCode = (e.which) ? e.which : e.keyCode;
+        if ((charCode >= 48 && charCode <= 57)) {
+            return true;
+        } else {
+            return false;
+        }
+    });
+
+    //hide overlay
+    $('form button[type="submit"], form input[type="submit"]').on('click', function () {
+        $('div.overlay').removeClass('hide');
+    });
+
+    $('#example1').on('search.dt page.dt length.dt', function () {
+        binding();
+    });
+});
+
+
+Date.prototype.toShortFormat = function () {
+
+    var month_names = ["Jan", "Feb", "Mar",
+        "Apr", "May", "Jun",
+        "Jul", "Aug", "Sep",
+        "Oct", "Nov", "Dec"];
+
+    var day = this.getDate();
+    var month_index = this.getMonth();
+    var year = this.getFullYear();
+
+    return "" + day + " " + month_names[month_index] + " " + year;
+}
+
+function validateFields(el) {
+    var isValid = true;
+    el.each(function () {
+        if ($(this).val() === '')
+            isValid = false;
+    });
+    return isValid;
+}
+
+//functions defined
+function binding() {
+    
+    //For delete button issue
+    $('div.overlay').removeClass('hide');
     setTimeout(function () {
         if ($('form.delete').length > 0) {
-            $('div.overlay').removeClass('hide');
             $("form.delete").each(function () {
                 var form = $(this);
                 form.find('button[type="submit"]').on("click", function (e) {
@@ -90,41 +147,7 @@ $('document').ready(function () {
                 });
             });
 
-            $('div.overlay').addClass('hide');
         }
-    }, 1500);
-
-    $('[name="mobile"], [name="mobile2"]').attr('maxlength', '10');
-    $('[name="mobile"], [name="mobile2"]').keypress(function (e) {
-        var charCode = (e.which) ? e.which : e.keyCode;
-        if ((charCode >= 48 && charCode <= 57)) {
-            return true;
-        } else {
-            return false;
-        }
-    });
-});
-
-
-Date.prototype.toShortFormat = function () {
-
-    var month_names = ["Jan", "Feb", "Mar",
-        "Apr", "May", "Jun",
-        "Jul", "Aug", "Sep",
-        "Oct", "Nov", "Dec"];
-
-    var day = this.getDate();
-    var month_index = this.getMonth();
-    var year = this.getFullYear();
-
-    return "" + day + " " + month_names[month_index] + " " + year;
-}
-
-function validateFields(el) {
-    var isValid = true;
-    el.each(function () {
-        if ($(this).val() === '')
-            isValid = false;
-    });
-    return isValid;
+        $('div.overlay').addClass('hide');
+    }, 1200);
 }
