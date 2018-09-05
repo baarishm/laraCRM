@@ -18,19 +18,20 @@ Leave Dashboard
 
     @endif
     <div class="row">
+       
 
         <div class="form-group col-md-3">
-            <label for="Name">Totel Leaves:10</label>
+            <label for="Name">Total Leaves : {{$empdetail->total_leaves}}</label>
 
         </div>
 
         <div class="form-group col-md-3">
-            <label for="Name">availed leave:8</label>
+            <label for="Name">Availed leave : {{number_format($empdetail->total_leaves)-($empdetail->available_leaves)}}</label>
 
 
         </div>
         <div class="form-group col-md-3">
-            <label for="Name">available Leaves:2</label>
+            <label for="Name">Available Leaves : {{$empdetail->available_leaves}}</label>
 
 
         </div>
@@ -50,7 +51,7 @@ Leave Dashboard
         <th >To Date</th>
         <th >No Of Days</th>
         <th >Leave Type</th>
-        <th >Leave Status</th>
+        <th > Status</th>
         <th style="width: 103px; text-align:center;" >Action</th>  
         </thead>
         </tr>

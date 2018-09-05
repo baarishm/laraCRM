@@ -30,6 +30,8 @@ class LeaveMasterController extends Controller {
 
     public function index(Request $request) {
 
+
+
         $role = Employee::employeeRole();
         $where = 'employees.deleted_at IS NULL ';
 
@@ -39,15 +41,36 @@ class LeaveMasterController extends Controller {
             $view = 'index';
             $where .= ' and leavemaster.EmpId = ' . Auth::user()->context_id;
         }
-
+        $empdetail = Employee::where('id', Auth::user()->context_id)
+                ->first();
+        
+//        if ($leaveMasterRow->Approved == '1') {
+//               DB::table('employees')
+//               ->where('id', Auth::user()->context_id)
+//              ->update(['available_leaves' => '(available_leaves)-(1)']);
+//            } 
+//            else  
+//                {
+//                DB::table('employees')
+//               ->where('id', Auth::user()->context_id)
+//           ->update(['total_leaves' => '(total_leaves)']);
+//            } 
+        
+//        if($Approved== '1'){
+//        DB::table('employees')
+//        ->where('id', Auth::user()->context_id)
+//        ->update(['available_leaves' => '(available_leaves)-(1)']);
+//        }
+       
         $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
                 ->whereRaw($where)
                 ->get();
 
-        return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role]);
+
+        return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role, 'empdetail' => $empdetail]);
     }
 
     public function teamMemberIndex(Request $request) {
@@ -121,7 +144,6 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
 //	$leaveMaster->Approved=$request->get('Approved');
-        
         //check existance        
         $LeaveRecord = LeaveMaster::where('EmpId', $request->get('EmpId'))
                 ->where('FromDate', $FromDate)
@@ -133,7 +155,7 @@ class LeaveMasterController extends Controller {
         $LeaveRecordExists = $LeaveRecord->count();
 
         if ($LeaveRecordExists > 0) {
-            return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error','You have already applied leave for these dates.');
+            return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'You have already applied leave for these dates.');
         }
 
         if ($leaveMaster->save()) {

@@ -50,7 +50,7 @@ Edit Apply  Leave
                         <div class="form-group col-md-4">
                             <label for="number">Leave Purpose</label>
 
-                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required value="{{$leaveMaster -> LeaveReason or old('LeaveReason') }}"> 
+                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required maxlength="180" value="{{$leaveMaster -> LeaveReason or old('LeaveReason') }}"> 
                         </div>
                         <div class="form-group col-md-4">
                             <label>Leave Type</label>

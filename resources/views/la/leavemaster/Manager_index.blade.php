@@ -59,14 +59,21 @@ Team Leave Dashboard
                      <!--<td>{{(($leaveMasterRow->Approved != '')? $leaveMasterRow->Approved : 'Pending' ) }}</td>-->
                     <td class="text-center"> 
                         @if($Approved=='1')
+                       
                         <span class="text-success">Approved</span>
+                            
+                       
                         @elseif($Approved=='0')
+                    
                         <span class="text-danger">Rejected</span>
+                    
                         @else
+                       
                         <div class="">
-                        <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);">Approve</button>
+                        <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id;  ?> onclick="myfunction(this);" >Approve</button>
                         <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
                         </div>
+                      
                         @endif
 
 
@@ -116,6 +123,7 @@ Team Leave Dashboard
             if (controlid == 'Approved')
             {
                 approved = 1;
+               
 
             }
             $.ajax({
@@ -125,7 +133,7 @@ Team Leave Dashboard
                 success: function (data) {
                     console.log(data);
                     swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
-
+               
                 }
             });
             var vid = $(button).attr('data-id');

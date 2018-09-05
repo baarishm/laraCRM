@@ -64,7 +64,7 @@ Apply For Leave
                         <div class="form-group col-md-3">
                             <label for="Number">Leave Purpose</label>
 
-                            <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" required  >   
+                            <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" required maxlength="180"  >   
                         </div>
                         <div class="form-group col-md-3">
                             <label>Leave Type</label>
