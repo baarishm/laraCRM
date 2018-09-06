@@ -117,11 +117,11 @@ $('document').ready(function () {
         }
     });
 
-    $('#example1').on('draw.dt search.dt page.dt length.dt', function () {
+    $('#example1').on('draw.dt search.dt page.dt length.dt', function (e) {
         binding();
     });
-    
-    $('.modal-footer [data-dismiss]').on('click',function(){
+
+    $('.modal-footer [data-dismiss]').on('click', function () {
         $('.modal-body div.form-group>input').val('');
     });
 });
@@ -152,38 +152,43 @@ function validateFields(el) {
 
 //functions defined
 function binding() {
-
     //For delete button issue
     $('div.overlay').removeClass('hide');
     setTimeout(function () {
         if ($('form.delete').length > 0) {
             $("form.delete").each(function () {
                 var form = $(this);
-                form.find('button[type="submit"]').on("click", function (e) {
-                    e.preventDefault();
-                    if (confirm("Are you sure to delete?")) {
-                        form.submit();
-                    } else {
-                        return false;
-                    }
-                    // swal({
-                    // title: "Are you sure?",
-                    // text: "You will not be able to recover this action!",
-                    // type: "warning",
-                    // showCancelButton: true,
-                    // confirmButtonClass: "btn-danger",
-                    // confirmButtonText: "Delete",
-                    // cancelButtonText: "Cancel",
-                    // closeOnConfirm: false,
-                    // closeOnCancel: false
-                    // },
-                    // function(isConfirm) {
-                    // console.log(isConfirm);
-                    // if(isConfirm){
-                    // form.submit();
-                    // }
-                    // });
-                });
+                if (!form.hasClass('binded')) {
+                    form.find('button[type="submit"]').on("click", function (e) {
+                        e.preventDefault();
+                        $('div.overlay').addClass('hide');
+                        if (confirm("Are you sure to delete?")) {
+                            $('div.overlay').removeClass('hide');
+                            form.submit();
+                        } else {
+                            return false;
+                        }
+                        // swal({
+                        // title: "Are you sure?",
+                        // text: "You will not be able to recover this action!",
+                        // type: "warning",
+                        // showCancelButton: true,
+                        // confirmButtonClass: "btn-danger",
+                        // confirmButtonText: "Delete",
+                        // cancelButtonText: "Cancel",
+                        // closeOnConfirm: false,
+                        // closeOnCancel: false
+                        // },
+                        // function(isConfirm) {
+                        // console.log(isConfirm);
+                        // if(isConfirm){
+                        // form.submit();
+                        // }
+                        // });
+                    });
+
+                    form.addClass('binded');
+                }
             });
 
         }

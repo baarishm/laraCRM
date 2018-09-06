@@ -172,15 +172,15 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveType = $request->get('LeaveType');
 //	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
         //check
-        $LeaveRecord = LeaveMaster::where('EmpId', $request->get('EmpId'))
+        $row = LeaveMaster::where('EmpId', $request->get('EmpId'))
                 ->where('FromDate', $FromDate)
                 ->where('ToDate', $ToDate)
                 ->where('withdraw', '0')
-                ->get();
+                    ->pluck('id');
 
-        $LeaveRecordExists = $LeaveRecord->count();
+        $Exists = $row->count();
 
-        if ($LeaveRecordExists > 0) {
+        if ($Exists > 0 && !in_array($id, $row->toArray())) {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'You have already applied leave for these dates.');
         }
         if ($leaveMaster->save()) {
