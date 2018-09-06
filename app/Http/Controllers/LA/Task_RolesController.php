@@ -89,13 +89,14 @@ class Task_RolesController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-            $Task_Role = Task_Role::where('task_id', $request->task_id)
+            $row = Task_Role::where('task_id', $request->task_id)
                     ->where('role_id', $request->role_id)
+                    ->withTrashed()
                     ->get();
 
-            $taskRoleExists = $Task_Role->count();
+            $Exists = $row->count();
 
-            if ($taskRoleExists > 0) {
+            if ($Exists > 0) {
                 return redirect()->route(config('laraadmin.adminRoute') . '.task_roles.create')->withErrors(['message' => 'Task already assigned to this role.']);
             }
 
@@ -188,6 +189,7 @@ class Task_RolesController extends Controller {
 
             $row = Task_Role::where('task_id', $request->task_id)
                     ->where('role_id', $request->role_id)
+                    ->withTrashed()
                     ->pluck('id');
 
             $Exists = $row->count();

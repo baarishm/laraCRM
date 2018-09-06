@@ -84,6 +84,7 @@ class Sidebar_Menu_AccessesController extends Controller {
 
             $row = Sidebar_Menu_Access::where('menu_id', $request->menu_id)
                     ->where('role_id', $request->role_id)
+                    ->withTrashed()
                     ->get();
 
             $Exists = $row->count();
@@ -180,6 +181,7 @@ class Sidebar_Menu_AccessesController extends Controller {
             }
             $row = Sidebar_Menu_Access::where('menu_id', $request->menu_id)
                     ->where('role_id', $request->role_id)
+                    ->withTrashed()
                     ->pluck('id');
 
             $Exists = $row->count();

@@ -104,6 +104,7 @@ class Resource_AllocationsController extends Controller {
                     ->where('employee_id', $request->employee_id)
                     ->where('start_date', $insert_data['start_date'])
                     ->where('end_date', $insert_data['end_date'])
+                    ->withTrashed()
                     ->get();
 
             $Exists = $row->count();
@@ -207,6 +208,7 @@ class Resource_AllocationsController extends Controller {
                     ->where('employee_id', $request->employee_id)
                     ->where('start_date', $update_data['start_date'])
                     ->where('end_date', $update_data['end_date'])
+                    ->withTrashed()
                     ->pluck('id');
 
             $Exists = $row->count();
