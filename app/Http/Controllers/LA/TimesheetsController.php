@@ -343,11 +343,11 @@ class TimesheetsController extends Controller {
                 //no condition to be applied
             } else if ($role == 'manager') {
                 $people_under_manager = Employee::getEngineersUnder('Manager');
-                if ($people_under_manager = '')
+                if ($people_under_manager != '')
                     $where = 'submitor_id IN (' . $people_under_manager . ')';
             } else if ($role == 'lead') {
                 $people_under_lead = Employee::getEngineersUnder('Lead');
-                if ($people_under_lead = '')
+                if ($people_under_lead != '')
                     $where = 'submitor_id IN (' . $people_under_lead . ')';
             } else if ($role == 'engineer') {
                 $this->show_action = true;
