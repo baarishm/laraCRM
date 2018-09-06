@@ -18,6 +18,7 @@ use Collective\Html\FormFacade as Form;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Manager;
+use App\Models\Employee;
 
 class ManagersController extends Controller {
 
@@ -214,7 +215,7 @@ class ManagersController extends Controller {
      */
     public function destroy($id) {
         if (Module::hasAccess("Managers", "delete")) {
-            Manager::find($id)->delete();
+            Manager::find($id)->destroy();
 
             // Redirecting to index() method
             return redirect()->route(config('laraadmin.adminRoute') . '.managers.index');

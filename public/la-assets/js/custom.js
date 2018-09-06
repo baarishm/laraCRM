@@ -112,13 +112,17 @@ $('document').ready(function () {
 
     //hide overlay
     $('button[type="submit"], input[type="submit"]').on('click', function () {
-        if (!$(this).closest('form')[0].checkValidity()) {
+        if (!$(this).closest('form')[0].checkValidity() || $('.error').length != 0) {
             $('div.overlay').addClass('hide');
         }
     });
 
-    $('#example1').on('search.dt page.dt length.dt', function () {
+    $('#example1').on('draw.dt search.dt page.dt length.dt', function () {
         binding();
+    });
+    
+    $('.modal-footer [data-dismiss]').on('click',function(){
+        $('.modal-body div.form-group>input').val('');
     });
 });
 

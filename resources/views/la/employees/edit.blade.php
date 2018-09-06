@@ -8,7 +8,7 @@
 @section("section_url", url(config('laraadmin.adminRoute') . '/employees'))
 @section("sub_section", "Edit")
 
-@section("htmlheader_title", "Employees Edit : ".$employee->$view_col)
+@section("htmlheader_title", "Employees Edit ")
 
 @section("main-content")
 
