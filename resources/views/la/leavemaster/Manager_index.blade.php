@@ -71,10 +71,10 @@ Team Leave Dashboard
                        
                         <div class="">
                             @if($Approved=='0' || $Approved=='')
-                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" data-days='{{$leaveMasterRow->NoOfDays}}'>Approve</button>
+                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" data-days="{{$leaveMasterRow->NoOfDays}}">Approve</button>
                             @endif
                             @if($Approved=='1' || $Approved=='')
-                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" data-days='{{{{$leaveMasterRow->NoOfDays}}}}'>Reject</button> 
+                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" data-days='{{$leaveMasterRow->NoOfDays}}'>Reject</button> 
                             @endif
                         </div>
                       
