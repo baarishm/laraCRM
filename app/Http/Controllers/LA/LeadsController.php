@@ -215,7 +215,7 @@ class LeadsController extends Controller {
      */
     public function destroy($id) {
         if (Module::hasAccess("Leads", "delete")) {
-            Lead::find($id)->destroy();
+            Lead::find($id)->forceDelete();
 
             // Redirecting to index() method
             return redirect()->route(config('laraadmin.adminRoute') . '.leads.index');

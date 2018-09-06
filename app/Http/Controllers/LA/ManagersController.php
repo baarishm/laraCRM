@@ -215,7 +215,7 @@ class ManagersController extends Controller {
      */
     public function destroy($id) {
         if (Module::hasAccess("Managers", "delete")) {
-            Manager::find($id)->destroy();
+            Manager::find($id)->forceDelete();
 
             // Redirecting to index() method
             return redirect()->route(config('laraadmin.adminRoute') . '.managers.index');
