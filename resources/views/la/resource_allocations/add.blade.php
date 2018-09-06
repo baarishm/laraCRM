@@ -40,9 +40,8 @@
 					--}}
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
-                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!}
+                <div class="form-group">
+                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/projects') }}">Cancel</a></button>
                 </div>
                 {!! Form::close() !!}
             </div>
