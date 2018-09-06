@@ -176,7 +176,6 @@ class LeaveMasterController extends Controller {
                 ->where('FromDate', $FromDate)
                 ->where('ToDate', $ToDate)
                 ->where('withdraw', '0')
-                ->withTrashed()
                 ->pluck('id');
 
         $Exists = $row->count();
