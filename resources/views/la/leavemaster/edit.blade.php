@@ -82,89 +82,80 @@ Edit Apply  Leave
 @push('scripts')
 
 <script type="text/javascript">
-    $(document).ready(function () {
-
-
+     $(document).ready(function () {
         // To calulate difference b/w two dates
-          function CalculateDiff(isstart)
-        {       
+        function CalculateDiff(isstart)
+        {
             if ($("#datepicker").val() != "" && $("#datepickerto").val() != "") {
                 var start = $("#datepicker").datepicker("getDate");
                 var end = $("#datepickerto").datepicker("getDate");
-                
-                if (end < start)
-        return 0;
-    
-    // Calculate days between dates
-    var millisecondsPerDay = 86400 * 1000; // Day in milliseconds
-    start.setHours(0,0,0,1);  // Start just after midnight
-    end.setHours(23,59,59,999);  // End just before midnight
-    var diff = end - start;  // Milliseconds between datetime objects    
-    var days = Math.ceil(diff / millisecondsPerDay);
-    
-    // Subtract two weekend days for every week in between
-    var weeks = Math.floor(days / 7);
-    days = days - (weeks * 2);
 
-    // Handle special cases
-    var start = start.getDay();
-    var end = end.getDay();
-    
-    // Remove weekend not previously removed.   
-    if (start - end > 1)         
-        days = days - 2;      
-    
-    // Remove start day if span starts on Sunday but ends before Saturday
-    if (start == 0 && end != 6)
-        days = days - 1  
-            
-    // Remove end day if span ends on Saturday but starts after Sunday
-    if (end == 6 && start != 0)
-        days = days - 1  
-    
-       $("#NoOfDays").val(days);    
+                if (end < start)
+                    return 0;
+
+                // Calculate days between dates
+                var millisecondsPerDay = 86400 * 1000; // Day in milliseconds
+                start.setHours(0, 0, 0, 1);  // Start just after midnight
+                end.setHours(23, 59, 59, 999);  // End just before midnight
+                var diff = end - start;  // Milliseconds between datetime objects    
+                var days = Math.ceil(diff / millisecondsPerDay);
+
+                // Subtract two weekend days for every week in between
+                var weeks = Math.floor(days / 7);
+                days = days - (weeks * 2);
+
+                // Handle special cases
+                var start = start.getDay();
+                var end = end.getDay();
+
+                // Remove weekend not previously removed.   
+                if (start - end > 1)
+                    days = days - 2;
+
+                // Remove start day if span starts on Sunday but ends before Saturday
+                if (start == 0 && end != 6)
+                    days = days - 1
+
+                // Remove end day if span ends on Saturday but starts after Sunday
+                if (end == 6 && start != 0)
+                    days = days - 1
+                if(days > '{{ $number_of_leaves }}'){
+                    swal('You cannot take more than {{ $number_of_leaves }} leaves at a time!');
+                    $('#datepickerto').val('');
+                    $('button[type="submit"]').attr('disabled', true);
+                }
+                else{
+                    $('button[type="submit"]').attr('disabled', false);
+                }
+                $("#NoOfDays").val(days);
                 // alert(Math.round(days));
 
             }
-        } 
-        
-       
-//        function CalculateDiff(isstart)
-//        {
-//            if ($("#datepicker").val() != "" && $("#datepickerto").val() != "") {
-//                var start = $("#datepicker").datepicker("getDate");
-//                var end = $("#datepickerto").datepicker("getDate");
-//                days = ((end - start) / (1000 * 60 * 60 * 24)) + 1;
-//                $("#NoOfDays").val(days);
-//
-//
-//                // alert(Math.round(days));
-//
-//            }
-//        }
+        }
 
         $("#datepicker").datepicker({
             autoclose: true,
             format: 'd M yyyy',
-             startDate: '-20d',
-             endDate: '+60d',
+            startDate: '-{{ $before_days }}d',
+            endDate: '+{{ $after_days }}d',
+            todayHighlight: 'true',
 
         }).on('changeDate', function (e) {
             $("#datepickerto").val('');
             $("#NoOfDays").val('');
-            $("#datepickerto").datepicker('setStartDate', e.date);
+            $("#datepickerto").datepicker('setStartDate', e.date).datepicker("setDate", e.date );
             CalculateDiff(true);
         });
-
         $("#datepickerto").datepicker({
-
             autoclose: true,
-            format: 'd M yyyy'
-
+            format: 'd M yyyy',
+            todayHighlight: 'true'
         }).on('changeDate', function () {
             CalculateDiff(false);
         });
-    });
+        $("#datepickerto").datepicker('setStartDate', $("#datepicker").val());
+    }
+    );
 
 
 </script>

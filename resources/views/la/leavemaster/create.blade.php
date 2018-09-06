@@ -96,9 +96,6 @@ Apply For Leave
 
 <script type="text/javascript">
     $(document).ready(function () {
-
-
-
         // To calulate difference b/w two dates
         function CalculateDiff(isstart)
         {
@@ -148,19 +145,6 @@ Apply For Leave
 
             }
         }
-
-
-//        function CalculateDiff(isstart)
-//        {
-//            if ($("#datepicker").val() != "" && $("#datepickerto").val() != "") {
-//                var start = $("#datepicker").datepicker("getDate");
-//                var end = $("#datepickerto").datepicker("getDate");
-//                days = ((end - start) / (1000 * 60 * 60 * 24)) + 1;
-//                $("#NoOfDays").val(days);
-//                // alert(Math.round(days));
-//
-//            }
-//        }
 
         $("#datepicker").datepicker({
             autoclose: true,

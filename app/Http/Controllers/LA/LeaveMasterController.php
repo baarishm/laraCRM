@@ -15,7 +15,7 @@ class LeaveMasterController extends Controller {
 
     public function edit($id) {
         $leaveMaster = DB::table('leavemaster')
-                ->select(['id', 'EmpId', DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), 'NoOfDays', 'LeaveReason', 'LeaveType'])
+                ->select(['id', 'EmpId', DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), 'NoOfDays', 'LeaveReason', 'LeaveType', 'approved'])
                 ->where('id', $id)
                 ->get();
 
@@ -23,9 +23,13 @@ class LeaveMasterController extends Controller {
         $leave_types = DB::table('leave_types')
                 ->whereNull('deleted_at')
                 ->get();
-
+        $data = ['before_days' => LAConfigs::getByKey('before_days_leave'), 'after_days' => LAConfigs::getByKey('after_days_leave'), 'number_of_leaves' => LAConfigs::getByKey('number_of_leaves')];
         $data['leaveMaster'] = $leaveMaster[0];
         $data['leaveMaster']->leave_type = $leave_types;
+        if ($data['leaveMaster']->approved != '') {
+            return redirect()->back();
+        }
+
         return view('la.leavemaster.edit', $data);
     }
 
@@ -202,11 +206,10 @@ class LeaveMasterController extends Controller {
         $leavemaster = DB::table('leavemaster')->where('id', $_GET['id'])->update($update_field);
         if ($leavemaster->approved && $leavemaster->ApprovedBy != '') {
             $leavemaster = DB::table('employees')->where('id', $leavemaster->EmpId)->decrement('available_leaves', $_GET['days']);
-        }
-        else if (!$leavemaster->approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
+        } else if (!$leavemaster->approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
             $leavemaster = DB::table('employees')->where('id', $leavemaster->EmpId)->increment('available_leaves', $_GET['days']);
         }
-        
+
         return "true";
     }
 
