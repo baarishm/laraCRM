@@ -89,11 +89,21 @@ class ProjectsController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
-			$insert_data = $request->all();
+            $insert_data = $request->all();
             $insert_data['start_date'] = date('Y-m-d', strtotime($request->start_date));
             $insert_data['end_date'] = date('Y-m-d', strtotime($request->end_date));
-			
-            $insert_id = Module::insert("Projects", $insert_data);
+
+            $row = Project::where('name', $request->name)
+                    ->withTrashed()
+                    ->get();
+
+            $Exists = $row->count();
+
+            if ($Exists > 0) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.projects.create')->withErrors(['message' => 'Project with this name already exists. Please check or contact Admin to revoke it.']);
+            }
+
+            $insert_id = Project::create($insert_data);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.projects.index');
         } else {
@@ -179,11 +189,22 @@ class ProjectsController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
                 ;
             }
-			$update_data = $request->all();
+
+            $row = Project::where('name', $request->name)
+                    ->withTrashed()
+                    ->pluck('id');
+
+            $Exists = $row->count();
+
+            if ($Exists > 0 && !in_array($id, $row->toArray())) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.projects.edit' , ['id' => $id])->withErrors(['message' => 'Project with this name already exists. Please check or contact Admin to revoke it.']);
+            }
+
+            $update_data = $request->all();
             $update_data['start_date'] = date('Y-m-d', strtotime($request->start_date));
             $update_data['end_date'] = date('Y-m-d', strtotime($request->end_date));
-			
-            echo $insert_id = Module::updateRow("Projects", $update_data, $id); die;
+
+            $insert_id = Project::find($id)->update($update_data);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.projects.index');
         } else {
@@ -214,7 +235,7 @@ class ProjectsController extends Controller {
      * @return
      */
     public function dtajax() {
-        $values = DB::table('projects')->select(['id', 'name', 'manager_id', 'lead_id', 'client_id', DB::raw('DATE_FORMAT(start_date, "%d %b %Y") as start_date'),DB::raw('DATE_FORMAT(end_date, "%d %b %Y") as end_date')])->whereNull('deleted_at');
+        $values = DB::table('projects')->select(['id', 'name', 'manager_id', 'lead_id', 'client_id', DB::raw('DATE_FORMAT(start_date, "%d %b %Y") as start_date'), DB::raw('DATE_FORMAT(end_date, "%d %b %Y") as end_date')])->whereNull('deleted_at');
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 

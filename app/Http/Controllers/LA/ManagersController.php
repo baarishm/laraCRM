@@ -18,6 +18,7 @@ use Collective\Html\FormFacade as Form;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Manager;
+use App\Models\Employee;
 
 class ManagersController extends Controller {
 
@@ -89,7 +90,18 @@ class ManagersController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
+            $row = Manager::where('employee_id', $request->employee_id)
+                    ->withTrashed()
+                    ->get();
+
+            $Exists = $row->count();
+
+            if ($Exists > 0) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.managers.create')->withErrors(['message' => 'Manager already exists. Please check or contact Admin to revoke it.']);
+            }
+
             $insert_id = Module::insert("Managers", $request);
+            Employee::updateRole('MANAGER', $request->employee_id);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.managers.index');
         } else {
@@ -175,8 +187,19 @@ class ManagersController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
                 ;
             }
+            
+            $row = Manager::where('employee_id', $request->employee_id)
+                    ->withTrashed()
+                    ->pluck('id');
 
+            $Exists = $row->count();
+
+            if ($Exists > 0 && !in_array($id, $row->toArray())) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.managers.edit', ['id' => $id])->withErrors(['message' => 'Manager already exists. Please check or contact Admin to revoke it.']);
+            }
+            
             $insert_id = Module::updateRow("Managers", $request, $id);
+            Employee::updateRole('MANAGER', $request->employee_id);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.managers.index');
         } else {
@@ -192,7 +215,7 @@ class ManagersController extends Controller {
      */
     public function destroy($id) {
         if (Module::hasAccess("Managers", "delete")) {
-            Manager::find($id)->delete();
+            Manager::find($id)->forceDelete();
 
             // Redirecting to index() method
             return redirect()->route(config('laraadmin.adminRoute') . '.managers.index');

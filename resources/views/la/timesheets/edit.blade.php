@@ -1,7 +1,11 @@
 @extends("la.layouts.app")
 @section("contentheader_title")
-<a href="{{ url(config('laraadmin.adminRoute') . '/timesheets') }}">Timesheets</a> :
+<a href="{{ url(config('laraadmin.adminRoute') . '/timesheets') }}">Edit Timesheet Entry</a>
 @endsection
+<?php
+//echo $module->row->id;die;
+// echo "<pre>"; print_r($module->row->id);die;
+?>
 @section("section", "Timesheets")
 @section("section_url", url(config('laraadmin.adminRoute') . '/timesheets'))
 
@@ -23,43 +27,47 @@
     </div>
     <div class="box-body">
         <div class="row">
-            <div class="col-md-10 col-md-offset-1">
+<!--            <div class="col-md-10 col-md-offset-1">-->
+                  <div class="col-md-12">
                 {!! Form::model($timesheet, ['route' => [config('laraadmin.adminRoute') . '.timesheets.update', $timesheet->id ], 'method'=>'PUT', 'id' => 'timesheet-edit-form']) !!}
                 <div id="entry_parent">
                     <div class="entry" id="1">
                          <div class="row">
-                            <div class="col-md-3">
+                              <div class="col-md-2">
+                                @la_input($module, 'date')
+                            </div>
+                             
+                             
+                             
+                             
+                            <div class="col-md-2">
                                 @la_input($module, 'project_id')
                             </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
+                            <div class="col-md-2">
                                     <label for="task_id">Task Name:</label>
                                     <select class="form-control" name="task_id">
                                         @foreach($tasks as $task)
                                         <option value="{{$task->task_id}}" <?php echo (($task->task_id == $module->row->task_id) ? 'selected' : ''); ?>>{{$task->name}}</option>
                                         @endforeach
                                     </select>
-                                </div>
+                                    
+<!--                                </div>-->
                             </div>
-<!--                        </div>
-                        <div class="row">-->
-                            <div class ="col-md-6">
-                                @la_input($module, 'comments')
+                              <div class="col-md-3">
+                               @la_input($module, 'comments')
+                               
                             </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-2">
-                                @la_input($module, 'date')
-                            </div>
-                            <div class="col-md-2">
+                             
+                               <div class="col-md-1">
                                 @la_input($module, 'hours')
                             </div>
-                            <div class="col-md-2">
+                            <div class="col-md-1">
                                 @la_input($module, 'minutes')
                             </div>
-                            <div class ="col-md-6">
-                                @la_input($module, 'remarks')
-                            </div>
+                             <div class="col-md-1" style="margin-top: 20px;">
+                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success pull-left']) !!} 
+                </div>
+
                         </div>
                         <div class="hide">
                             @la_input($module, 'dependency')
@@ -85,17 +93,12 @@
                     </div>
                 </div>
                 <input type="hidden" name="submitor_id" value="<?php echo base64_encode(base64_encode(Auth::user()->context_id)); ?>" />
-                <br>
-                <div class="form-group">
-                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success pull-left']) !!} 
-                </div>
+            
+               
                 {!! Form::close() !!}
             </div>
         </div>
     </div>
-</div>
-<div class="overlay">
-    <div class="loader"/>
 </div>
 @endsection
 
@@ -113,7 +116,7 @@ $(function () {
             $.ajax({
                 method: "POST",
                 url: "{{ url('/hoursWorked') }}",
-                data: {date: $('.date>input').val(), _token : "{{ csrf_token()}}"}
+                data: {type: 'day', date: $('.date>input').val(), task_removed: {{ $timesheet->id}}, _token : "{{ csrf_token()}}"}
             }).success(function (totalHours) {
                 if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val()/60)) > 24) {
                     swal("Number of working hours for a day cannot exceed more than 24 hrs!");
@@ -126,7 +129,6 @@ $(function () {
     });
 
     //hide stuff on page load
-    $('div.overlay').hide();
     $('[for="dependency_for"], [for="dependent_on"]').parents('div.form-group').fadeOut('slow');
 
 
@@ -143,8 +145,9 @@ $(function () {
     });
     $('[name="dependency"][value="No"]').trigger('click');
 
-    $('.date').data("DateTimePicker").minDate(moment().subtract(1, 'days').millisecond(0).second(0).minute(0).hour(0));
-    $('.date').data("DateTimePicker").maxDate(moment()).daysOfWeekDisabled([0, 6]);
+    $('.date').data("DateTimePicker").minDate(moment().subtract(7, 'days').millisecond(0).second(0).minute(0).hour(0));
+    $('.date').data("DateTimePicker").daysOfWeekDisabled([0]);
+//    $('.date').data("DateTimePicker").maxDate(moment());
 });
 </script>
 @endpush

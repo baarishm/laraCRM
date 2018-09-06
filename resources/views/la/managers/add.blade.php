@@ -1,7 +1,7 @@
 @extends("la.layouts.app")
 
 @section("contentheader_title")
-<a href="{{ url(config('laraadmin.adminRoute') . '/leads') }}">Leads</a> :
+<a href="{{ url(config('laraadmin.adminRoute') . '/leads') }}">Manager</a> :
 @endsection
 @section("section", "Leads")
 @section("section_url", url(config('laraadmin.adminRoute') . '/leads'))
@@ -26,7 +26,7 @@
     <div class="box-body">
         <div class="row">
             <div class="col-md-8 col-md-offset-2">
-                {!! Form::open(['action' => 'LA\LeadsController@store', 'id' => 'lead-add-form']) !!}
+                {!! Form::open(['action' => 'LA\ManagersController@store', 'id' => 'lead-add-form']) !!}
                 @la_form($module)
 
                 {{--

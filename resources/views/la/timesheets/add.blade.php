@@ -1,44 +1,7 @@
 @extends("la.layouts.app")
-<style>
-    div.overlay{
-        background: none repeat scroll 0 0 #00000026;
-        position: absolute;
-        display: block;
-        z-index: 1000001;
-        top: 0;
-        height: 100%;
-        width: 100%;
-        margin-top: 50px;
-    }
-    .loader {
-        position: relative;
-        border: 8px solid #7b7b7b;
-        border-top: 8px solid #fbfbfb;
-        border-radius: 50%;
-        width: 60px;
-        height: 60px;
-        animation: spin 2s linear infinite;
-        top: 280px;
-        left: 520px;
-    }
 
-    @keyframes spin {
-        0% { transform: rotate(0deg); }
-        100% { transform: rotate(360deg); }
-    }
-
-
-    input[type="search"].form-control.input-sm{
-        float : right;
-        margin:5px;
-        border:none;
-        border-bottom: 1px solid #9a9999;
-        font-weight: 400;
-    }
-
-</style>
 @section("contentheader_title")
-<a href="{{ url(config('laraadmin.adminRoute') . '/timesheets') }}">Timesheets</a> :
+<a href="{{ url(config('laraadmin.adminRoute') . '/timesheets') }}">Add Timesheet Entry</a>
 @endsection
 @section("section", "Timesheets")
 @section("section_url", url(config('laraadmin.adminRoute') . '/timesheets'))
@@ -55,266 +18,178 @@
     </ul>
 </div>
 @endif
-<!-- for Last records details -->
-<div class="box box-success">
-    <!--<div class="box-header"></div>-->
-    <div class="box-body">
-        <table id="example1" class="table table-bordered">
-            <thead>
-                <tr class="success">
-                    <th>Project Name</th>
-                    <th>Task Name</th>
-                    <th>Time Spent(in hrs)</th>
-                    <th>Date</th>
-                    <th>Remove Row form this Sheet</th>
-                </tr>
-            </thead>
-            @if(!empty($records))
-            @foreach($records as $record)
-            <tr class="entry-row" data-value="{{$record->id}}">
-                <td>{{$record->project_name}}</td>
-                <td>{{$record->task_name}}</td>
-                <td>{{$record->hours+($record->minutes/60)}}</td>
-                <td>{{date('d M Y',strtotime($record->date))}}</td>
-                <td><button class="btn btn-danger btn-xs remove-row"><i class="fa fa-times"></i></button></td>
-            </tr>
-            @endforeach
-            @endif
-            <tbody>
-
-            </tbody>
-        </table>
-    </div>
-</div>
-<!-- End -->
-<!-- Buttons to add form or to send email -->
-<div class="form-group">
-    <a href="#" class="btn btn-success " id ="add-entry">Add Entry</a>
-    @if(!empty($records))
-    <a href="#" class="btn btn-primary" id="send-mail">Send Timesheet Email</a>
-    @endif
-</div>
 <div class="box entry-form">
-    <div class="box-header">
-
-    </div>
     <div class="box-body">
         <div class="row">
-            <div class="col-md-10 col-md-offset-1">
-                {!! Form::open(['action' => 'LA\TimesheetsController@store', 'id' => 'timesheet-add-form']) !!}
-                <div id="entry_parent">
-                    <div class="entry" id="1">
-                        <div class="row">
-                            <div class="col-md-3">
-                                @la_input($module, 'project_id')
-                            </div>
-                            <div class="col-md-3">
-                                <div class="form-group">
-                                    <label for="task_id">Task Name:</label>
-                                    <select class="form-control" name="task_id">
-                                        @foreach($tasks as $task)
-                                        <option value="{{$task->task_id}}">{{$task->name}}</option>
-                                        @endforeach
-                                    </select>
+            <div class="col-md-12">
+                <table id="entry_table">
+                    <thead class="entry-header">
+                        <tr>
+                            <th style="width: 16%;">Date<span class="required">*</span></th>
+                            <th style="width: 20%;">Project<span class="required">*</span></th>
+                            <th style="width: 20%;">Task<span class="required">*</span></th>
+                            <th>Description</th>
+                            <th>Hours<span class="required">*</span></th>
+                            <th>Minutes<span class="required">*</span></th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="entry_body">
+                        <tr class="entry-row">
+                            <td>
+                                <div class="input-group date">
+                                    <input class="form-control" placeholder="Enter Date" required name="date" id="date" type="text" value="" autocomplete="off">
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
                                 </div>
-                            </div>
-<!--                        </div>
-                        <div class="row">-->
-                            <div class ="col-md-6">
-                                @la_input($module, 'comments')
-                            </div>
-                        </div>
-                        <div class="row">
-                            <div class="col-md-2">
-                                @la_input($module, 'date')
-                            </div>
-                            <div class="col-md-2">
-                                @la_input($module, 'hours')
-                            </div>
-                            <div class="col-md-2">
-                                @la_input($module, 'minutes')
-                            </div>
-                            <div class ="col-md-6">
-                                @la_input($module, 'remarks')
-                            </div>
-                        </div>
-                        <div class="hide">
-                            @la_input($module, 'dependency')
-                            @la_input($module, 'dependency_for')
-                            @la_input($module, 'dependent_on')
-                            <div class="form-group">
-                                <label for="lead_id">Lead Name:</label>
-                                <select class="form-control" name="lead_id">
-                                    @foreach($leads as $lead)
-                                    <option value="{{$lead->lead_id}}" data-mail = "{{$lead->lead_email}}">{{$lead->lead_name}}</option>
+                            </td>
+                            <td>
+                                <select class="form-control" name="project_id" id="project_id" required>
+                                    @foreach($projects as $project)
+                                    <option data-name="{{$project->name}}" value="{{$project->id}}">{{$project->name}}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="manager_id">Manager Name:</label>
-                                <select class="form-control" name="manager_id">
-                                    @foreach($managers as $manager)
-                                    <option value="{{$manager->manager_id}}" data-mail = "{{$manager->manager_email}}">{{$manager->manager_name}}</option>
+                            </td>
+                            <td>
+                                <select class="form-control" name="task_id" id="task_id" required>
+                                    @foreach($tasks as $task)
+                                    <option data-name="{{$task->name}}" value="{{$task->task_id}}">{{$task->name}}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <input type="hidden" name="submitor_id" value="<?php echo base64_encode(base64_encode(Auth::user()->context_id)); ?>" />
-                <input type="hidden" name="task_removed" id="task_removed" value="{{$task_removed}}" />
-                <br>
-                <div class="form-group">
-                    {!! Form::submit( 'Add Entry', ['class'=>'btn btn-success pull-left']) !!} 
-                </div>
-                {!! Form::close() !!}
+                            </td>
+                            <td>
+                                <input class="form-control" placeholder="Enter Description" name="comments" id="comments" type="text" value="">
+                            </td>
+                            <td>
+                                <select class="form-control" name="hours" id="hours" required>
+                                    @for($i = 1; $i <= 24 ; $i++)
+                                    <option value="{{$i}}">{{$i}}</option>
+                                    @endfor
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control" name="minutes" id="minutes" required>
+                                    <option value="00">00</option>
+                                    <option value="30">30</option>
+                                </select>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary add-entry submit-form" data-value=''><i class="fa fa-plus"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
 </div>
-<div class="overlay">
-    <div class="loader"/>
-</div>
+
+<input type="hidden" name="submitor_id" id="submitor_id" value="<?php echo base64_encode(base64_encode(Auth::user()->context_id)); ?>" />
 @endsection
 
 @push('scripts')
 <script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
 <script>
-$(function () {
-    $("#timesheet-add-form input[type='submit']").click(function (e) {
-        e.preventDefault();
-        if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
-            swal("Number of hours for a task cannot exceed more than 24 hrs!");
-            return false;
-        } else {
-            $.ajax({
-                method: "POST",
-                url: "{{ url('/hoursWorked') }}",
-                data: {date: $('.date>input').val(), _token : "{{ csrf_token()}}"}
-            }).success(function (totalHours) {
-                if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val()/60)) > 24) {
-                    swal("Number of working hours for a day cannot exceed more than 24 hrs!");
-                    return false;
-                } else {
-                    $('#timesheet-add-form').submit();
-                }
-            });
-        }
-    });
+$(document).ready(function () {
+    var removeable_options = $('select[name="task_id"] option[data-name!="Leave"]').detach();
+    init(removeable_options);
+    //form submition
+    $(document).on('click', 'button.submit-form', function () {
+        var send_data = {
+            _token: "{{ csrf_token() }}",
+            project_id: $('select#project_id').val(),
+            task_id: $('select#task_id').val(),
+            date: $('#date').val(),
+            comments: $('#comments').val(),
+            hours: $('#hours').val(),
+            minutes: $('#minutes').val(),
+            submitor_id: $('#submitor_id').val(),
+        };
+        var saved_data = {
+            _method: "POST",
+            _token: "{{ csrf_token() }}",
+            project_id: $('select#project_id').val(),
+            task_id: $('select#task_id').val(),
+            project_name: $('select#project_id option:selected').attr('data-name'),
+            task_name: $('select#task_id option:selected').attr('data-name'),
+            date: $('#date').val(),
+            comments: $('#comments').val(),
+            hours: $('#hours').val(),
+            minutes: $('#minutes').val()
+        };
+        var el = $(this);
 
-    //hide stuff on page load
-    $('.entry-form').hide();
-    $('div.overlay').hide();
-    $('[for="dependency_for"], [for="dependent_on"]').parents('div.form-group').fadeOut('slow');
-
-    //show entry form on add entry button click
-    $("#add-entry").click(function (event) {
-        event.preventDefault();
-        $('.entry-form').show();
-        $("#add-entry").hide();
-    });
-
-    //show hide dependency based boxes and values
-    $('[name="dependency"]').change(function () {
-        if ($('[name="dependency"]:checked').val() == 'No') {
-            $('[for="dependency_for"], [for="dependent_on"]').parents('div.form-group').fadeOut('slow');
-            $('select[name="dependent_on"]').val('');
-            $('textarea[name="dependency_for"]').val('');
-        } else {
-            $('[for="dependency_for"], [for="dependent_on"]').parents('div.form-group').fadeIn('slow');
-            $('select[name="dependent_on"]').val($('select[name="dependent_on"] option:first').val());
-        }
-    });
-    $('[name="dependency"][value="No"]').trigger('click');
-
-
-    //initialize datatable
-    $("#example1").DataTable({
-        language: {
-            lengthMenu: "_MENU_",
-            search: "_INPUT_",
-            searchPlaceholder: "Search"
-        },
-    });
-
-    //send mail
-    function send_timesheet_mail(date) {
-        $('div.overlay').show();
-        $.ajax({
-            method: "POST",
-            url: "{{ url('/hoursWorked') }}",
-            data: {date: date, task_removed: $('#task_removed').val(), _token : "{{ csrf_token() }}"}
-        }).success(function (totalHours) {
-            if (parseInt(totalHours) < 9) {
-                swal("Number of working hours for a day cannot be less than 9 hrs for a timesheet to be sent!");
-                $('div.overlay').hide();
+        if (el.hasClass('add-entry') || el.hasClass('update-entry-db')) {
+            var url = "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}";
+            var method = "POST";
+            if (el.hasClass('update-entry-db')) {
+                url = "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}" + "/" + el.attr('data-value') + "?_method=PUT";
+                method = "PUT";
+            }
+            saved_data['_method'] = method;
+            if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
+                $('div.overlay').addClass('hide');
+                swal("Number of hours for a task cannot exceed more than 24 hrs!"); 
                 return false;
             } else {
-                $.ajax({
-                    url: "{{ url('/sendEmailToLeadsAndManagers') }}",
-                    type: 'POST',
-                    data: {
-                        'task_removed': $('#task_removed').val(),
-                        'date': date,
-                        '_token' : "{{ csrf_token()}}"
-                    },
-                    success: function (data) {
-                        $('div.overlay').hide();
-                        alert(data);
-                        window.location.href = "{{ url('/admin/timesheets') }}";
-                    }
-                });
+                if (validateFields($('[required]'))) {
+                    $('div.overlay').removeClass('hide');
+                    $.ajax({
+                        method: "POST",
+                        url: "{{ url('/hoursWorked') }}",
+                        data: {type: 'day', date: $('.date>input').val(), _token: "{{ csrf_token()}}", task_removed: el.attr('data-value')}
+                    }).success(function (totalHours) {
+                        condition = (parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val() / 60));
+
+                        if (condition > 24) {
+                            $('div.overlay').addClass('hide');
+                            swal("Number of working hours for a day cannot exceed more than 24 hrs!");
+                            return false;
+                        } else {
+                            $.ajax({
+                                method: "POST",
+                                url: url,
+                                data: send_data,
+                                success: function (id) {
+                                    update_row(saved_data, id, removeable_options);
+                                    $('tr.entry-row').find('.submit-form').addClass('add-entry').removeClass('update-entry-db').attr('data-value', '');
+                                    $('.add-entry').find('i').removeClass('fa-edit').addClass('fa-plus');
+                                    $('div.overlay').addClass('hide');
+                                }
+                            });
+                        }
+                    });
+                } else { 
+                    $('div.overlay').addClass('hide');
+                    swal('Please fill all required fields!');
+                }
             }
-        });
-    }
-
-    $('#send-mail').click(async function (event) {
-        event.preventDefault();
-
-        var mail_pending_dates = {};
-        $.ajax({
-            method: "POST",
-            url: "{{ url('/datesMailPending') }}",
-            data: {'task_removed': $('#task_removed').val(), _token : "{{ csrf_token() }}"},
-            async: false
-        }).success(function (dates) {
-            mail_pending_dates = $.parseJSON(dates);
-        });
-
-        if (Object.keys(mail_pending_dates).length == 1) {
-            send_timesheet_mail(Object.keys(mail_pending_dates)[0]);
-        } else {
-            swal({
-                title: 'Select date for which you need to send timesheet.',
-                input: 'radio',
-                inputOptions: mail_pending_dates
-            }).then(function (result) {
-                if (result.value) {
-                    send_timesheet_mail(result.value);
-                } else {
-                    swal({type: 'error', text: "Please select one date!"});
+        } else if (el.hasClass('update-entry')) {
+            if ($('tr.entry-row button.submit-form').hasClass('update-entry-db')) { 
+                $('div.overlay').addClass('hide');
+                swal('Submit last row first!');
+                return false;
+            }
+            show_update_row(el);
+        } else if (el.hasClass('delete-entry')) {
+            var parent_row = el.parents('tr.recent-entry');
+            $('div.overlay').removeClass('hide');
+            $.ajax({
+                method: 'POST',
+                url: "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}" + "/" + el.attr('data-value'),
+                data: {_token: "{{ csrf_token() }}", id: el.attr('data-value'), ajax: true, _method: 'DELETE'},
+                success: function () {
+                    $('div.overlay').addClass('hide');
+                    parent_row.remove();
+                    swal('Row deleted successfully!');
                 }
             });
         }
     });
 
-    //remove row from timesheet
-    $(document).on('click', '.remove-row', function () {
-        $("#task_removed").val($("#task_removed").val() + ',' + $(this).parents('tr').attr('data-value'));
-        $(this).parents('tr').addClass('hide').remove();
-		if ($('#example1 tr').length == 1) {
-			$('ul.pagination li.paginate_button.active').prev('li.paginate_button').trigger('click');
-			if ($('#example1 tr').length == 1) {
-				$('#send-mail').hide();
-			} else {
-				$('#send-mail').show();
-			}
-		}
-    });
-	
-
-    $('.date').data("DateTimePicker").minDate(moment().subtract(1, 'days').millisecond(0).second(0).minute(0).hour(0));
-    $('.date').data("DateTimePicker").maxDate(moment()).daysOfWeekDisabled([0, 6]);
 });
 </script>
+
+<script src="{{ asset('la-assets/js/pages/timesheets.js') }}"></script>
 @endpush

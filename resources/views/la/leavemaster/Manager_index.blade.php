@@ -1,6 +1,6 @@
 @extends("la.layouts.app")
 @section("contentheader_title")
-Leave Manager Dashboard
+Team Leave Dashboard
 @endsection
 @section("main-content")
 
@@ -14,21 +14,23 @@ Leave Manager Dashboard
 
     @endif
     <div class="card" style="background: #FFF">
-
-        <table class="table table-striped table-bordered" >
+        @if(!empty($leaveMaster))
+        <button type="button" class="days btn" id="P"  onclick="DateSorting('P')">Previous Day</button>
+        <button type="button" class="days btn" id="T"   onclick="DateSorting('T')">Today</button>
+        <button type="button" class="days btn" id="N" onclick="DateSorting('N')">Next Day</button>
+        <input type="text" readonly="true" id="holder" class="pull-right" style="border:none;">
+        <table class="table table-striped table-bordered"  id="searchdate">
 
 
             <tr>
             <thead>
-
             <th>Name</th>
             <th>From Date</th>
             <th>To Date</th>
             <th>No Of Days</th>
             <th>Leave Type</th>
             <th>Purpose</th>
-            <th style="width: 103px; text-align:center;">Action</th>
-
+            <th style="width:155px; text-align:center;">Action</th>
             </thead>
             </tr>
 
@@ -41,7 +43,7 @@ Leave Manager Dashboard
                 $Approved=$leaveMasterRow->Approved;
                 @endphp
 
-                <tr id="ps">
+                <tr>
 
                     <td>{{$leaveMasterRow->Employees_name}}</td>
 
@@ -56,14 +58,26 @@ Leave Manager Dashboard
                     </td>
                      <!--<td>{{(($leaveMasterRow->Approved != '')? $leaveMasterRow->Approved : 'Pending' ) }}</td>-->
                     <td class="text-center"> 
-                        @if($Approved=='1' || $Approved=='0')
-
-                        <button type="button" class="btn" name="Approved" id="Approved" style="background: green" >done</button>
-
-
+                        @if($Approved=='1')
+                       
+                        <span class="text-success">Approved</span>
+                            
+                       
+                        @elseif($Approved=='0')
+                    
+                        <span class="text-danger">Rejected</span>
+                    
                         @else
-                        <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);"   >Approve</button>
-                        <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+                       
+                        <div class="">
+                            @if($Approved=='0' || $Approved=='')
+                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" data-days="{{$leaveMasterRow->NoOfDays}}">Approve</button>
+                            @endif
+                            @if($Approved=='1' || $Approved=='')
+                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" data-days='{{$leaveMasterRow->NoOfDays}}'>Reject</button> 
+                            @endif
+                        </div>
+                      
                         @endif
 
 
@@ -73,9 +87,36 @@ Leave Manager Dashboard
                 @endforeach
             </tbody>
         </table>
+        @else
+        <div>No Record found!</div>
+        @endif
     </div>
+
+
+
     @endsection
+    @push('scripts')
     <script type="text/javascript">
+        function DateSorting(date) {
+
+            $.ajax({
+                url: "{{ url(config('laraadmin.adminRoute') . '/datesearch') }}",
+                type: 'POST',
+                data: {'date': date, _token: "{{ csrf_token() }}"},
+                success: function (data) {
+                    data = $.parseJSON(data);
+                    $("#searchdate tbody").html(data.html);
+                    $(".days").removeClass('btn-success');
+                    $("#" + data.day).addClass('btn-success');
+                    if (data.day == 'T') {
+                        $('#N').hide();
+                    } else {
+                        $('#N').show();
+                    }
+                }
+            });
+        }
+
 
         function myfunction(button)
         {
@@ -86,28 +127,44 @@ Leave Manager Dashboard
             if (controlid == 'Approved')
             {
                 approved = 1;
+               
 
             }
             $.ajax({
-                url: '/approveLeave',
+                url: "{{ url('/approveLeave') }}",
                 type: 'GET',
-                data: {'approved': approved, 'id': $(button).attr('data-id')},
+                data: {'approved': approved, 'id': $(button).attr('data-id'), 'days' : $(button).attr('data-days')},
                 success: function (data) {
-                    console.log(data);
                     swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
-
+               
                 }
             });
-            var element = document.getElementById("ps");
-            element.classList.add("mystyle");
             var vid = $(button).attr('data-id');
-            $('[data-id=' + vid + ']').attr('disabled', 'disabled');
+            $(button).parent('td').html((approved) ? '<span class="text-success">Approved</span>' : '<span class="text-danger">Rejected</span>');
+            $('[data-id=' + vid + ']').remove();
+        }
+        
+        $(function () {
+            $('.days').click(function () {
+                var elem_id = $(this).attr('id');
+                var add_day = ((elem_id == 'N') ? 1 : ((elem_id == 'T') ? 0 : -1));
+                var today = new Date();
+                var dd = today.getDate() + add_day;
+                var mm = today.getMonth() + 1; //January is 0!
+                var yyyy = today.getFullYear();
+                if (dd < 10) {
+                    dd = '0' + dd;
+                }
+                if (mm < 10) {
+                    mm = '0' + mm;
+                }
+                var today = yyyy + '-' + mm + '-' + dd;
 
-            // $("button").data("data-id").attr('disabled', 'disabled');
-
-
-        };
+                $('#holder').val(new Date(today).toShortFormat());
+            });
+        });
 
     </script>
 
+    @endpush
 

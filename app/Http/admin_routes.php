@@ -95,6 +95,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
         Route::post("/datesMailPending", 'LA\TimesheetsController@ajaxDatesMailPending');
         Route::post("/exportTimeSheetToAuthority", 'LA\TimesheetsController@ajaxExportTimeSheetToAuthority');
         Route::get(config('laraadmin.adminRoute') . "/downloadTimesheet", 'LA\TimesheetsController@downloadTimesheet');
+        Route::get(config('laraadmin.adminRoute') . "/timesheet/teamMembers", 'LA\TimesheetsController@teamMemberSheet');
+        Route::get(config('laraadmin.adminRoute') . "/timesheet/sendMail", 'LA\TimesheetsController@sendMail');
 
 
 	/* ================== Sidebar_Menu_Accesses ================== */
@@ -105,6 +107,14 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
 	Route::post(config('laraadmin.adminRoute') . '/leaves/store', 'LA\LeaveMasterController@store');
 	Route::get('/approveLeave', 'LA\LeaveMasterController@ajaxApproveLeave');
+	Route::post(config('laraadmin.adminRoute') . '/datesearch', 'LA\LeaveMasterController@ajaxDateSearch');
+	Route::get(config('laraadmin.adminRoute') . '/leave/teamMember', 'LA\LeaveMasterController@teamMemberIndex');
+	Route::post(config('laraadmin.adminRoute') . '/leave/withdraw', 'LA\LeaveMasterController@ajaxWithdraw');
+        
+        
+        /* ================== Leaves_Of_Team_member================== */
+        Route::get(config('laraadmin.adminRoute') . '/teamMemberOnLeave', 'LA\LeaveMasterController@Teamindex');
+//	Route::post(config('laraadmin.adminRoute') . '/leaves/index', 'LA\LeaveMasterController@Teamindex');
         
 	/* ================== Sidebar_Menu_Leaves_ViewData ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
@@ -122,4 +132,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::get(config('laraadmin.adminRoute') . '/leave_type_dt_ajax', 'LA\Leave_TypesController@dtajax');
         
        
+
+	/* ================== Resource_Allocations ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/resource_allocations', 'LA\Resource_AllocationsController');
+	Route::get(config('laraadmin.adminRoute') . '/resource_allocation_dt_ajax', 'LA\Resource_AllocationsController@dtajax');
 });

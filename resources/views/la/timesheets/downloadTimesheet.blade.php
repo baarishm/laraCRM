@@ -91,9 +91,6 @@
         </div>
     </div>
 </div>
-<div class="overlay hide">
-    <div class="loader"/>
-</div>
 @endsection
 
 @push('scripts')
@@ -104,8 +101,14 @@ $(function () {
         $.ajax({
             method: "POST",
             url: "{{ url('/exportTimeSheetToAuthority') }}",
-            data: {start_date: $('#start_date').val(), end_date: $('#end_date').val(), _token: "{{ csrf_token()}}"}
-        }).success(function (data) {
+            data: {start_date: $('input[name="start_date"]').val(), end_date: $('input[name="end_date"]').val(), _token: "{{ csrf_token()}}"}
+        }).success(function (response) {
+            var a = document.createElement("a");
+            a.href = response.file;
+            a.download = response.name;
+            document.body.appendChild(a);
+            a.click();
+            a.remove();
         });
     });
 

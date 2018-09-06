@@ -120,13 +120,15 @@ $(function () {
             language: {
             lengthMenu: "_MENU_",
                     search: "_INPUT_",
-                    searchPlaceholder: "Search"
+                    searchPlaceholder: "Search By Employee Name"
             },
+            columnDefs: [ {"searchable": false, "targets": [6, 9]}],
             @if ($show_actions)
-    columnDefs: [ { orderable: false, targets: [ - 1] }],
+                columnDefs: [ { orderable: false, targets: [ - 1] }, {"searchable": false, "targets": [6, 9]}],
             @endif
     }
     );
+    
     $("#employee-add-form").validate({
 
     });

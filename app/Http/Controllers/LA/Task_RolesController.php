@@ -88,17 +88,17 @@ class Task_RolesController extends Controller {
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-			
-			$Task_Role = Task_Role::where('task_id', $request->task_id)
-							->where('role_id', $request->role_id)
-							->get();
-			
-			$taskRoleExists = $Task_Role->count();
-			
-			if($taskRoleExists > 0){
-				return redirect()->route(config('laraadmin.adminRoute') . '.task_roles.create')->withErrors(['message'=> 'Task already assigned to this role.']);
-			}
-			
+
+            $Task_Role = Task_Role::where('task_id', $request->task_id)
+                    ->where('role_id', $request->role_id)
+                    ->get();
+
+            $taskRoleExists = $Task_Role->count();
+
+            if ($taskRoleExists > 0) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.task_roles.create')->withErrors(['message' => 'Task already assigned to this role.']);
+            }
+
             $insert_id = Module::insert("Task_Roles", $request);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.task_roles.index');
@@ -185,6 +185,17 @@ class Task_RolesController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
                 ;
             }
+
+            $row = Task_Role::where('task_id', $request->task_id)
+                    ->where('role_id', $request->role_id)
+                    ->pluck('id');
+
+            $Exists = $row->count();
+
+            if ($Exists > 0 && !in_array($id, $row->toArray())) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.task_roles.edit', ['id' => $id])->withErrors(['message' => 'Task already assigned to this role.']);
+            }
+
 
             $insert_id = Module::updateRow("Task_Roles", $request, $id);
 

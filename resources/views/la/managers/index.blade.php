@@ -86,6 +86,7 @@ $(function () {
 	$("#example1").DataTable({
 		processing: true,
         serverSide: true,
+        searching : false,
         ajax: "{{ url(config('laraadmin.adminRoute') . '/manager_dt_ajax') }}",
 		language: {
 			lengthMenu: "_MENU_",

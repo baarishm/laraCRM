@@ -51,7 +51,10 @@
 @push('scripts')
 <script>
 $(function () {
-	$('select[name="role_id"]').prepend("<option value='0' selected='selected'>Common</option>");
+	$('select[name="role_id"]').prepend("<option value='0'>Common</option>");
+        if($('select[name="role_id"] option[selected]').length == 0){
+            $('select[name="role_id"] option:first').attr('selected', true);
+        }
 });
 </script>
 @endpush
