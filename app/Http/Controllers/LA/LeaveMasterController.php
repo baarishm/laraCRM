@@ -30,9 +30,6 @@ class LeaveMasterController extends Controller {
     }
 
     public function index(Request $request) {
-
-
-
         $role = Employee::employeeRole();
         $where = 'employees.deleted_at IS NULL ';
 
@@ -342,7 +339,7 @@ class LeaveMasterController extends Controller {
     /**
      * Withdraw a Leave
      */
-    public function withdraw(Request $request) {
+    public function ajaxWithdraw(Request $request) {
         DB::table('leavemaster')->where('id', $request->id)->update(['withdraw' => 1]);
         return 'withdrawn';
     }
