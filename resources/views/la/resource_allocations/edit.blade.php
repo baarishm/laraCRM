@@ -54,9 +54,8 @@
 @push('scripts')
 <script>
 $(function () {
-	$("#resource_allocation-edit-form").validate({
-		
-	});
+        $('[name="allocation"]').attr('min', '5').attr('max', '100');
+        $('.date').data("DateTimePicker").minDate(moment('2016-08-29'));
 });
 </script>
 @endpush
