@@ -24,6 +24,7 @@ Team Leave Dashboard
 
             <tr>
             <thead>
+            <th>EMP.ID</th>
             <th>Name</th>
             <th>From Date</th>
             <th>To Date</th>
@@ -44,7 +45,7 @@ Team Leave Dashboard
                 @endphp
 
                 <tr>
-
+                      <td>{{$leaveMasterRow->EmpId}}</td>
                     <td>{{$leaveMasterRow->Employees_name}}</td>
 
                     <td>{{$FromDate}}</td>
@@ -52,8 +53,7 @@ Team Leave Dashboard
                     <td>{{$leaveMasterRow->NoOfDays}}</td>
                     <td>{{(($leaveMasterRow->leave_name != '')? $leaveMasterRow->leave_name : "Not Specified" ) }}</td> 
 
-<!--                    <td>{{$leaveMasterRow->LeaveReason}}</td>-->
-                    <td><span  id="btn2" data-toggle="popover"  title="{{$leaveMasterRow->LeaveReason}}" data-content="Default popover">Leave Reason ..</span>
+                   <td><span  id="btn2" data-toggle="popover"   title="{{$leaveMasterRow->LeaveReason}}" data-content="Default popover">Leave Reason ..</span>
 
                     </td>
                      <!--<td>{{(($leaveMasterRow->Approved != '')? $leaveMasterRow->Approved : 'Pending' ) }}</td>-->
@@ -162,6 +162,12 @@ Team Leave Dashboard
                 $('#holder').val(new Date(today).toShortFormat());
             });
         });
+        
+//       function myFunction() {
+//  $str = "{{$leaveMasterRow->LeaveReason}}";
+//     $res = str.substr($str, 20);
+//    document.getElementById("btn2").innerHTML = res;
+//}
 
     </script>
 

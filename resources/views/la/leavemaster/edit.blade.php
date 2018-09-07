@@ -26,9 +26,9 @@ Edit Apply  Leave
                     <input name="_method" type="hidden" value="PATCH">
                     <div class="row">
 
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-4 hide">
                             <label for="name">Employee Id:</label>
-                            <input type="text" class ="form-control" autocomplete="off" readonly="readonly" name="EmpId" value="{{$leaveMaster -> EmpId}}">
+<input type="text" class ="form-control" autocomplete="off" readonly="readonly" name="EmpId" value="{{$leaveMaster -> EmpId}}">
                         </div>
 
 
@@ -48,7 +48,7 @@ Edit Apply  Leave
                             <input type="text" class="form-control" name="NoOfDays" autocomplete="off" readonly="readonly" id="NoOfDays" value="{{$leaveMaster -> NoOfDays or old('NoOfDays') }}">
                         </div>
                         <div class="form-group col-md-4">
-                            <label for="number">Leave Purpose</label>
+                            <label for="number">Leave Purpose*</label>
 
                             <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required maxlength="180" value="{{$leaveMaster -> LeaveReason or old('LeaveReason') }}"> 
                         </div>
@@ -128,21 +128,7 @@ Edit Apply  Leave
             }
         } 
         
-       
-//        function CalculateDiff(isstart)
-//        {
-//            if ($("#datepicker").val() != "" && $("#datepickerto").val() != "") {
-//                var start = $("#datepicker").datepicker("getDate");
-//                var end = $("#datepickerto").datepicker("getDate");
-//                days = ((end - start) / (1000 * 60 * 60 * 24)) + 1;
-//                $("#NoOfDays").val(days);
-//
-//
-//                // alert(Math.round(days));
-//
-//            }
-//        }
-
+ 
         $("#datepicker").datepicker({
             autoclose: true,
             format: 'd M yyyy',

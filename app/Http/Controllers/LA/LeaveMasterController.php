@@ -44,25 +44,7 @@ class LeaveMasterController extends Controller {
         }
         $empdetail = Employee::where('id', Auth::user()->context_id)
                 ->first();
-        
-//        if ($leaveMasterRow->Approved == '1') {
-//               DB::table('employees')
-//               ->where('id', Auth::user()->context_id)
-//              ->update(['available_leaves' => '(available_leaves)-(1)']);
-//            } 
-//            else  
-//                {
-//                DB::table('employees')
-//               ->where('id', Auth::user()->context_id)
-//           ->update(['total_leaves' => '(total_leaves)']);
-//            } 
-        
-//        if($Approved== '1'){
-//        DB::table('employees')
-//        ->where('id', Auth::user()->context_id)
-//        ->update(['available_leaves' => '(available_leaves)-(1)']);
-//        }
-       
+
         $leaveMaster = DB::table('leavemaster')
                 ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
@@ -207,11 +189,21 @@ class LeaveMasterController extends Controller {
         $update_field = ['approved' => $_GET['approved']];
         if ($_GET['approved']) {
             $update_field['ApprovedBy'] = Auth::user()->context_id;
+              DB::table('employees')
+             
+       ->update([('available_leaves') =>'available_leaves - 1']);
+        
+              
+                   
+            
         } else {
             $update_field['RejectedBy'] = Auth::user()->context_id;
         }
         $leavemaster = DB::table('leavemaster')->where('id', $_GET['id'])->update($update_field);
+         $empdetail = DB::table('employees')->where('id', $_GET[('available_leaves')])->update($update_field);
+          
         return "true";
+        
     }
 
     /**
@@ -310,7 +302,7 @@ class LeaveMasterController extends Controller {
 
         foreach ($leaveMaster as $leaveMasterRow) {
             $html .= '<tr id="ps">
-
+                     <td>' . $leaveMasterRow->EmpId . '</td>
                     <td>' . $leaveMasterRow->Employees_name . '</td>
 
                     <td>' . $leaveMasterRow->FromDate . '</td>
