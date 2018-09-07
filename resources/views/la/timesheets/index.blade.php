@@ -105,7 +105,7 @@ $(function () {
     var table = $("#example1").DataTable({
     processing: true,
             serverSide: true,
-            searchable: false,
+            searching: false,
             ajax: {
             url:"{{ url(config('laraadmin.adminRoute') . '/timesheet_dt_ajax') }}",
                     type : 'get',
@@ -180,7 +180,7 @@ $(function () {
         } else {
             $(".week#minus, .week#plus").attr('disabled', false);
         }
-        $('div.week-div').find('span').html('<b>' + ((week_num > 0) ? '+' : '') + week_num + ' Week</b>')
+        $('div.week-div').find('span').html('<b>' + (((week_num == 0)) ? 'Current Week' : ((week_num > 0) ? '+' : '') + week_num + ' Week</b>'))
         table.draw();
         $('div.overlay').addClass('hide');
     });

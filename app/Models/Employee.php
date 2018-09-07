@@ -52,4 +52,15 @@ class Employee extends Model {
         }
     }
 
+    /**
+     * To update role of user
+     * @param string $roleName  Manager or Lead
+     * @param string $emp_id  Context_id of user
+     */
+    public static function updateRole($roleName = 'LEAD', $emp_id = 0) {
+        $role_array = collect(DB::table('roles')->whereNull('deleted_at')->get())->keyBy('name');
+        $user_id = DB::table('users')->whereRaw('context_id = "' . $emp_id . '"')->first();
+        DB::table('role_user')->where('user_id', $user_id->id)->update(['role_id' => $role_array[strtoupper($roleName)]->id]);
+    }
+
 }

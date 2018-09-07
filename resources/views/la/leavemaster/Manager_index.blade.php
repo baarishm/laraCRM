@@ -162,12 +162,6 @@ Team Leave Dashboard
                 $('#holder').val(new Date(today).toShortFormat());
             });
         });
-        
-//       function myFunction() {
-//  $str = "{{$leaveMasterRow->LeaveReason}}";
-//     $res = str.substr($str, 20);
-//    document.getElementById("btn2").innerHTML = res;
-//}
 
     </script>
 

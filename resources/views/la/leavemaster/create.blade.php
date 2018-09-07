@@ -34,36 +34,29 @@ Apply For Leave
 
                     <div class="row">
 
-                       <div class="form-group col-md-3 hide">
-                           <label for="Name">Employee Id:</label>
+                        <div class="form-group col-md-3 hide">
+                            <label for="Name">Employee Id:</label>
                             <input type="text" class="form-control" name="EmpId" autocomplete="off" value="<?php echo Auth::user()->context_id; ?>" id="EmpId" placeholder="EmpId" required readonly>
                         </div>
                         <div class="form-group col-md-3">
-                          
-                             <label for="StartDate" class="control-label">Start Date*</label>
+
+                            <label for="StartDate" class="control-label">Start Date*</label>
 
                             <input type="text" value="{{ old('FromDate')}}" class="form-control" 
-                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="From" required  readonly='true' />
+                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="From" readonly='true' />
                         </div>
-
                         <div class="form-group col-md-3">
-
-                          
-                               <label for="EndDate" class="control-label">End Date*</label>
+                            <label for="EndDate" class="control-label">End Date*</label>
                             <input type="text" value="{{ old('ToDate')}}" class="form-control " id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="To" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' />	
-
                         </div>
-
-
                         <div class="form-group col-md-3">
                             <label for="Name">Number Of Days</label>
                             <input type="text" value="{{ old('NoOfDays')}}" class="form-control" readonly="readonly" name="NoOfDays" id="NoOfDays" autocomplete="off" >
-                          
+
                         </div>
                         <div class="form-group col-md-3">
                             <label for="Number">Leave Purpose*</label>
-
-                            <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" required maxlength="180"  >   
+                            <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" maxlength="180"  >   
                         </div>
                         <div class="form-group col-md-3">
                             <label>Leave Type</label>
@@ -95,9 +88,6 @@ Apply For Leave
 
 <script type="text/javascript">
     $(document).ready(function () {
-
-
-
         // To calulate difference b/w two dates
         function CalculateDiff(isstart)
         {
@@ -134,11 +124,11 @@ Apply For Leave
                 // Remove end day if span ends on Saturday but starts after Sunday
                 if (end == 6 && start != 0)
                     days = days - 1
-                if(days > '{{ $number_of_leaves }}'){
+                if (days > '{{ $number_of_leaves }}') {
                     swal('You cannot take more than {{ $number_of_leaves }} leaves at a time!');
+                    $('#datepickerto').val('');
                     $('button[type="submit"]').attr('disabled', true);
-                }
-                else{
+                } else {
                     $('button[type="submit"]').attr('disabled', false);
                 }
                 $("#NoOfDays").val(days);
@@ -158,10 +148,7 @@ Apply For Leave
         }).on('changeDate', function (e) {
             $("#datepickerto").val('');
             $("#NoOfDays").val('');
-
-            $("#datepickerto").datepicker('setStartDate', e.date);
-
-
+            $("#datepickerto").datepicker('setStartDate', e.date).datepicker("setDate", e.date);
             CalculateDiff(true);
         });
         $("#datepickerto").datepicker({

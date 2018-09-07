@@ -89,6 +89,16 @@ class TasksController extends Controller {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
 
+            $row = Task::where('name', $request->name)
+                    ->withTrashed()
+                    ->get();
+
+            $Exists = $row->count();
+
+            if ($Exists > 0) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.tasks.create')->withErrors(['message' => 'Task with this name already exists. Please check or contact Admin to revoke it.']);
+            }
+
             $insert_id = Module::insert("Tasks", $request);
 
             return redirect()->route(config('laraadmin.adminRoute') . '.tasks.index');
@@ -174,6 +184,16 @@ class TasksController extends Controller {
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
                 ;
+            }
+
+            $row = Task::where('name', $request->name)
+                    ->withTrashed()
+                    ->pluck('id');
+
+            $Exists = $row->count();
+
+            if ($Exists > 0 && !in_array($id, $row->toArray())) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.tasks.edit', ['id' => $id])->withErrors(['message' => 'Task with this name already exists. Please check or contact Admin to revoke it.']);
             }
 
             $insert_id = Module::updateRow("Tasks", $request, $id);

@@ -103,6 +103,17 @@ class EmployeesController extends Controller {
             $insert_data['name'] = ucwords($request->name);
             unset($insert_data['role']);
             unset($insert_data['is_confirmed_hidden']);
+
+            $row = Employee::where('email', $request->email)
+                    ->withTrashed()
+                    ->get();
+
+            $Exists = $row->count();
+
+            if ($Exists > 0) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.employees.create')->withErrors(['message' => 'Employee with this email ID already exists. Please check or ask admin to revoke it.']);
+            }
+
             // Create Employee
             $employee = Employee::create($insert_data);
             // Create User
@@ -221,6 +232,16 @@ class EmployeesController extends Controller {
             $update_data['name'] = ucwords($request->name);
             unset($update_data['role']);
             unset($update_data['is_confirmed_hidden']);
+            
+            $row = Employee::where('email', $request->email)
+                    ->withTrashed()
+                    ->pluck('id');
+
+            $Exists = $row->count();
+            if ($Exists > 0 && !in_array($id, $row->toArray())) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.employees.edit', ['id' => $id])->withErrors(['message' => 'Employee with this email ID already exists. Please check or ask admin to revoke it.']);
+            }
+
             $insert_id = Employee::find($id)->update($update_data);
 
             // Update User

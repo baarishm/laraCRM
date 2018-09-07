@@ -334,7 +334,7 @@ class TimesheetsController extends Controller {
         }
 
         $role = Employee::employeeRole();
-        $this->custom_cols = [($role != 'engineer') ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Mail Sent' ELSE 'Submitted' end) as mail_sent")];
+        $this->custom_cols = [($request->teamMember) ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Mail Sent' ELSE 'Submitted' end) as mail_sent")];
 
         $where = 'submitor_id = ' . Auth::user()->context_id;
         if ($request->teamMember) {
@@ -343,11 +343,11 @@ class TimesheetsController extends Controller {
                 //no condition to be applied
             } else if ($role == 'manager') {
                 $people_under_manager = Employee::getEngineersUnder('Manager');
-                if ($people_under_manager = '')
+                if ($people_under_manager != '')
                     $where = 'submitor_id IN (' . $people_under_manager . ')';
             } else if ($role == 'lead') {
                 $people_under_lead = Employee::getEngineersUnder('Lead');
-                if ($people_under_lead = '')
+                if ($people_under_lead != '')
                     $where = 'submitor_id IN (' . $people_under_lead . ')';
             } else if ($role == 'engineer') {
                 $this->show_action = true;
@@ -376,7 +376,7 @@ class TimesheetsController extends Controller {
         
         $out = Datatables::of($values)->make();
         $data = $out->getData();
-        $col_arr = [($role != 'engineer') ? 'submitor_id' : 'id', 'project_id', 'task_id', 'date', 'hours', 'mail_sent'];
+        $col_arr = [($request->teamMember) ? 'submitor_id' : 'id', 'project_id', 'task_id', 'date', 'hours', 'mail_sent'];
         $fields_popup = ModuleFields::getModuleFields('Timesheets');
         foreach ($fields_popup as $column => $val) {
             if (!in_array($column, $col_arr)) {

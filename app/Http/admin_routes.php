@@ -109,6 +109,7 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::get('/approveLeave', 'LA\LeaveMasterController@ajaxApproveLeave');
 	Route::post(config('laraadmin.adminRoute') . '/datesearch', 'LA\LeaveMasterController@ajaxDateSearch');
 	Route::get(config('laraadmin.adminRoute') . '/leave/teamMember', 'LA\LeaveMasterController@teamMemberIndex');
+	Route::post(config('laraadmin.adminRoute') . '/leave/withdraw', 'LA\LeaveMasterController@ajaxWithdraw');
         
         
         /* ================== Leaves_Of_Team_member================== */
@@ -131,4 +132,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::get(config('laraadmin.adminRoute') . '/leave_type_dt_ajax', 'LA\Leave_TypesController@dtajax');
         
        
+
+	/* ================== Resource_Allocations ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/resource_allocations', 'LA\Resource_AllocationsController');
+	Route::get(config('laraadmin.adminRoute') . '/resource_allocation_dt_ajax', 'LA\Resource_AllocationsController@dtajax');
 });

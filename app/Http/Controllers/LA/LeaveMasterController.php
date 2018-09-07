@@ -15,7 +15,7 @@ class LeaveMasterController extends Controller {
 
     public function edit($id) {
         $leaveMaster = DB::table('leavemaster')
-                ->select(['id', 'EmpId', DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), 'NoOfDays', 'LeaveReason', 'LeaveType'])
+                ->select(['id', 'EmpId', DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), 'NoOfDays', 'LeaveReason', 'LeaveType', 'approved'])
                 ->where('id', $id)
                 ->get();
 
@@ -23,16 +23,17 @@ class LeaveMasterController extends Controller {
         $leave_types = DB::table('leave_types')
                 ->whereNull('deleted_at')
                 ->get();
-
+        $data = ['before_days' => LAConfigs::getByKey('before_days_leave'), 'after_days' => LAConfigs::getByKey('after_days_leave'), 'number_of_leaves' => LAConfigs::getByKey('number_of_leaves')];
         $data['leaveMaster'] = $leaveMaster[0];
         $data['leaveMaster']->leave_type = $leave_types;
+        if ($data['leaveMaster']->approved != '') {
+            return redirect()->back();
+        }
+
         return view('la.leavemaster.edit', $data);
     }
 
     public function index(Request $request) {
-
-
-
         $role = Employee::employeeRole();
         $where = 'employees.deleted_at IS NULL ';
 
@@ -131,8 +132,7 @@ class LeaveMasterController extends Controller {
         $LeaveRecord = LeaveMaster::where('EmpId', $request->get('EmpId'))
                 ->where('FromDate', $FromDate)
                 ->where('ToDate', $ToDate)
-                ->whereNull('Approved')
-                ->where('withdraw', '')
+                ->where('withdraw', '0')
                 ->get();
 
         $LeaveRecordExists = $LeaveRecord->count();
@@ -171,7 +171,19 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
 //	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
+        //check
+        $row = LeaveMaster::where('EmpId', $request->get('EmpId'))
+                ->where('FromDate', $FromDate)
+                ->where('ToDate', $ToDate)
+                ->where('withdraw', '0')
+                ->withTrashed()
+                ->pluck('id');
 
+        $Exists = $row->count();
+
+        if ($Exists > 0 && !in_array($id, $row->toArray())) {
+            return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'You have already applied leave for these dates.');
+        }
         if ($leaveMaster->save()) {
 //            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
         }
@@ -200,8 +212,14 @@ class LeaveMasterController extends Controller {
             $update_field['RejectedBy'] = Auth::user()->context_id;
         }
         $leavemaster = DB::table('leavemaster')->where('id', $_GET['id'])->update($update_field);
-         $empdetail = DB::table('employees')->where('id', $_GET[('available_leaves')])->update($update_field);
-          
+
+        if ($leavemaster->approved && $leavemaster->ApprovedBy != '') {
+            $leavemaster = DB::table('employees')->where('id', $leavemaster->EmpId)->decrement('available_leaves', $_GET['days']);
+        } else if (!$leavemaster->approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
+            $leavemaster = DB::table('employees')->where('id', $leavemaster->EmpId)->increment('available_leaves', $_GET['days']);
+        }
+
+
         return "true";
         
     }
@@ -243,6 +261,7 @@ class LeaveMasterController extends Controller {
     public function Teamindex(Request $request) {
         $role = Employee::employeeRole();
         $where = 'employees.deleted_at IS NULL ';
+        $view = 'Manager_index';
         if ($role == "manager" || $role == "lead") {
             //manager  
             $engineersUnder = Employee::getEngineersUnder(($role == "manager") ? "Manager" : "Lead");
@@ -250,10 +269,8 @@ class LeaveMasterController extends Controller {
                 $where .= " and EmpId IN( " . $engineersUnder . " )";
             else
                 $where .= " and EmpId IN( '' )";
-            $view = 'Manager_index';
         } else {
             //other users
-            $view = 'Manager_index';
             $where .= 'and leavemaster.EmpId = ' . Auth::user()->context_id;
         }
 
@@ -331,6 +348,14 @@ class LeaveMasterController extends Controller {
         }
 
         return json_encode(['html' => $html, 'day' => $request->date]);
+    }
+
+    /**
+     * Withdraw a Leave
+     */
+    public function ajaxWithdraw(Request $request) {
+        DB::table('leavemaster')->where('id', $request->id)->update(['withdraw' => 1]);
+        return 'withdrawn';
     }
 
 }

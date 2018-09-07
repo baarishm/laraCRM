@@ -129,7 +129,8 @@ $(document).ready(function () {
             }
             saved_data['_method'] = method;
             if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
-                swal("Number of hours for a task cannot exceed more than 24 hrs!");
+                $('div.overlay').addClass('hide');
+                swal("Number of hours for a task cannot exceed more than 24 hrs!"); 
                 return false;
             } else {
                 if (validateFields($('[required]'))) {
@@ -159,12 +160,14 @@ $(document).ready(function () {
                             });
                         }
                     });
-                } else {
+                } else { 
+                    $('div.overlay').addClass('hide');
                     swal('Please fill all required fields!');
                 }
             }
         } else if (el.hasClass('update-entry')) {
-            if ($('tr.entry-row button.submit-form').hasClass('update-entry-db')) {
+            if ($('tr.entry-row button.submit-form').hasClass('update-entry-db')) { 
+                $('div.overlay').addClass('hide');
                 swal('Submit last row first!');
                 return false;
             }

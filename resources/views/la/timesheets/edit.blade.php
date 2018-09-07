@@ -69,12 +69,6 @@
                 </div>
 
                         </div>
-                        <div class="row">
-
-                            <div class ="col-md-2">
-                                @la_input($module, 'remarks')
-                            </div>
-                        </div>
                         <div class="hide">
                             @la_input($module, 'dependency')
                             @la_input($module, 'dependency_for')
