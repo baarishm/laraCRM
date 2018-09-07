@@ -238,12 +238,12 @@ class LeaveMasterController extends Controller {
         $leavemaster = LeaveMaster::find($_GET['id']);
 
         if ($leavemaster->approved && $leavemaster->ApprovedBy != '') {
-            echo "here";
-            die;
-            $employee_update = DB::table('employees')->where('id', $leavemaster->EmpId)->decrement('available_leaves', $_GET['days']);
+            DB::table('employees')->where('id', $leavemaster->EmpId)->decrement('available_leaves', $_GET['days']);
         } else if (!$leavemaster->approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
-            $employee_update = DB::table('employees')->where('id', $leavemaster->EmpId)->increment('available_leaves', $_GET['days']);
+            DB::table('employees')->where('id', $leavemaster->EmpId)->increment('available_leaves', $_GET['days']);
         }
+        
+        $employee_update = Employee::find($leavemaster->EmpId);
 
         $mail_data = [
             'approved' => $_GET['approved'],
