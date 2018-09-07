@@ -83,11 +83,11 @@ Leave Dashboard
                     <td>
                         <a href="" class="btn btn-default withdraw" data-removed="{{$leaveMasterRow->id}}">Withdraw</a>
                     </td>
-                    @elseif(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->withdraw && (date('Y-m-d') <= $leaveMasterRow->FromDate)) 
+                    @elseif(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->withdraw && (date('Y-m-d') >= $leaveMasterRow->FromDate)) 
                     <td>
                         Withdrawn
                     </td>
-                    @elseif($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL' && (date('Y-m-d') <= $leaveMasterRow->FromDate))
+                    @elseif(($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL') && (date('Y-m-d') >= $leaveMasterRow->FromDate))
                     <td class="text-center">
 
                         <form action="{{action('LA\LeaveMasterController@destroy', $leaveMasterRow->id)}}" method="post" class="delete">
