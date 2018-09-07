@@ -26,33 +26,15 @@ Edit Apply  Leave
                     <input name="_method" type="hidden" value="PATCH">
                     <div class="row">
 
-                        <div class="form-group col-md-4 hide">
+                        <div class="form-group col-md-3 hide">
                             <label for="name">Employee Id:</label>
-<input type="text" class ="form-control" autocomplete="off" readonly="readonly" name="EmpId" value="{{$leaveMaster -> EmpId}}">
+                            <input type="text" class ="form-control" autocomplete="off" readonly="readonly" name="EmpId" value="{{$leaveMaster -> EmpId}}">
                         </div>
-
-
-                        <div class="form-group col-md-4">
-                            <label for="StartDate" class="control-label">Start Date:</label>
-                            <input type="text" class="form-control " 
-                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="FromDate" required  readonly='true' value="{{$leaveMaster -> FromDate or old('FromDate') }}" />
-
+                        <div class="form-group col-md-3">
+                            <label>Manager Name</label>
+                            <input type="text" class="form-control" value="{{$manager}}" disabled/>
                         </div>
-                        <div class="form-group col-md-4">
-                            <label for="text" class="control-label">End Date:</label>
-
-                            <input type="text" class="form-control" id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="ToDate" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' value="{{$leaveMaster -> ToDate or old('ToDate') }}" />
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="name">Number Of Days</label>
-                            <input type="text" class="form-control" name="NoOfDays" autocomplete="off" readonly="readonly" id="NoOfDays" value="{{$leaveMaster -> NoOfDays or old('NoOfDays') }}">
-                        </div>
-                        <div class="form-group col-md-4">
-                            <label for="number">Leave Purpose*</label>
-
-                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required maxlength="180" value="{{$leaveMaster -> LeaveReason or old('LeaveReason') }}"> 
-                        </div>
-                        <div class="form-group col-md-4">
+                        <div class="form-group col-md-3">
                             <label>Leave Type</label>
                             <select name="LeaveType" class="form-control" >
 
@@ -66,8 +48,28 @@ Edit Apply  Leave
 
                             </select>
                         </div>
-                        <div class="col-sm-12 text-right" style="margin-top:60px">
-                            <button type="submit" class="btn btn-success" style="margin-left:38px">Update</button>
+                        <div class="form-group col-md-3">
+                            <label for="StartDate" class="control-label">Start Date:</label>
+                            <input type="text" class="form-control " 
+                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="FromDate" required  readonly='true' value="{{$leaveMaster -> FromDate or old('FromDate')}}" />
+
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="text" class="control-label">End Date:</label>
+
+                            <input type="text" class="form-control" id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="ToDate" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' value="{{$leaveMaster -> ToDate or old('ToDate')}}" />
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="name">Number Of Days</label>
+                            <input type="text" class="form-control" name="NoOfDays" autocomplete="off" readonly="readonly" id="NoOfDays" value="{{$leaveMaster -> NoOfDays or old('NoOfDays')}}">
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label for="number">Leave Purpose*</label>
+
+                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required maxlength="180" value="{{$leaveMaster -> LeaveReason or old('LeaveReason')}}"> 
+                        </div>
+                        <div class="form-group col-md-3" style="margin-top:25px">
+                            <button type="submit" class="btn btn-success" onclick="this.disabled = true; this.value = 'Sending, please wait...'; this.form.submit();">Update</button>
                         </div>
 
                     </div>
@@ -82,7 +84,7 @@ Edit Apply  Leave
 @push('scripts')
 
 <script type="text/javascript">
-     $(document).ready(function () {
+    $(document).ready(function () {
         // To calulate difference b/w two dates
         function CalculateDiff(isstart)
         {
@@ -119,19 +121,17 @@ Edit Apply  Leave
                 // Remove end day if span ends on Saturday but starts after Sunday
                 if (end == 6 && start != 0)
                     days = days - 1
-                if(days > '{{ $number_of_leaves }}'){
+                if (days > '{{ $number_of_leaves }}') {
                     swal('You cannot take more than {{ $number_of_leaves }} leaves at a time!');
                     $('#datepickerto').val('');
                     $('button[type="submit"]').attr('disabled', true);
-                }
-                else{
+                } else {
                     $('button[type="submit"]').attr('disabled', false);
                 }
                 $("#NoOfDays").val(days);
-                // alert(Math.round(days));
-
             }
-       
+        }
+
         $("#datepicker").datepicker({
             autoclose: true,
             format: 'd M yyyy',
@@ -142,7 +142,7 @@ Edit Apply  Leave
         }).on('changeDate', function (e) {
             $("#datepickerto").val('');
             $("#NoOfDays").val('');
-            $("#datepickerto").datepicker('setStartDate', e.date).datepicker("setDate", e.date );
+            $("#datepickerto").datepicker('setStartDate', e.date).datepicker("setDate", e.date);
             CalculateDiff(true);
         });
         $("#datepickerto").datepicker({

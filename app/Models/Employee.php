@@ -63,4 +63,24 @@ class Employee extends Model {
         DB::table('role_user')->where('user_id', $user_id->id)->update(['role_id' => $role_array[strtoupper($roleName)]->id]);
     }
 
+    /**
+     * Get Manager Details
+     * @param int $of  ID of employee whose manager is to be found
+     * @return array Details of manager
+     */
+    public static function getManagerDetails($of = '') {
+        $manager = Employee::leftJoin('employees as manager', 'employees.second_approver', '=', 'manager.id')->where('employees.id', $of)->first();
+        return $manager;
+    }
+
+    /**
+     * Get Lead Details
+     * @param int $of  ID of employee whose lead is to be found
+     * @return array Details of lead
+     */
+    public static function getLeadDetails($of = '') {
+        $lead = Employee::leftJoin('employees as lead', 'employees.first_approver', '=', 'lead.id')->where('employees.id', $of)->first();
+        return $lead;
+    }
+
 }

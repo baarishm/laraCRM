@@ -118,7 +118,7 @@ class Leave_TypesController extends Controller
 			} else {
 				return view('errors.404', [
 					'record_id' => $id,
-					'record_name' => ucfirst("leave_type"),
+					'record_name' => ucwords("leave_type"),
 				]);
 			}
 		} else {
@@ -148,7 +148,7 @@ class Leave_TypesController extends Controller
 			} else {
 				return view('errors.404', [
 					'record_id' => $id,
-					'record_name' => ucfirst("leave_type"),
+					'record_name' => ucwords("leave_type"),
 				]);
 			}
 		} else {

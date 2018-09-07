@@ -124,7 +124,7 @@ class Sidebar_Menu_AccessesController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("sidebar_menu_access"),
+                    'record_name' => ucwords("sidebar_menu_access"),
                 ]);
             }
         } else {
@@ -153,7 +153,7 @@ class Sidebar_Menu_AccessesController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("sidebar_menu_access"),
+                    'record_name' => ucwords("sidebar_menu_access"),
                 ]);
             }
         } else {

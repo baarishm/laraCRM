@@ -44,6 +44,18 @@
                     ?>
                 </select>
             </div>
+            <div class="col-md-2 pull-right">
+                <select id="employee_search" name="employee_search">
+                    <option value="" selected="selected" >Select Employee</option>
+                    <?php
+                    if (!empty($employees)) {
+                        foreach ($employees as $value) {
+                            echo '<option value="' . $value->employee_id . '">' . $value->employee_name . '</option>';
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
         </div>
         <table id="example1" class="table table-bordered">
             <thead>
@@ -107,14 +119,15 @@
 $(function () {
     var table = $("#example1").DataTable({
     processing: true,
-            serverSide: true, 
+            serverSide: true,
             searching: false,
             ajax: {
             url:"{{ url(config('laraadmin.adminRoute') . '/resource_allocation_dt_ajax') }}",
                     type : 'get',
                     data:function(d){
-                    d.project_search = $('#project_search').val();
+                            d.project_search = $('#project_search').val();
                             d.date_search = $('#date_search').val();
+                            d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
                     }
             },
             language: {
@@ -128,15 +141,12 @@ $(function () {
             @endif
     }
     );
-    
-    $("#project_search, #date_search").on('change dp.change', function () {
+
+    $("#project_search, #date_search, #employee_search").on('change dp.change', function () {
         table.draw();
     });
-
-   
-    $("#resource_allocation-add-form").validate({
-
-    });
+    
+    $('#project_search, #employee_search').select2();
 });
 </script>
 @endpush

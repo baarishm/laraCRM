@@ -76,7 +76,7 @@ class UsersController extends Controller
 			} else {
 				return view('errors.404', [
 					'record_id' => $id,
-					'record_name' => ucfirst("user"),
+					'record_name' => ucwords("user"),
 				]);
 			}
 		} else {

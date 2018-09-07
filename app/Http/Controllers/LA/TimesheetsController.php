@@ -90,11 +90,36 @@ class TimesheetsController extends Controller {
                 ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
                 ->whereNull('projects.deleted_at')
                 ->get();
+
+
+        $role = Employee::employeeRole();
+        $where = '';
+        if ($role == 'manager') {
+            $people_under_manager = Employee::getEngineersUnder('Manager');
+            if ($people_under_manager != '')
+                $where = 'submitor_id IN (' . $people_under_manager . ')';
+        } else if ($role == 'lead') {
+            $people_under_lead = Employee::getEngineersUnder('Lead');
+            if ($people_under_lead != '')
+                $where = 'submitor_id IN (' . $people_under_lead . ')';
+        }
+
+        $employees = DB::table('timesheets')
+                ->select([DB::raw('distinct(timesheets.submitor_id)'), DB::raw('employees.name AS employee_name')])
+                ->leftJoin('employees', 'timesheets.submitor_id', '=', 'employees.id')
+                ->whereNull('employees.deleted_at');
+        
+        if ($where != '') {
+            $employees = $employees->whereRaw($where);
+        }
+        $employees = $employees->get();
+
         if (Module::hasAccess($module->id)) {
             return View('la.timesheets.index', [
                 'show_actions' => $this->show_action,
                 'listing_cols' => $this->custom_cols,
                 'projects' => $projects,
+                'employees' => $employees,
                 'module' => $module,
                 'teamMember' => true
             ]);
@@ -218,7 +243,7 @@ class TimesheetsController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("timesheet"),
+                    'record_name' => ucwords("timesheet"),
                 ]);
             }
         } else {
@@ -236,21 +261,25 @@ class TimesheetsController extends Controller {
         if (Module::hasAccess("Timesheets", "edit")) {
             $timesheet = Timesheet::find($id);
             if (isset($timesheet->id)) {
-                $module = Module::get('Timesheets');
+                if ($timesheet->date < date('Y-m-d', strtotime('-1 week'))) {
+                    $module = Module::get('Timesheets');
 
-                $module->row = $timesheet;
-                $forward = Timesheet::leads_managers_tasks_notSubmitted();
-                return view('la.timesheets.edit', [
-                            'module' => $module,
-                            'view_col' => $this->view_col,
-                            'leads' => $forward['leads'],
-                            'managers' => $forward['managers'],
-                            'tasks' => $forward['tasks'],
-                        ])->with('timesheet', $timesheet);
+                    $module->row = $timesheet;
+                    $forward = Timesheet::leads_managers_tasks_notSubmitted();
+                    return view('la.timesheets.edit', [
+                                'module' => $module,
+                                'view_col' => $this->view_col,
+                                'leads' => $forward['leads'],
+                                'managers' => $forward['managers'],
+                                'tasks' => $forward['tasks'],
+                            ])->with('timesheet', $timesheet);
+                } else {
+                    return redirect()->back();
+                }
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("timesheet"),
+                    'record_name' => ucwords("timesheet"),
                 ]);
             }
         } else {
@@ -328,17 +357,21 @@ class TimesheetsController extends Controller {
         if ($request->date_search != '') {
             $date = ' timesheets.date like "%' . date('Y-m-d', strtotime($request->date_search)) . '%"';
         }
-        $week = ' timesheets.date >= "' . date('Y-m-d', strtotime('last Monday')) . '" and timesheets.date <= "'. date('Y-m-d', strtotime('last Saturday')) . '"';
+        $employee = '';
+        if ($request->employee_search != '') {
+            $date = ' timesheets.submitor_id = "' . $request->employee_search . '"';
+        }
+        $week = ' timesheets.date >= "' . date('Y-m-d', strtotime('last Monday')) . '" and timesheets.date <= "' . date('Y-m-d', strtotime('last Saturday')) . '"';
         if ($request->week_search != '') {
-            $week = ' timesheets.date >= "' . date('Y-m-d',strtotime("Monday", strtotime('this week '.$request->week_search.' week'))) . '" and timesheets.date <= "'. date('Y-m-d',strtotime("Saturday", strtotime('this week '.$request->week_search.' week'))) . '"';
+            $week = ' timesheets.date >= "' . date('Y-m-d', strtotime("Monday", strtotime('this week ' . $request->week_search . ' week'))) . '" and timesheets.date <= "' . date('Y-m-d', strtotime("Saturday", strtotime('this week ' . $request->week_search . ' week'))) . '"';
         }
 
-        $role = Employee::employeeRole();
         $this->custom_cols = [($request->teamMember) ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Mail Sent' ELSE 'Submitted' end) as mail_sent")];
 
         $where = 'submitor_id = ' . Auth::user()->context_id;
         if ($request->teamMember) {
             $where = '';
+            $role = Employee::employeeRole();
             if ($role == 'superAdmin') {
                 //no condition to be applied
             } else if ($role == 'manager') {
@@ -369,11 +402,14 @@ class TimesheetsController extends Controller {
         if ($date != "") {
             $value->whereRaw($date);
         }
+        if ($employee != "") {
+            $value->whereRaw($employee);
+        }
         if ($week != "") {
             $value->whereRaw($week);
         }
         $values = $value->orderBy('timesheets.date', 'desc');
-        
+
         $out = Datatables::of($values)->make();
         $data = $out->getData();
         $col_arr = [($request->teamMember) ? 'submitor_id' : 'id', 'project_id', 'task_id', 'date', 'hours', 'mail_sent'];
@@ -397,7 +433,7 @@ class TimesheetsController extends Controller {
 
             if ($this->show_action || !$request->teamMember) {
                 $output = '';
-                if ($data->data[$i][count($this->custom_cols) - 1] != 'Mail Sent') {
+                if ($data->data[$i][count($this->custom_cols) - 1] != 'Mail Sent' && ($data->data[$i][3] >= date('Y-m-d', strtotime('-1 week')))) {
                     if (Module::hasAccess("Timesheets", "edit")) {
                         $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/timesheets/' . $data->data[$i][0] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
                     }

@@ -131,7 +131,7 @@ class Task_RolesController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("task_role"),
+                    'record_name' => ucwords("task_role"),
                 ]);
             }
         } else {
@@ -160,7 +160,7 @@ class Task_RolesController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("task_role"),
+                    'record_name' => ucwords("task_role"),
                 ]);
             }
         } else {

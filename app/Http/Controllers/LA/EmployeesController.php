@@ -165,7 +165,7 @@ class EmployeesController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("employee"),
+                    'record_name' => ucwords("employee"),
                 ]);
             }
         } else {
@@ -198,7 +198,7 @@ class EmployeesController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("employee"),
+                    'record_name' => ucwords("employee"),
                 ]);
             }
         } else {

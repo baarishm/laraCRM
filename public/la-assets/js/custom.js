@@ -3,12 +3,12 @@ $('document').ready(function () {
     $('div.overlay').addClass('hide');
 
     //date search
-    $('#date_search').datetimepicker({
+    $('#date_search, .date_search').datetimepicker({
         format: 'DD MMM YYYY',
         minDate: moment('2016-08-29')
     });
     //stop keyboard entry
-    $('#date_search').on('paste keydown', function (e) {
+    $('#date_search, .date_search').on('paste keydown', function (e) {
         var charCode = (e.which) ? e.which : e.keyCode;
         if (charCode != 8) {
             e.preventDefault();
@@ -42,8 +42,16 @@ $('document').ready(function () {
 
             //stop keyboard entry
             $(this).on('paste keydown', function (e) {
-                e.preventDefault();
-                return false;
+                if ($(this).find('input').hasClass('date_search') || $(this).hasClass('date_search')) {
+                    var charCode = (e.which) ? e.which : e.keyCode;
+                    if (charCode != 8) {
+                        e.preventDefault();
+                        return false;
+                    }
+                } else {
+                    e.preventDefault();
+                    return false;
+                }
             });
 
             //start date and end date validation

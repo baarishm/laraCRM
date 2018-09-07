@@ -120,7 +120,7 @@ class OrganizationsController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("organization"),
+                    'record_name' => ucwords("organization"),
                 ]);
             }
         } else {
@@ -151,7 +151,7 @@ class OrganizationsController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("organization"),
+                    'record_name' => ucwords("organization"),
                 ]);
             }
         } else {

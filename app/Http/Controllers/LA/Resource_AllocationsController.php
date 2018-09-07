@@ -18,6 +18,8 @@ use Collective\Html\FormFacade as Form;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Resource_Allocation;
+use App\Models\Employee;
+use App\Models\Project;
 
 class Resource_AllocationsController extends Controller {
 
@@ -51,12 +53,35 @@ class Resource_AllocationsController extends Controller {
                 ->whereNull('projects.deleted_at')
                 ->get();
 
+        $role = Employee::employeeRole();
+        $where = '';
+        if ($role == 'manager') {
+            $people_under_manager = Employee::getEngineersUnder('Manager');
+            if ($people_under_manager != '')
+                $where = 'employee_id IN (' . $people_under_manager . ')';
+        } else if ($role == 'lead') {
+            $people_under_lead = Employee::getEngineersUnder('Lead');
+            if ($people_under_lead != '')
+                $where = 'employee_id IN (' . $people_under_lead . ')';
+        }
+
+        $employees = DB::table('resource_allocations')
+                ->select([DB::raw('distinct(resource_allocations.employee_id)'), DB::raw('employees.name AS employee_name')])
+                ->leftJoin('employees', 'resource_allocations.employee_id', '=', 'employees.id')
+                ->whereNull('employees.deleted_at');
+
+        if ($where != '') {
+            $employees = $employees->whereRaw($where);
+        }
+        $employees = $employees->get();
+
         if (Module::hasAccess($module->id)) {
             return View('la.resource_allocations.index', [
                 'show_actions' => $this->show_action,
                 'listing_cols' => $this->listing_cols,
                 'module' => $module,
-                'projects' => $projects
+                'projects' => $projects,
+                'employees' => $employees,
             ]);
         } else {
             return redirect(config('laraadmin.adminRoute') . "/");
@@ -100,17 +125,32 @@ class Resource_AllocationsController extends Controller {
             $insert_data['start_date'] = date('Y-m-d', strtotime($request->start_date));
             $insert_data['end_date'] = date('Y-m-d', strtotime($request->end_date));
 
+            //validate user allocation dates inside project date
+            $project = Project::find($request->project_id);
+            if (isset($project->id)) {
+                $pstart = date('d M Y', strtotime($project->start_date));
+                $pend = date('d M Y', strtotime($project->end_date));
+                
+                if ($insert_data['start_date'] < $project->start_date || $insert_data['start_date'] > $project->end_date) {
+                    return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.create')->withErrors(['message' => 'Start date should be between Project\'s start date (' . $pstart . ') and end date(' . $pend . ').'])->withInput();
+                }
+                if ($insert_data['end_date'] < $project->start_date || $insert_data['end_date'] > $project->end_date) {
+                    return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.create')->withErrors(['message' => 'End date should be between Project\'s start date (' . $pstart . ') and end date(' . $pend . ').'])->withInput();
+                }
+            } else {
+                return redirect()->back()->withErrors(['message' => 'Project is invalid.'])->withInput();
+            }
+
             $row = Resource_Allocation::where('project_id', $request->project_id)
                     ->where('employee_id', $request->employee_id)
-                    ->where('start_date', $insert_data['start_date'])
-                    ->where('end_date', $insert_data['end_date'])
+                    ->whereRaw('(start_date < "' . $insert_data['start_date'] . '" and end_date > "' . $insert_data['start_date'] . '") OR (start_date < "' . $insert_data['end_date'] . '" and end_date > "' . $insert_data['end_date'] . '")')
                     ->withTrashed()
                     ->get();
 
             $Exists = $row->count();
 
             if ($Exists > 0) {
-                return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.create')->withErrors(['message' => 'User already allocated for same dates.']);
+                return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.create')->withErrors(['message' => 'User already allocated for same dates.'])->withInput();
             }
 
             $insert_id = Resource_Allocation::create($insert_data);
@@ -144,7 +184,7 @@ class Resource_AllocationsController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("resource_allocation"),
+                    'record_name' => ucwords("resource_allocation"),
                 ]);
             }
         } else {
@@ -173,7 +213,7 @@ class Resource_AllocationsController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("resource_allocation"),
+                    'record_name' => ucwords("resource_allocation"),
                 ]);
             }
         } else {
@@ -204,17 +244,31 @@ class Resource_AllocationsController extends Controller {
             $update_data['start_date'] = date('Y-m-d', strtotime($request->start_date));
             $update_data['end_date'] = date('Y-m-d', strtotime($request->end_date));
 
+            //validate user allocation dates inside project date
+            $project = Project::find($request->project_id);
+            if (isset($project->id)) {
+                $pstart = date('d M Y', strtotime($project->start_date));
+                $pend = date('d M Y', strtotime($project->end_date));
+                if ($update_data['start_date'] < $project->start_date || $update_data['start_date'] > $project->end_date) {
+                    return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.edit', ['id' => $id])->withErrors(['message' => 'Start date should be between Project\'s start date (' . $pstart . ') and end date(' . $pend . ').'])->withInput();
+                }
+                if ($update_data['end_date'] < $project->start_date || $update_data['end_date'] > $project->end_date) {
+                    return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.edit', ['id' => $id])->withErrors(['message' => 'End date should be between Project\'s start date (' . $pstart . ') and end date(' . $pend . ').'])->withInput();
+                }
+            } else {
+                return redirect()->back()->withErrors(['message' => 'Project is invalid.'])->withInput();
+            }
+
             $row = Resource_Allocation::where('project_id', $request->project_id)
                     ->where('employee_id', $request->employee_id)
-                    ->where('start_date', $update_data['start_date'])
-                    ->where('end_date', $update_data['end_date'])
+                    ->whereRaw('(start_date < "' . $update_data['start_date'] . '" and end_date > "' . $update_data['start_date'] . '") OR (start_date < "' . $update_data['end_date'] . '" and end_date > "' . $update_data['end_date'] . '")')
                     ->withTrashed()
                     ->pluck('id');
 
             $Exists = $row->count();
 
             if ($Exists > 0 && !in_array($id, $row->toArray())) {
-                return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.edit', ['id' => $id])->withErrors(['message' => 'User already allocated for same dates.']);
+                return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.edit', ['id' => $id])->withErrors(['message' => 'User already allocated for same dates.'])->withInput();
             }
 
             $insert_id = Resource_Allocation::find($id)->update($update_data);
@@ -233,7 +287,7 @@ class Resource_AllocationsController extends Controller {
      */
     public function destroy($id) {
         if (Module::hasAccess("Resource_Allocations", "delete")) {
-            Resource_Allocation::find($id)->delete();
+            Resource_Allocation::find($id)->forceDelete();
 
             // Redirecting to index() method
             return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.index');
@@ -256,17 +310,24 @@ class Resource_AllocationsController extends Controller {
         if ($request->date_search != '') {
             $date = ' resource_allocations.start_date <= "' . date('Y-m-d', strtotime($request->date_search)) . '" and resource_allocations.end_date >= "' . date('Y-m-d', strtotime($request->date_search)) . '"';
         }
+        $employee = '';
+        if ($request->employee_search != '') {
+            $date = ' resource_allocations.employee_id = "' . $request->employee_search . '"';
+        }
 
         $value = DB::table('resource_allocations')
                 ->select(['resource_allocations.id AS id', 'project_id', 'employee_id', DB::raw('DATE_FORMAT(resource_allocations.start_date, "%d %b %Y") as start_date'), DB::raw('DATE_FORMAT(resource_allocations.end_date, "%d %b %Y") as end_date'), 'allocation'])
                 ->join('projects', 'projects.id', '=', 'resource_allocations.project_id')
                 ->whereNull('resource_allocations.deleted_at');
-        
+
         if ($project != "") {
             $value->whereRaw($project);
         }
         if ($date != "") {
             $value->whereRaw($date);
+        }
+        if ($employee != "") {
+            $value->whereRaw($employee);
         }
         $values = $value->orderBy('start_date', 'desc');
         $out = Datatables::of($values)->make();

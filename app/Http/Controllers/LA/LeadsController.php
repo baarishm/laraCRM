@@ -132,7 +132,7 @@ class LeadsController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("lead"),
+                    'record_name' => ucwords("lead"),
                 ]);
             }
         } else {
@@ -161,7 +161,7 @@ class LeadsController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("lead"),
+                    'record_name' => ucwords("lead"),
                 ]);
             }
         } else {

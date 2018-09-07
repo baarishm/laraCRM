@@ -130,7 +130,7 @@ class TasksController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("task"),
+                    'record_name' => ucwords("task"),
                 ]);
             }
         } else {
@@ -159,7 +159,7 @@ class TasksController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("task"),
+                    'record_name' => ucwords("task"),
                 ]);
             }
         } else {

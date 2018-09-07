@@ -33,10 +33,26 @@ Apply For Leave
                     <input type="hidden" name="_token" value="{{ csrf_token()}}">
 
                     <div class="row">
-
+                        <div class="form-group col-md-3">
+                            <label>Manager Name</label>
+                            <input type="text" class="form-control" value="{{$manager}}" disabled/>
+                        </div>
                         <div class="form-group col-md-3 hide">
                             <label for="Name">Employee Id:</label>
                             <input type="text" class="form-control" name="EmpId" autocomplete="off" value="<?php echo Auth::user()->context_id; ?>" id="EmpId" placeholder="EmpId" required readonly>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Leave Type</label>
+                            <select name="LeaveType" class="form-control" >
+                                <?php
+                                if (!empty($leave_types)) {
+                                    foreach ($leave_types as $value) {
+                                        echo '<option value="' . $value->id . '">' . $value->name . '</option>';
+                                    }
+                                }
+                                ?>
+
+                            </select>
                         </div>
                         <div class="form-group col-md-3">
 
@@ -58,21 +74,8 @@ Apply For Leave
                             <label for="Number">Leave Purpose*</label>
                             <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" maxlength="180"  >   
                         </div>
-                        <div class="form-group col-md-3">
-                            <label>Leave Type</label>
-                            <select name="LeaveType" class="form-control" >
-                                <?php
-                                if (!empty($leave_types)) {
-                                    foreach ($leave_types as $value) {
-                                        echo '<option value="' . $value->id . '">' . $value->name . '</option>';
-                                    }
-                                }
-                                ?>
-
-                            </select>
-                        </div>
                         <div class="col-md-3" style="margin-top: 25px;">
-                            <button type="submit" class="btn btn-success"onclick="this.disabled = true;this.value = 'Sending, please wait...';this.form.submit();">Submit</button>
+                            <button type="submit" class="btn btn-success" onclick="this.disabled = true; this.value = 'Sending, please wait...'; this.form.submit();">Submit</button>
                         </div>
                     </div>
 

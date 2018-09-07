@@ -134,7 +134,7 @@ class ProjectsController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("project"),
+                    'record_name' => ucwords("project"),
                 ]);
             }
         } else {
@@ -163,7 +163,7 @@ class ProjectsController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("project"),
+                    'record_name' => ucwords("project"),
                 ]);
             }
         } else {

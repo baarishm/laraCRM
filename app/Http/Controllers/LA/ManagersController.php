@@ -132,7 +132,7 @@ class ManagersController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("manager"),
+                    'record_name' => ucwords("manager"),
                 ]);
             }
         } else {
@@ -161,7 +161,7 @@ class ManagersController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("manager"),
+                    'record_name' => ucwords("manager"),
                 ]);
             }
         } else {

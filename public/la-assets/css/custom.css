@@ -113,3 +113,25 @@ div.dropdown-menu tr td{
 .fa-refresh:hover{
     color: #7bb4cc;
 }
+
+
+/* For searching */
+.group{
+    background-color: #eee;
+}
+.group td{
+    text-align:center;
+}
+.search {
+    float: right;
+    margin: 3px;
+    border: none;
+    border: 1px solid #9a9999;
+    border-radius: 4px;
+    text-align: center;
+    height: 28px;
+}
+.search:focus {
+    outline: none; 
+    border: 1px solid #48b7d2;
+}
