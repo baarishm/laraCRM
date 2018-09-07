@@ -24,6 +24,7 @@ Team Leave Dashboard
 
             <tr>
             <thead>
+            <th>EMP.ID</th>
             <th>Name</th>
             <th>From Date</th>
             <th>To Date</th>
@@ -44,7 +45,7 @@ Team Leave Dashboard
                 @endphp
 
                 <tr>
-
+                      <td>{{$leaveMasterRow->EmpId}}</td>
                     <td>{{$leaveMasterRow->Employees_name}}</td>
 
                     <td>{{$FromDate}}</td>
@@ -52,8 +53,7 @@ Team Leave Dashboard
                     <td>{{$leaveMasterRow->NoOfDays}}</td>
                     <td>{{(($leaveMasterRow->leave_name != '')? $leaveMasterRow->leave_name : "Not Specified" ) }}</td> 
 
-<!--                    <td>{{$leaveMasterRow->LeaveReason}}</td>-->
-                    <td><span  id="btn2" data-toggle="popover"  title="{{$leaveMasterRow->LeaveReason}}" data-content="Default popover">Leave Reason ..</span>
+                   <td><span  id="btn2" data-toggle="popover"   title="{{$leaveMasterRow->LeaveReason}}" data-content="Default popover">Leave Reason ..</span>
 
                     </td>
                      <!--<td>{{(($leaveMasterRow->Approved != '')? $leaveMasterRow->Approved : 'Pending' ) }}</td>-->
@@ -70,12 +70,8 @@ Team Leave Dashboard
                         @else
                        
                         <div class="">
-                            @if($Approved=='0' || $Approved=='')
-                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" data-days="{{$leaveMasterRow->NoOfDays}}">Approve</button>
-                            @endif
-                            @if($Approved=='1' || $Approved=='')
-                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" data-days='{{$leaveMasterRow->NoOfDays}}'>Reject</button> 
-                            @endif
+                        <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id;  ?> onclick="myfunction(this);" >Approve</button>
+                        <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
                         </div>
                       
                         @endif
@@ -133,17 +129,20 @@ Team Leave Dashboard
             $.ajax({
                 url: "{{ url('/approveLeave') }}",
                 type: 'GET',
-                data: {'approved': approved, 'id': $(button).attr('data-id'), 'days' : $(button).attr('data-days')},
+                data: {'approved': approved, 'id': $(button).attr('data-id')},
                 success: function (data) {
+                    console.log(data);
                     swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
                
                 }
             });
             var vid = $(button).attr('data-id');
-            $(button).parent('td').html((approved) ? '<span class="text-success">Approved</span>' : '<span class="text-danger">Rejected</span>');
-            $('[data-id=' + vid + ']').remove();
+            $('[data-id=' + vid + ']').attr('disabled', 'disabled');
+
+            // $("button").data("data-id").attr('disabled', 'disabled');
+
+
         }
-        
         $(function () {
             $('.days').click(function () {
                 var elem_id = $(this).attr('id');

@@ -200,17 +200,27 @@ class LeaveMasterController extends Controller {
         $update_field = ['approved' => $_GET['approved']];
         if ($_GET['approved']) {
             $update_field['ApprovedBy'] = Auth::user()->context_id;
+              DB::table('employees')
+             
+       ->update([('available_leaves') =>'available_leaves - 1']);
+        
+              
+                   
+            
         } else {
             $update_field['RejectedBy'] = Auth::user()->context_id;
         }
         $leavemaster = DB::table('leavemaster')->where('id', $_GET['id'])->update($update_field);
+
         if ($leavemaster->approved && $leavemaster->ApprovedBy != '') {
             $leavemaster = DB::table('employees')->where('id', $leavemaster->EmpId)->decrement('available_leaves', $_GET['days']);
         } else if (!$leavemaster->approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
             $leavemaster = DB::table('employees')->where('id', $leavemaster->EmpId)->increment('available_leaves', $_GET['days']);
         }
 
+
         return "true";
+        
     }
 
     /**
@@ -308,7 +318,7 @@ class LeaveMasterController extends Controller {
 
         foreach ($leaveMaster as $leaveMasterRow) {
             $html .= '<tr id="ps">
-
+                     <td>' . $leaveMasterRow->EmpId . '</td>
                     <td>' . $leaveMasterRow->Employees_name . '</td>
 
                     <td>' . $leaveMasterRow->FromDate . '</td>
