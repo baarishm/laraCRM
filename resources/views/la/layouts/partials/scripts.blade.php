@@ -19,7 +19,7 @@
 <script src="{{ asset('la-assets/js/custom.js') }}"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>  
- 
+
 <!-- Sweet Alert -->
 <!--<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.11/dist/sweetalert2.all.min.js"></script>
@@ -33,6 +33,7 @@
 $(document).ready(function () {
     setTimeout(function () {
         $('.btn-delete, .btn-danger[type="submit"]').click(function () {
+            $('div.overlay').addClass('hide');
             if (!confirm("Are you sure to delete?")) {
                 return false;
             }

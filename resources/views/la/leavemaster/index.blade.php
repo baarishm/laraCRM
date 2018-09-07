@@ -87,10 +87,10 @@ Leave Dashboard
                     <td>
                         Withdrawn
                     </td>
-                    @elseif($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL')
+                    @elseif($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL' && (date('Y-m-d') <= $leaveMasterRow->FromDate))
                     <td class="text-center">
 
-                        <form action="{{action('LA\LeaveMasterController@destroy', $leaveMasterRow->id)}}" method="post">
+                        <form action="{{action('LA\LeaveMasterController@destroy', $leaveMasterRow->id)}}" method="post" class="delete">
                             <input type="hidden" name="_token" value="{{ csrf_token()}}">
 
 

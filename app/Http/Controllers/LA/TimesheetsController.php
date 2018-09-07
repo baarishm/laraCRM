@@ -108,7 +108,7 @@ class TimesheetsController extends Controller {
                 ->select([DB::raw('distinct(timesheets.submitor_id)'), DB::raw('employees.name AS employee_name')])
                 ->leftJoin('employees', 'timesheets.submitor_id', '=', 'employees.id')
                 ->whereNull('employees.deleted_at');
-        
+
         if ($where != '') {
             $employees = $employees->whereRaw($where);
         }
@@ -261,7 +261,7 @@ class TimesheetsController extends Controller {
         if (Module::hasAccess("Timesheets", "edit")) {
             $timesheet = Timesheet::find($id);
             if (isset($timesheet->id)) {
-                if ($timesheet->date < date('Y-m-d', strtotime('-1 week'))) {
+                if ($timesheet->date >= date('Y-m-d', strtotime('-1 week'))) {
                     $module = Module::get('Timesheets');
 
                     $module->row = $timesheet;
@@ -274,7 +274,7 @@ class TimesheetsController extends Controller {
                                 'tasks' => $forward['tasks'],
                             ])->with('timesheet', $timesheet);
                 } else {
-                    return redirect()->back();
+                    return redirect()->back()->withErrors(['Trying to be smart!!!']);
                 }
             } else {
                 return view('errors.404', [
@@ -330,14 +330,20 @@ class TimesheetsController extends Controller {
      */
     public function destroy($id, Request $request) {
         if (Module::hasAccess("Timesheets", "delete")) {
-            Timesheet::find($id)->delete();
-
-            if ($request->ajax()) {
-                return "Deleted!";
+            $timesheet = Timesheet::find($id);
+            if (isset($timesheet->id)) {
+                if ($timesheet->date >= date('Y-m-d', strtotime('-1 week'))) {
+                    Timesheet::find($id)->delete();
+                    //if ajax
+                    if ($request->ajax()) {
+                        return "Deleted!";
+                    }
+                    // Redirecting to index() method
+                    return redirect()->route(config('laraadmin.adminRoute') . '.timesheets.index');
+                } else {
+                    return redirect()->back()->withErrors(['Trying to be smart!!!']);
+                }
             }
-
-            // Redirecting to index() method
-            return redirect()->route(config('laraadmin.adminRoute') . '.timesheets.index');
         } else {
             return redirect(config('laraadmin.adminRoute') . "/");
         }

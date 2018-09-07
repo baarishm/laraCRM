@@ -24,22 +24,27 @@ class LeaveMasterController extends Controller {
                 ->get();
 
 
-        $manager = Employee::getManagerDetails(Auth::user()->context_id);
+        if (date('Y-m-d', strtodate($leaveMaster->FromDate)) >= date('Y-m-d')) {
 
-        $data = [
-            'before_days' => LAConfigs::getByKey('before_days_leave'),
-            'after_days' => LAConfigs::getByKey('after_days_leave'),
-            'number_of_leaves' => LAConfigs::getByKey('number_of_leaves'),
-            'manager' => ucwords($manager->name),
-        ];
+            $manager = Employee::getManagerDetails(Auth::user()->context_id);
 
-        $data['leaveMaster'] = $leaveMaster;
-        $data['leaveMaster']->leave_type = $leave_types;
-        if ($data['leaveMaster']->approved != '') {
-            return redirect()->back();
+            $data = [
+                'before_days' => LAConfigs::getByKey('before_days_leave'),
+                'after_days' => LAConfigs::getByKey('after_days_leave'),
+                'number_of_leaves' => LAConfigs::getByKey('number_of_leaves'),
+                'manager' => ucwords($manager->name),
+            ];
+
+            $data['leaveMaster'] = $leaveMaster;
+            $data['leaveMaster']->leave_type = $leave_types;
+            if ($data['leaveMaster']->approved != '') {
+                return redirect()->back();
+            }
+
+            return view('la.leavemaster.edit', $data);
+        } else {
+            return redirect()->back()->withErrors(['Trying to be smart!!!']);
         }
-
-        return view('la.leavemaster.edit', $data);
     }
 
     public function index(Request $request) {
@@ -209,8 +214,13 @@ class LeaveMasterController extends Controller {
 
     public function destroy($id) {
         $leaveMaster = LeaveMaster::find($id);
-        $leaveMaster->delete();
-        return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been  deleted');
+
+        if (date('Y-m-d', strtodate($leaveMaster->FromDate)) >= date('Y-m-d')) {
+            $leaveMaster->delete();
+            return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been  deleted');
+        } else {
+            return redirect()->back()->withErrors(['Trying to be smart!!!']);
+        }
     }
 
     public function ajaxApproveLeave() {
@@ -223,10 +233,10 @@ class LeaveMasterController extends Controller {
         } else {
             $update_field['RejectedBy'] = Auth::user()->context_id;
         }
-        
+
         LeaveMaster::where('id', $_GET['id'])->update($update_field);
         $leavemaster = LeaveMaster::find($_GET['id']);
-        
+
         if ($leavemaster->approved && $leavemaster->ApprovedBy != '') {
             echo "here";
             die;

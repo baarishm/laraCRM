@@ -7,6 +7,7 @@ $('document').ready(function () {
         format: 'DD MMM YYYY',
         minDate: moment('2016-08-29')
     });
+
     //stop keyboard entry
     $('#date_search, .date_search').on('paste keydown', function (e) {
         var charCode = (e.which) ? e.which : e.keyCode;
@@ -15,6 +16,20 @@ $('document').ready(function () {
             return false;
         }
     });
+
+    //disable end date
+    if ($('[name="start_date"]').val() == '') {
+        $('[name="end_date"]').attr('disabled', true);
+    }
+    if ($('[name="FromDate"]').val() == '') {
+        $('[name="ToDate"]').attr('disabled', true);
+    }
+    $('[name="FromDate"]').change(function () {
+        $('[name="ToDate"]').attr('disabled', false);
+        if ($('[name="FromDate"]').val() == '') {
+            $('[name="ToDate"]').attr('disabled', true);
+        }
+    })
 
     //date inputs
     if ($('.date').length > 0) {
@@ -60,6 +75,9 @@ $('document').ready(function () {
                     var start_date = $('input[name="start_date"]').val();
                     if (start_date != '') {
                         $('[name="end_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date(start_date)));
+                        $('[name="end_date"]').attr('disabled', false);
+                    } else {
+                        $('[name="end_date"]').attr('disabled', true);
                     }
                     if (new Date($('input[name="start_date"]').val()) > new Date($('input[name="end_date"]').val())) {
                         $('input[name="end_date"]').parents('.date').data('DateTimePicker').date(start_date);
