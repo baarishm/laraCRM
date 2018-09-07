@@ -133,8 +133,6 @@ Team Leave Dashboard
         if (controlid == 'Approved')
         {
             approved = 1;
-
-
         }
         $.ajax({
             url: "{{ url('/approveLeave') }}",
@@ -143,7 +141,6 @@ Team Leave Dashboard
             success: function (data) {
                 console.log(data);
                 swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
-
             }
         });
         var vid = $(button).attr('data-id');

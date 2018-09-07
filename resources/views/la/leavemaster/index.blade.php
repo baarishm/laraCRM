@@ -117,9 +117,9 @@ $(function () {
                 method: "POST",
                 url: "{{ url(config('laraadmin.adminRoute') . '/leave/withdraw') }}",
                 data: {id: link.attr('data-removed'),  _token : "{{ csrf_token()}}"}
-            }).success(function (totalHours) {
+            }).success(function (message) {
                 link.parents('td').html('Withdrawn');
-                swal('Leave withdrawn successfully!');
+                swal(message);
             });
     });
 });

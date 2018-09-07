@@ -223,9 +223,13 @@ class LeaveMasterController extends Controller {
         } else {
             $update_field['RejectedBy'] = Auth::user()->context_id;
         }
-        $leavemaster = DB::table('leavemaster')->where('id', $_GET['id'])->update($update_field);
-
+        
+        LeaveMaster::where('id', $_GET['id'])->update($update_field);
+        $leavemaster = LeaveMaster::find($_GET['id']);
+        
         if ($leavemaster->approved && $leavemaster->ApprovedBy != '') {
+            echo "here";
+            die;
             $employee_update = DB::table('employees')->where('id', $leavemaster->EmpId)->decrement('available_leaves', $_GET['days']);
         } else if (!$leavemaster->approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
             $employee_update = DB::table('employees')->where('id', $leavemaster->EmpId)->increment('available_leaves', $_GET['days']);
@@ -412,11 +416,16 @@ class LeaveMasterController extends Controller {
      * Withdraw a Leave
      */
     public function ajaxWithdraw(Request $request) {
-        $leaveRecord = DB::table('leavemaster')->where('id', $request->id)->update(['withdraw' => 1]);
-        if ($leaveRecord->approved == 1) {
-            $employee_update = DB::table('employees')->where('id', $leavemaster->EmpId)->increment('available_leaves', $leaveRecord->NoOfDays);
+        $leaveRecord = LeaveMaster::find($_GET['id']);
+        if ($leaveRecord->withdraw != 1) {
+            LeaveMaster::where('id', $request->id)->update(['withdraw' => 1]);
+            if ($leaveRecord->approved == 1) {
+                $employee_update = DB::table('employees')->where('id', $leaveRecord->EmpId)->increment('available_leaves', $leaveRecord->NoOfDays);
+            }
+            return 'Leave withdrawn successfully!';
+        } else {
+            return 'Being Smart! Already Withdrawn!';
         }
-        return 'withdrawn';
     }
 
 }
