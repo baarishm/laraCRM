@@ -24,7 +24,7 @@ class LeaveMasterController extends Controller {
                 ->get();
 
 
-        if (date('Y-m-d', strtodate($leaveMaster->FromDate)) >= date('Y-m-d')) {
+        if (date('Y-m-d', strtotime($leaveMaster->FromDate)) >= date('Y-m-d')) {
 
             $manager = Employee::getManagerDetails(Auth::user()->context_id);
 
@@ -215,7 +215,7 @@ class LeaveMasterController extends Controller {
     public function destroy($id) {
         $leaveMaster = LeaveMaster::find($id);
 
-        if (date('Y-m-d', strtodate($leaveMaster->FromDate)) >= date('Y-m-d')) {
+        if (date('Y-m-d', strtotime($leaveMaster->FromDate)) >= date('Y-m-d')) {
             $leaveMaster->delete();
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been  deleted');
         } else {
