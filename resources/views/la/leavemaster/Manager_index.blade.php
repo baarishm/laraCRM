@@ -94,34 +94,32 @@ Team Leave Dashboard
                         @endif
 					
 					@elseif($role == 'manager')
-						@if($Approved=='1' && leaveMasterRow->RejectedBy == '')
+						@if($Approved=='1' && $leaveMasterRow->RejectedBy == '')
 
-                        
-                        <div class="">
-                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
-                        </div>
+							<div class="">
+								<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+							</div>
 
-                        @elseif($Approved=='0' && leaveMasterRow->ApprovedBy == '')
+                        @elseif($Approved=='0' && $leaveMasterRow->ApprovedBy == '')
 
-                        
-                        <div class="">
-                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
-                        </div>
+							<div class="">
+								<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
+							</div>
 						
-						@if($Approved=='1' && leaveMasterRow->RejectedBy != '' && leaveMasterRow->ApprovedBy != '')
+						@elseif($Approved=='1' && $leaveMasterRow->RejectedBy != '' && $leaveMasterRow->ApprovedBy != '')
 
-                        <span class="text-success">Approved</span>
+							<span class="text-success">Approved</span>
 
-                        @elseif($Approved=='0' && leaveMasterRow->RejectedBy != '' && leaveMasterRow->ApprovedBy == '')
+                        @elseif($Approved=='0' && $leaveMasterRow->RejectedBy != '' && $leaveMasterRow->ApprovedBy == '')
 
-                        <span class="text-danger">Rejected</span>
+							<span class="text-danger">Rejected</span>
 
                         @else
 
-                        <div class="">
-                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
-                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
-                        </div>
+							<div class="">
+								<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
+								<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+							</div>
 
                         @endif
 					@endif
