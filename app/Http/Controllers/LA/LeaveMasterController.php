@@ -225,23 +225,24 @@ class LeaveMasterController extends Controller {
 
     public function ajaxApproveLeave() {
 
-        $update_field = ['approved' => $_GET['approved']];
+        $update_field = ['Approved' => $_GET['approved']];
         if ($_GET['approved']) {
             $update_field['ApprovedBy'] = Auth::user()->context_id;
-            DB::table('employees')
-                    ->update([('available_leaves') => 'available_leaves - 1']);
         } else {
             $update_field['RejectedBy'] = Auth::user()->context_id;
         }
 
         LeaveMaster::where('id', $_GET['id'])->update($update_field);
         $leavemaster = LeaveMaster::find($_GET['id']);
+		$employee = Employee::find($leavemaster->EmpId);
+        if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
+			$available_leaves = $employee->available_leaves - $_GET['days'];
+		} else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
+			$available_leaves = $employee->available_leaves + $_GET['days'];
+		}
+		
+		DB::update("update employees set available_leaves = $available_leaves where id = ?", [$leavemaster->EmpId]);
 
-        if ($leavemaster->approved && $leavemaster->ApprovedBy != '') {
-            DB::table('employees')->where('id', $leavemaster->EmpId)->decrement('available_leaves', $_GET['days']);
-        } else if (!$leavemaster->approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
-            DB::table('employees')->where('id', $leavemaster->EmpId)->increment('available_leaves', $_GET['days']);
-        }
         
         $employee_update = Employee::find($leavemaster->EmpId);
 
@@ -255,7 +256,7 @@ class LeaveMasterController extends Controller {
             'leave_from' => date('d M Y', strtotime($leavemaster->FromDate)),
             'leave_to' => date('d M Y', strtotime($leavemaster->ToDate))
         ];
-        $this->sendApprovalMail($mail_data);
+        //$this->sendApprovalMail($mail_data);
         return "true";
     }
 

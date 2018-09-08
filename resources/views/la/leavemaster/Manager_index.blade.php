@@ -74,6 +74,7 @@ Team Leave Dashboard
                     </td>
                      <!--<td>{{(($leaveMasterRow->Approved != '')? $leaveMasterRow->Approved : 'Pending' ) }}</td>-->
                     <td class="text-center"> 
+					@if($role == 'lead')
                         @if($Approved=='1')
 
                         <span class="text-success">Approved</span>
@@ -86,12 +87,44 @@ Team Leave Dashboard
                         @else
 
                         <div class="">
-                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" >Approve</button>
-                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
+                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
                         </div>
 
                         @endif
+					
+					@elseif($role == 'manager')
+						@if($Approved=='1' && leaveMasterRow->RejectedBy == '')
 
+                        
+                        <div class="">
+                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+                        </div>
+
+                        @elseif($Approved=='0' && leaveMasterRow->ApprovedBy == '')
+
+                        
+                        <div class="">
+                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
+                        </div>
+						
+						@if($Approved=='1' && leaveMasterRow->RejectedBy != '' && leaveMasterRow->ApprovedBy != '')
+
+                        <span class="text-success">Approved</span>
+
+                        @elseif($Approved=='0' && leaveMasterRow->RejectedBy != '' && leaveMasterRow->ApprovedBy == '')
+
+                        <span class="text-danger">Rejected</span>
+
+                        @else
+
+                        <div class="">
+                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
+                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+                        </div>
+
+                        @endif
+					@endif
 
                     </td>
 
@@ -137,7 +170,7 @@ Team Leave Dashboard
         $.ajax({
             url: "{{ url('/approveLeave') }}",
             type: 'GET',
-            data: {'approved': approved, 'id': $(button).attr('data-id')},
+            data: {'approved': approved, 'id': $(button).attr('data-id'), 'days': $(button).attr('data-days')},
             success: function (data) {
                 console.log(data);
                 swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
