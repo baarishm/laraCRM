@@ -17,7 +17,7 @@ class CreateHolidaysListsTable extends Migration
      */
     public function up()
     {
-        Module::generate("Holidays_lists", 'holidays_lists', 'day', 'fa-calendar', [
+        Module::generate("Holidays_lists", 'holidays_lists', 'occasion', 'fa-calendar', [
             ["day", "Date", "Date", true, "", 0, 0, true],
             ["occasion", "Occasion", "TextField", false, "", 0, 255, true],
         ]);
