@@ -96,7 +96,7 @@ Leave Dashboard
 
                             <a href="{{action('LA\LeaveMasterController@edit',$leaveMasterRow->id)}}" class="btn btn-warning "><i class="fa fa-edit"></i></a>
                             <input name="_method" type="hidden" value="DELETE" >
-                            <button class="btn btn-danger pull-left" type="submit"><i class="fa fa-remove"></i></button>
+                            <button class="btn btn-danger pull-left delete-btn" type="submit"><i class="fa fa-remove"></i></button>
                             @endif
                         </form>
                     </td>

@@ -188,29 +188,24 @@ function binding() {
                     form.find('button[type="submit"]').on("click", function (e) {
                         e.preventDefault();
                         $('div.overlay').addClass('hide');
-                        if (confirm("Are you sure to delete?")) {
-                            $('div.overlay').removeClass('hide');
-                            form.submit();
-                        } else {
-                            return false;
-                        }
-                        // swal({
-                        // title: "Are you sure?",
-                        // text: "You will not be able to recover this action!",
-                        // type: "warning",
-                        // showCancelButton: true,
-                        // confirmButtonClass: "btn-danger",
-                        // confirmButtonText: "Delete",
-                        // cancelButtonText: "Cancel",
-                        // closeOnConfirm: false,
-                        // closeOnCancel: false
-                        // },
-                        // function(isConfirm) {
-                        // console.log(isConfirm);
-                        // if(isConfirm){
-                        // form.submit();
-                        // }
-                        // });
+                        swal({
+                            title: "Are you sure?",
+                            text: "You will not be able to recover this action!",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonClass: "btn-danger",
+                            confirmButtonText: "Delete",
+                            cancelButtonText: "Cancel",
+                            closeOnConfirm: false,
+                            closeOnCancel: false
+                        }).then(function (isConfirm) {
+                            if (isConfirm.value) {
+                                $('div.overlay').removeClass('hide');
+                                form.submit();
+                            } else {
+                                return false;
+                            }
+                        });
                     });
 
                     form.addClass('binded');

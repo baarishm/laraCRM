@@ -32,11 +32,28 @@
 <script>
 $(document).ready(function () {
     setTimeout(function () {
-        $('.btn-delete, .btn-danger[type="submit"]').click(function () {
+        $('.delete-btn').click(function (e) {
+            e.preventDefault();
             $('div.overlay').addClass('hide');
-            if (!confirm("Are you sure to delete?")) {
-                return false;
-            }
+            var form = $(this).parents('form.delete');
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this action!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Delete",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            }).then(function (isConfirm) {
+                if (isConfirm.value) {
+                    $('div.overlay').removeClass('hide');
+                    form.submit();
+                } else {
+                    return false;
+                }
+            });
         });
     }, 300);
     $('.bg-primary .dats1, .row.stats').hide();
