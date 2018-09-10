@@ -8,7 +8,7 @@
 
 @section("headerElems")
 @la_access("Leads", "create")
-	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Lead</button>
+	<!--<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Lead</button>-->
 @endla_access
 @endsection
 

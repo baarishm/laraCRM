@@ -8,7 +8,7 @@
 
 @section("headerElems")
 @la_access("Roles", "create")
-	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Role</button>
+<!--	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Role</button>-->
 @endla_access
 @endsection
 

@@ -8,7 +8,7 @@
 
 @section("headerElems")
 @la_access("Departments", "create")
-<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Department</button>
+<!--<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Department</button>-->
 @endla_access
 @endsection
 
