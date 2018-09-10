@@ -411,7 +411,7 @@ class LeaveMasterController extends Controller {
                 $html .= '<span  id="btn2" data-toggle="popover" title="' . $leaveMasterRow->LeaveReason . '" data-content="Default popover">Leave Reason ..</span>';
 
                 $html .= '</td>'
-                        . '<td class="text-center">';
+                        . '<td class="text-center" clas="status">';
                 if ($leaveMasterRow->Approved == '1') {
                     $html .= '<span class="text-success">Approved</span>';
                 } else if ($leaveMasterRow->Approved == '0') {

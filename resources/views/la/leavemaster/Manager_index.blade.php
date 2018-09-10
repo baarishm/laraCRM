@@ -73,7 +73,7 @@ Team Leave Dashboard
                     <td><span title="{{$leaveMasterRow->LeaveReason}}" >{{((strlen($leaveMasterRow->LeaveReason)>20) ? substr($leaveMasterRow->LeaveReason, 0, 20).'...' : $leaveMasterRow->LeaveReason)}}</span>
 
                     </td>
-                    <td>
+                    <td class="status">
                         @if($Approved=='1')
                             <span class="text-success">Approved</span>
                         @elseif($Approved=='0')
@@ -179,7 +179,8 @@ Team Leave Dashboard
                 }
             });
             var vid = $(button).attr('data-id');
-            $(button).parents('td').html((approved) ? '<span class="text-success">Approved</span>' : '<span class="text-danger">Rejected</span>');
+            $(button).parents('td').siblings(".status").html((approved) ? '<span class="text-success">Approved</span>' : '<span class="text-danger">Rejected</span>');
+            $(button).parents('td').html('Action Taken');
             $('[data-id=' + vid + ']').remove();
         });
 
