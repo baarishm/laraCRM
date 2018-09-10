@@ -8,7 +8,7 @@
 
 @section("headerElems")
 @la_access("Holidays_Lists", "create")
-	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Holiday</button>
+	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Holidays List</button>
 @endla_access
 @endsection
 
@@ -91,7 +91,7 @@ $(function () {
 		language: {
 			lengthMenu: "_MENU_",
 			search: "_INPUT_",
-			searchPlaceholder: "Search By Occasion"
+			searchPlaceholder: "Search"
 		},
 		@if($show_actions)
 		columnDefs: [ { orderable: false, targets: [-1] }],

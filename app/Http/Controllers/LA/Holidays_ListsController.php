@@ -22,7 +22,7 @@ use App\Models\Holidays_List;
 class Holidays_ListsController extends Controller {
 
     public $show_action = true;
-    public $view_col = 'day';
+    public $view_col = 'occasion';
     public $listing_cols = ['id', 'day', 'occasion'];
 
     public function __construct() {
@@ -209,6 +209,7 @@ class Holidays_ListsController extends Controller {
         $data = $out->getData();
 
         $fields_popup = ModuleFields::getModuleFields('Holidays_Lists');
+
         for ($i = 0; $i < count($data->data); $i++) {
             for ($j = 0; $j < count($this->listing_cols); $j++) {
                 $col = $this->listing_cols[$j];
@@ -217,7 +218,7 @@ class Holidays_ListsController extends Controller {
                 }
                 if ($col == $this->view_col && $col != 'day') {
                     $data->data[$i][$j] = '<a href="' . url(config('laraadmin.adminRoute') . '/holidays_lists/' . $data->data[$i][0]) . '">' . $data->data[$i][$j] . '</a>';
-                } 
+                }
                 if ($col == "day") {
                     $data->data[$i][$j] = date('d M Y', strtotime($data->data[$i][$j]));
                 }
