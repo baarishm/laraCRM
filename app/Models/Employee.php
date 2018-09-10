@@ -44,7 +44,10 @@ class Employee extends Model {
      */
     public static function getEngineersUnder($approvalType = 'Manager') {
         if ($approvalType == 'Manager') {
-            return implode(',', DB::table('employees')->where('second_approver', Auth::user()->context_id)->orWhere('first_approver', Auth::user()->context_id)->whereNull('deleted_at')->pluck('id'));
+            return implode(',', DB::table('employees')->whereNull('deleted_at')->where(function($q) {
+                        $q->where('second_approver', Auth::user()->context_id)
+                          ->orWhere('first_approver', Auth::user()->context_id);
+                    })->pluck('id'));
         } else if ($approvalType == 'Lead') {
             return implode(',', DB::table('employees')->where('first_approver', Auth::user()->context_id)->whereNull('deleted_at')->pluck('id'));
         } else {
