@@ -223,7 +223,7 @@ class Holidays_ListsController extends Controller {
                     $data->data[$i][$j] = date('d M Y', strtotime($data->data[$i][$j]));
                 }
             }
-
+            
             if ($this->show_action) {
                 $output = '';
                 if (Module::hasAccess("Holidays_Lists", "edit")) {
