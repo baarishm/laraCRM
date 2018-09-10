@@ -140,12 +140,5 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Holidays_Lists ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/holidays_lists', 'LA\Holidays_ListsController');
 	Route::get(config('laraadmin.adminRoute') . '/holidays_list_dt_ajax', 'LA\Holidays_ListsController@dtajax');
-
-	/* ================== Holidays_Lists ================== */
-	Route::resource(config('laraadmin.adminRoute') . '/holidays_lists', 'LA\Holidays_ListsController');
-	Route::get(config('laraadmin.adminRoute') . '/holidays_list_dt_ajax', 'LA\Holidays_ListsController@dtajax');
-
-	/* ================== Holidays_Lists ================== */
-	Route::resource(config('laraadmin.adminRoute') . '/holidays_lists', 'LA\Holidays_ListsController');
-	Route::get(config('laraadmin.adminRoute') . '/holidays_list_dt_ajax', 'LA\Holidays_ListsController@dtajax');
+        
 });

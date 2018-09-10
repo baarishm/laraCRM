@@ -270,6 +270,7 @@ class EmployeesController extends Controller {
     public function destroy($id) {
         if (Module::hasAccess("Employees", "delete")) {
             Employee::find($id)->delete();
+            User::where('context_id', '=', $id)->update(['deleted_at'=> date('Y-m-d H:i:s')]);
 
             // Redirecting to index() method
             return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
