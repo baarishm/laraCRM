@@ -128,10 +128,9 @@ $(function () {
             @endif
     }
     );
-    
-    $("#employee-add-form").validate({
 
-    });
+    var date = new Date().toShortFormat();
+    $('[name="date_hire"]').val(date);
 });
 </script>
 @endpush

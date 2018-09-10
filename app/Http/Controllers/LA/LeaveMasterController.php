@@ -24,7 +24,7 @@ class LeaveMasterController extends Controller {
                 ->get();
 
 
-        if (date('Y-m-d', strtotime($leaveMaster->FromDate)) >= date('Y-m-d')) {
+        if (date('Y-m-d', strtotime($leaveMaster->FromDate)) >= date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days'))) {
 
             $manager = Employee::getManagerDetails(Auth::user()->context_id);
 
@@ -68,7 +68,15 @@ class LeaveMasterController extends Controller {
                 ->get();
 
 
-        return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role, 'empdetail' => $empdetail]);
+        return view('la.leavemaster.' . $view, [
+            'before_days' => LAConfigs::getByKey('before_days_leave'),
+            'after_days' => LAConfigs::getByKey('after_days_leave'),
+            'number_of_leaves' => LAConfigs::getByKey('number_of_leaves'),
+            'leaveMaster' => $leaveMaster,
+            'role' => $role,
+            'empdetail' => $empdetail
+                ]
+        );
     }
 
     public function teamMemberIndex(Request $request) {
@@ -215,7 +223,7 @@ class LeaveMasterController extends Controller {
     public function destroy($id) {
         $leaveMaster = LeaveMaster::find($id);
 
-        if (date('Y-m-d', strtotime($leaveMaster->FromDate)) >= date('Y-m-d')) {
+        if (date('Y-m-d', strtotime($leaveMaster->FromDate)) >= date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days'))) {
             $leaveMaster->delete();
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been  deleted');
         } else {
@@ -225,7 +233,7 @@ class LeaveMasterController extends Controller {
 
     public function ajaxApproveLeave() {
 
-        $update_field = ['Approved' => $_GET['approved']];
+        $update_field = ['Approved' => $_GET['approved'], 'actionReason' => $_GET['actionReason']];
         if ($_GET['approved']) {
             $update_field['ApprovedBy'] = Auth::user()->context_id;
         } else {
@@ -234,29 +242,29 @@ class LeaveMasterController extends Controller {
 
         LeaveMaster::where('id', $_GET['id'])->update($update_field);
         $leavemaster = LeaveMaster::find($_GET['id']);
-		$employee = Employee::find($leavemaster->EmpId);
+        $employee = Employee::find($leavemaster->EmpId);
         if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
-			$available_leaves = $employee->available_leaves - $_GET['days'];
-		} else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
-			$available_leaves = $employee->available_leaves + $_GET['days'];
-		}
-		
-		DB::update("update employees set available_leaves = $available_leaves where id = ?", [$leavemaster->EmpId]);
+            $available_leaves = $employee->available_leaves - $_GET['days'];
+        } else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
+            $available_leaves = $employee->available_leaves + $_GET['days'];
+        }
 
-        
+        DB::update("update employees set available_leaves = $available_leaves where id = ?", [$leavemaster->EmpId]);
+
+
         $employee_update = Employee::find($leavemaster->EmpId);
 
         $mail_data = [
             'approved' => $_GET['approved'],
             'action_by' => ucwords(Auth::user()->name),
-            'comment' => '',
+            'comment' => $_GET['actionReason'],
             'action_date' => date('d M Y'),
             'mail_to' => $employee_update->email,
             'mail_to_name' => ucwords($employee_update->name),
             'leave_from' => date('d M Y', strtotime($leavemaster->FromDate)),
             'leave_to' => date('d M Y', strtotime($leavemaster->ToDate))
         ];
-        //$this->sendApprovalMail($mail_data);
+        $this->sendApprovalMail($mail_data);
         return "true";
     }
 

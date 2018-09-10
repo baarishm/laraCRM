@@ -87,7 +87,7 @@ Leave Dashboard
                     <td>
                         Withdrawn
                     </td>
-                    @elseif(($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL'))
+                    @elseif((($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL') && date('Y-m-d', strtotime('-'.$before_days.' days')) <= $leaveMasterRow->FromDate))
                     <td class="text-center">
 
                         <form action="{{action('LA\LeaveMasterController@destroy', $leaveMasterRow->id)}}" method="post" class="delete">

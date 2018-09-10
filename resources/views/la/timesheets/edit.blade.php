@@ -111,6 +111,7 @@ $(function () {
         e.preventDefault();
         if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
             swal("Number of hours for a task cannot exceed more than 24 hrs!");
+            $('div.overlay').addClass('hide');
             return false;
         } else {
             $.ajax({
@@ -120,6 +121,7 @@ $(function () {
             }).success(function (totalHours) {
                 if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val()/60)) > 24) {
                     swal("Number of working hours for a day cannot exceed more than 24 hrs!");
+                    $('div.overlay').addClass('hide');
                     return false;
                 } else {
                     $('#timesheet-edit-form').submit();
