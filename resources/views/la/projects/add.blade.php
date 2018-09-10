@@ -55,6 +55,7 @@
         $("#project-edit-form").validate({
 
         });
+        $('[name="start_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date('2016-08-29')));
     });
 </script>
 @endpush

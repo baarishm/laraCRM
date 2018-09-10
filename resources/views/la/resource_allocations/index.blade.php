@@ -8,7 +8,7 @@
 
 @section("headerElems")
 @la_access("Resource_Allocations", "create")
-<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Resource Allocation</button>
+<!--<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Resource Allocation</button>-->
 @endla_access
 @endsection
 
