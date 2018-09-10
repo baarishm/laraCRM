@@ -391,6 +391,7 @@ class LeaveMasterController extends Controller {
                         <th>No Of Days</th>
                         <th>Leave Type</th>
                         <th>Purpose</th>
+                        <th>Leave Status</th>
                         <th style="width:155px; text-align:center;">Action</th>
                 </tr>
                 ';
@@ -408,16 +409,38 @@ class LeaveMasterController extends Controller {
 
                  <td>';
                 $html .= '<span  id="btn2" data-toggle="popover" title="' . $leaveMasterRow->LeaveReason . '" data-content="Default popover">Leave Reason ..</span>';
-                $html .= '</td>
-                   
-                    <td class="text-center">';
+
+                $html .= '</td>'
+                        . '<td class="text-center">';
                 if ($leaveMasterRow->Approved == '1') {
                     $html .= '<span class="text-success">Approved</span>';
                 } else if ($leaveMasterRow->Approved == '0') {
                     $html .= '<span class="text-danger">Rejected</span>';
                 } else {
-                    $html .= '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);">Approve</button>';
-                    $html .= '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                    $html .= 'Pending';
+                }
+
+                $html .= '</td>
+                   
+                    <td class="text-center">';
+                if ($role == 'lead') {
+                    if ($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') {
+                        $html .= 'Action Taken';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);">Approve</button>';
+                        $html .= '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                    }
+                } else if ($role == 'manager') {
+                    if (($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->ApprovedBy != '' && $leaveMasterRow->RejectedBy != '') {
+                        $html .= 'Action Taken';
+                    } else if ($leaveMasterRow->Approved == '1' && $leaveMasterRow->RejectedBy == '') {
+                        $html .= '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                    } else if ($leaveMasterRow->Approved == '0' && $leaveMasterRow->ApprovedBy == '') {
+                        $html .= '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);">Approve</button>';
+                    } else {
+                        $html .= '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);">Approve</button>';
+                        $html .= '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                    }
                 }
 
 
