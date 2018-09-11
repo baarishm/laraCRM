@@ -135,3 +135,9 @@ div.dropdown-menu tr td{
     outline: none; 
     border: 1px solid #48b7d2;
 }
+
+.Highlighted{
+    background-color : #5c83f385 !important;
+    color: White !important;
+    border-radius: 50% !important;
+}

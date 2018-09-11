@@ -84,7 +84,10 @@ Edit Apply  Leave
 @push('scripts')
 
 <script type="text/javascript">
-    $(document).ready(function () {
+
+
+   $(document).ready(function () {
+
         // To calulate difference b/w two dates
         function CalculateDiff(isstart)
         {
@@ -129,15 +132,31 @@ Edit Apply  Leave
                     $('button[type="submit"]').attr('disabled', false);
                 }
                 $("#NoOfDays").val(days);
+                // alert(Math.round(days));
+
             }
         }
 
-        $("#datepicker").datepicker({
-            autoclose: true,
+        //get dates from session
+        var dates = "{{ Session::get('holiday_list') }}";
+        dates = JSON.parse(dates.replace(/&quot;/g, '\"'));
+        $('#datepicker').datepicker({
+            todayHighlight: 'true',
             format: 'd M yyyy',
+            daysOfWeekDisabled: [0],
             startDate: '-{{ $before_days }}d',
             endDate: '+{{ $after_days }}d',
-            todayHighlight: 'true',
+            beforeShowDay: function (date) {
+                var date = date.getFullYear() + "-" + ("0" + (date.getMonth()+1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
+                var Highlight = dates[date];
+                var re = [];
+                if (Highlight) {
+                    re = {enabled: false, classes: "Highlighted tooltips", tooltip: dates[date]['occasion']};
+                } else {
+                    re = {enabled: true};
+                }
+                return re;
+            }
 
         }).on('changeDate', function (e) {
             $("#datepickerto").val('');
@@ -145,16 +164,30 @@ Edit Apply  Leave
             $("#datepickerto").datepicker('setStartDate', e.date).datepicker("setDate", e.date);
             CalculateDiff(true);
         });
+
         $("#datepickerto").datepicker({
+            todayHighlight: 'true',
             autoclose: true,
             format: 'd M yyyy',
-            todayHighlight: 'true'
+            daysOfWeekDisabled: [0],
+
+            beforeShowDay: function (date) {
+                var date = date.getFullYear() + "-" + ("0" + (date.getMonth()+1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
+                var Highlight = dates[date];
+                if (Highlight) {
+                    re = {enabled: false, classes: "Highlighted", tooltip: 'Holiday'};
+                } else {
+                    re = {enabled: true};
+                }
+                return re;
+            }
+
         }).on('changeDate', function () {
+
             CalculateDiff(false);
         });
-        $("#datepickerto").datepicker('setStartDate', $("#datepicker").val());
-    }
-    );
+    });
+
 
 
 </script>
