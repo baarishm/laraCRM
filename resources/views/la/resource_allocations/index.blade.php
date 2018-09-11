@@ -117,36 +117,35 @@
 <script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
 <script>
 $(function () {
-    var table = $("#example1").DataTable({
-    processing: true,
-            serverSide: true,
-            searching: false,
-            ajax: {
-            url:"{{ url(config('laraadmin.adminRoute') . '/resource_allocation_dt_ajax') }}",
-                    type : 'get',
-                    data:function(d){
-                            d.project_search = $('#project_search').val();
-                            d.date_search = $('#date_search').val();
-                            d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
-                    }
-            },
-            language: {
-            lengthMenu: "_MENU_",
-                    search: "_INPUT_",
-                    searchPlaceholder: "Search"
-            },
-            columnDefs: [ {"searchable": false, "targets": [3, 4]}],
-            @if ($show_actions)
-    columnDefs: [ { orderable: false, targets: [ - 1] }, {"searchable": false, "targets": [3, 4]}],
-            @endif
-    }
-    );
-
-    $("#project_search, #date_search, #employee_search").on('change dp.change', function () {
-        table.draw();
-    });
-    
-    $('#project_search, #employee_search').select2();
+var table = $("#example1").DataTable({
+        processing: true,
+        "order": [[ 3, "desc" ]],
+        serverSide: true,
+        searching: false,
+        ajax: {
+        url:"{{ url(config('laraadmin.adminRoute') . '/resource_allocation_dt_ajax') }}",
+                type : 'get',
+                data:function(d){
+                d.project_search = $('#project_search').val();
+                d.date_search = $('#date_search').val();
+                d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
+                }
+        },
+        language: {
+        lengthMenu: "_MENU_",
+                search: "_INPUT_",
+                searchPlaceholder: "Search"
+        },
+        columnDefs: [ {"searchable": false, "targets": [3, 4]}],
+        @if ($show_actions)
+        columnDefs: [ { orderable: false, targets: [ - 1] }, {"searchable": false, "targets": [3, 4]}],
+        @endif
+}
+);
+$("#project_search, #date_search, #employee_search").on('change dp.change', function () {
+table.draw();
+});
+$('#project_search, #employee_search').select2();
 });
 </script>
 @endpush

@@ -130,7 +130,7 @@ class Resource_AllocationsController extends Controller {
             if (isset($project->id)) {
                 $pstart = date('d M Y', strtotime($project->start_date));
                 $pend = date('d M Y', strtotime($project->end_date));
-                
+
                 if ($insert_data['start_date'] < $project->start_date || $insert_data['start_date'] > $project->end_date) {
                     return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.create')->withErrors(['message' => 'Start date should be between Project\'s start date (' . $pstart . ') and end date(' . $pend . ').'])->withInput();
                 }
@@ -329,7 +329,7 @@ class Resource_AllocationsController extends Controller {
         if ($employee != "") {
             $value->whereRaw($employee);
         }
-        $values = $value->orderBy('start_date', 'desc');
+        $values = $value;
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 
