@@ -150,6 +150,9 @@ $('document').ready(function () {
     $('.modal-footer [data-dismiss]').on('click', function () {
         $('.modal-body div.form-group>input').val('');
     });
+
+    //tooltip
+    $('.tooltips').tooltip({'placement': 'bottom'});
 });
 
 

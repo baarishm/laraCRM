@@ -70,7 +70,7 @@ Team Leave Dashboard
                     <td>{{$leaveMasterRow->NoOfDays}}</td>
                     <td>{{(($leaveMasterRow->leave_name != '')? $leaveMasterRow->leave_name : "Not Specified" ) }}</td> 
 
-                    <td><span title="{{$leaveMasterRow->LeaveReason}}" >{{((strlen($leaveMasterRow->LeaveReason)>20) ? substr($leaveMasterRow->LeaveReason, 0, 20).'...' : $leaveMasterRow->LeaveReason)}}</span>
+                    <td><span class="tooltips" title="{{$leaveMasterRow->LeaveReason}}" >{{((strlen($leaveMasterRow->LeaveReason)>20) ? substr($leaveMasterRow->LeaveReason, 0, 20).'...' : $leaveMasterRow->LeaveReason)}}</span>
 
                     </td>
                     <td class="status">
@@ -189,7 +189,7 @@ Team Leave Dashboard
     $(document).ready(function () {
         $('.date').on('dp.change', function (e) {
             dateSorting();
-        })
+        });
     })
 
 </script>
