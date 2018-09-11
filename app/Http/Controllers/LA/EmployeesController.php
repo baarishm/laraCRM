@@ -310,7 +310,7 @@ class EmployeesController extends Controller {
                 // }
             }
 
-            if ($this->show_action) {
+            if ($this->show_action && $data->data[$i][2] != 'Super Admin') {
                 $output = '';
                 if (Module::hasAccess("Employees", "edit")) {
                     $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/employees/' . $data->data[$i][0] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
@@ -322,6 +322,9 @@ class EmployeesController extends Controller {
                     $output .= Form::close();
                 }
                 $data->data[$i][] = (string) $output;
+            }
+            else{
+                $data->data[$i][] = '';
             }
         }
         $out->setData($data);
