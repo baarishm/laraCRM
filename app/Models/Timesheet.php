@@ -41,14 +41,24 @@ class Timesheet extends Model {
                 ->get();
 
         $role_id = DB::table('employees')->whereRaw('id = "' . Auth::user()->context_id . '"')->first();
-        $tasks = DB::table('task_roles')
+
+        $role = Employee::employeeRole();
+        $where = '';
+        if ($role != 'manager') {
+            $where = 'role_id = ' . $role_id->dept . ' or role_id = 0';
+        }
+        $task = DB::table('task_roles')
                 ->select(['name', 'task_id'])
-                ->leftJoin('tasks', 'tasks.id', '=', 'task_roles.task_id')
-                ->whereRaw('role_id = ' . $role_id->dept . ' or role_id = 0')
-                ->whereNull('tasks.deleted_at')
+                ->leftJoin('tasks', 'tasks.id', '=', 'task_roles.task_id');
+        
+        if ($where != '') {
+            $task->whereRaw('role_id = ' . $role_id->dept . ' or role_id = 0');
+        }
+        
+        $task->whereNull('tasks.deleted_at')
                 ->orderBy('role_id', 'asc')
-                ->orderBy('tasks.name', 'asc')
-                ->get();
+                ->orderBy('tasks.name', 'asc');
+        $tasks = $task->get();
 
         $task_deleted = (session('task_removed') != '') ? " and timesheets.id NOT IN (" . trim(session('task_removed'), ',') . ")" : '';
         $notSubmitted = DB::table('timesheets')
