@@ -48,7 +48,7 @@ class Timesheet extends Model {
             $where = 'role_id = ' . $role_id->dept . ' or role_id = 0';
         }
         $task = DB::table('task_roles')
-                ->select(['name', DB::raw('DISTINCT(task_id) as task_id')])
+                ->select([DB::raw('DISTINCT(task_id) as task_id'),'name'])
                 ->leftJoin('tasks', 'tasks.id', '=', 'task_roles.task_id');
         
         if ($where != '') {
