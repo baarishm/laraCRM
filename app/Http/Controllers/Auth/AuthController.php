@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\User;
 use App\Models\Employee;
+use App\Models\Holidays_List;
 use App\Role;
 use Validator;
 use Eloquent;
@@ -142,6 +143,8 @@ use AuthenticatesAndRegistersUsers,
             if (\auth()->user()->deleted_at != NULL) {
                 return redirect('/logout');
             } else {
+                $holiday_list = collect(Holidays_List::select(['day','occasion']))->keyBy('day');
+                $request->session()->put('holiday_list', $holiday_list);
                 return redirect($this->redirectTo);
             }
         } else {

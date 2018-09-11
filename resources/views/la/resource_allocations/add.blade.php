@@ -54,6 +54,7 @@
 @push('scripts')
 <script>
     $(function () {
+        console.log({{ Session::get('holiday_list') }});
         $('[name="allocation"]').attr('min', '5').attr('max', '100');
         $('.date').data("DateTimePicker").minDate(moment('2016-08-29'));
     });
