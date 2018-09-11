@@ -143,7 +143,7 @@ use AuthenticatesAndRegistersUsers,
             if (\auth()->user()->deleted_at != NULL) {
                 return redirect('/logout');
             } else {
-                $holiday_list = collect(Holidays_List::select(['day','occasion'])->get())->keyBy('day');
+                $holiday_list = collect(Holidays_List::select(['day', 'occasion'])->get())->keyBy('day');
                 $request->session()->put('holiday_list', json_encode($holiday_list));
                 return redirect($this->redirectTo);
             }
@@ -151,4 +151,5 @@ use AuthenticatesAndRegistersUsers,
             return redirect()->back()->withErrors(['Credentials don\'t match!']);
         }
     }
+
 }
