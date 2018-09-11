@@ -91,111 +91,7 @@ Apply For Leave
 
 
 <script type="text/javascript">
-//    $(document).ready(function () {
-//
-//        // To calulate difference b/w two dates
-//        function CalculateDiff(isstart)
-//        {
-//            if ($("#datepicker").val() != "" && $("#datepickerto").val() != "") {
-//                var start = $("#datepicker").datepicker("getDate");
-//                var end = $("#datepickerto").datepicker("getDate");
-//
-//                if (end < start)
-//                    return 0;
-//
-//                // Calculate days between dates
-//                var millisecondsPerDay = 86400 * 1000; // Day in milliseconds
-//                start.setHours(0, 0, 0, 1);  // Start just after midnight
-//                end.setHours(23, 59, 59, 999);  // End just before midnight
-//                var diff = end - start;  // Milliseconds between datetime objects  
-//                
-//                var days = Math.ceil(diff / millisecondsPerDay);
-//
-//                // Subtract two weekend days for every week in between
-//                var weeks = Math.floor(days / 7);
-//                days = days - (weeks * 2);
-//
-//                // Handle special cases
-//                var start = start.getDay();
-//                var end = end.getDay();
-//
-//                // Remove weekend not previously removed.   
-//                if (start - end > 1)
-//                    days = days - 2;
-//
-//                // Remove start day if span starts on Sunday but ends before Saturday
-//                if (start == 0 && end != 6)
-//                    days = days - 1
-//
-//                // Remove end day if span ends on Saturday but starts after Sunday
-//                if (end == 6 && start != 0)
-//                    days = days - 1
-//                if (days > '{{ $number_of_leaves }}') {
-//                    swal('You cannot take more than {{ $number_of_leaves }} leaves at a time!');
-//                    $('#datepickerto').val('');
-//                    $('button[type="submit"]').attr('disabled', true);
-//                } else {
-//                    $('button[type="submit"]').attr('disabled', false);
-//                }
-//               
-//                $("#NoOfDays").val(days);
-//                // alert(Math.round(days));
-//
-//            }
-//        }
-//
-//        //get dates from session
-//        var dates = "{{ Session::get('holiday_list') }}";
-//        dates = JSON.parse(dates.replace(/&quot;/g, '\"'));
-//        $('#datepicker').datepicker({
-//            todayHighlight: 'true',
-//            format: 'd M yyyy',
-//            daysOfWeekDisabled: [0],
-//            startDate: '-{{ $before_days }}d',
-//            endDate: '+{{ $after_days }}d',
-//            beforeShowDay: function (date) {
-//                var date = date.getFullYear() + "-" + ("0" + (date.getMonth()+1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
-//                var Highlight = dates[date];
-//                var re = [];
-//                if (Highlight) {
-//                    re = {enabled: false, classes: "Highlighted tooltips", tooltip: dates[date]['occasion']};
-//                } else {
-//                    re = {enabled: true};
-//                }
-//                return re;
-//            }
-//
-//        }).on('changeDate', function (e) {
-//            $("#datepickerto").val('');
-//            $("#NoOfDays").val('');
-//            $("#datepickerto").datepicker('setStartDate', e.date).datepicker("setDate", e.date);
-//            CalculateDiff(true);
-//        });
-//
-//        $("#datepickerto").datepicker({
-//            todayHighlight: 'true',
-//            autoclose: true,
-//            format: 'd M yyyy',
-//            daysOfWeekDisabled: [0],
-//
-//            beforeShowDay: function (date) {
-//                var date = date.getFullYear() + "-" + ("0" + (date.getMonth()+1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
-//                var Highlight = dates[date];
-//                if (Highlight) {
-//                    re = {enabled: false, classes: "Highlighted", tooltip: 'Holiday'};
-//                } else {
-//                    re = {enabled: true};
-//                }
-//                return re;
-//            }
-//
-//        }).on('changeDate', function () {
-//
-//            CalculateDiff(false);
-//        });
-//    });
-//
-//
+
 
     $(document).ready(function () {
 
@@ -255,6 +151,8 @@ Apply For Leave
             autoclose: true,
             format: 'd M yyyy',
             daysOfWeekDisabled: [0,6],
+             startDate: '-{{ $before_days }}d',
+            endDate: '+{{ $after_days }}d',
             beforeShowDay: function (date) {
                 var date = date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
                 var Highlight = dates[date];
