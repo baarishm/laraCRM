@@ -57,3 +57,7 @@ Created by following http://laraadmin.com/docs/1.0/installation
                 <add accessType="Allow" users="?" />
             </authorization>
         </security>
+        
+-->> For Cron jobs : 
+    https://www.sitepoint.com/managing-cronjobs-with-laravel/
+    https://quantizd.com/how-to-use-laravel-task-scheduler-on-windows-10/
