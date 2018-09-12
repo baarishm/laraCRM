@@ -26,8 +26,9 @@
                     <thead class="entry-header">
                         <tr>
                             <th style="width: 16%;">Date<span class="required">*</span></th>
-                            <th style="width: 20%;">Project<span class="required">*</span></th>
-                            <th style="width: 20%;">Task<span class="required">*</span></th>
+                            <th style="width:15%;">Project<span class="required">*</span></th>
+                            <th style="width:15%;">Sprint<span class="required">*</span></th>
+                            <th style="width:15%;">Task<span class="required">*</span></th>
                             <th>Description</th>
                             <th>Hours<span class="required">*</span></th>
                             <th>Minutes<span class="required">*</span></th>
@@ -48,6 +49,13 @@
                                 <select class="form-control" name="project_id" id="project_id" required>
                                     @foreach($projects as $project)
                                     <option data-name="{{$project->name}}" value="{{$project->id}}">{{$project->name}}</option>
+                                    @endforeach
+                                </select>
+                            </td>
+                            <td>
+                                <select class="form-control" name="projects_sprint_id" id="projects_sprint_id" required>
+                                    @foreach($projects_sprints as $projects_sprint)
+                                    <option data-name="{{$projects_sprint->name}}" value="{{$projects_sprint->id}}">{{$projects_sprint->name}}</option>
                                     @endforeach
                                 </select>
                             </td>
@@ -99,6 +107,7 @@ $(document).ready(function () {
         var send_data = {
             _token: "{{ csrf_token() }}",
             project_id: $('select#project_id').val(),
+            projects_sprint_id: $('select#projects_sprint_id').val(),
             task_id: $('select#task_id').val(),
             date: $('#date').val(),
             comments: $('#comments').val(),
@@ -110,6 +119,7 @@ $(document).ready(function () {
             _method: "POST",
             _token: "{{ csrf_token() }}",
             project_id: $('select#project_id').val(),
+            projects_sprint_id: $('select#projects_sprint_id').val(),
             task_id: $('select#task_id').val(),
             project_name: $('select#project_id option:selected').attr('data-name'),
             task_name: $('select#task_id option:selected').attr('data-name'),
@@ -130,7 +140,7 @@ $(document).ready(function () {
             saved_data['_method'] = method;
             if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
                 $('div.overlay').addClass('hide');
-                swal("Number of hours for a task cannot exceed more than 24 hrs!"); 
+                swal("Number of hours for a task cannot exceed more than 24 hrs!");
                 return false;
             } else {
                 if (validateFields($('[required]'))) {
@@ -160,13 +170,13 @@ $(document).ready(function () {
                             });
                         }
                     });
-                } else { 
+                } else {
                     $('div.overlay').addClass('hide');
                     swal('Please fill all required fields!');
                 }
             }
         } else if (el.hasClass('update-entry')) {
-            if ($('tr.entry-row button.submit-form').hasClass('update-entry-db')) { 
+            if ($('tr.entry-row button.submit-form').hasClass('update-entry-db')) {
                 $('div.overlay').addClass('hide');
                 swal('Submit last row first!');
                 return false;
@@ -187,6 +197,39 @@ $(document).ready(function () {
             });
         }
     });
+
+    //to get project against date selected
+    $('.date').on('dp.change', function () {
+        var date = dateFormatDB($(this).find('input').val());
+        $.ajax({
+            url: "{{url(config('laraadmin.adminRoute') . '/projectList')}}",
+            method: 'POST',
+            data: {_token: "{{ csrf_token() }}", date: date}
+        }).success(function (project_list) {
+            $('select#project_id option').remove();
+            $(project_list).each(function (key, item) {
+                $('select#project_id').append('<option val="' + item.id + '">' + item.name + '</option>');
+            });
+        });
+        $('#project_id').trigger('change');
+    });
+
+    //to get sprint against project selected
+    $('#project_id').on('change', function () {
+        var date = dateFormatDB($('#date').val());
+        $.ajax({
+            url: "{{url(config('laraadmin.adminRoute') . '/sprintList')}}",
+            method: 'POST',
+            data: {_token: "{{ csrf_token() }}", date: date, project_id: $('#project_id').val()}
+        }).success(function (sprint_list) {
+            $('select#projects_sprint_id option').remove();
+            $(sprint_list).each(function (key, item) {
+                $('select#projects_sprint_id').append('<option val="' + item.id + '">' + item.name + '</option>');
+            });
+        });
+    });
+    
+    $('#project_id').trigger('change');
 
 });
 </script>

@@ -170,6 +170,12 @@ Date.prototype.toShortFormat = function () {
     return "" + day + " " + month_names[month_index] + " " + year;
 }
 
+function dateFormatDB(date) {
+    var date = new Date(date);
+    return date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
+}
+
+
 function validateFields(el) {
     var isValid = true;
     el.each(function () {

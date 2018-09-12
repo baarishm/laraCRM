@@ -95,7 +95,7 @@
 <script>
 $(function () {
 
-    var groupColumn = 3;
+    var groupColumn = 4;
     var table = $("#example1").DataTable({
     processing: true,
             serverSide: true,

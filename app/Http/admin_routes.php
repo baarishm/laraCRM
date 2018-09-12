@@ -74,6 +74,7 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Projects ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/projects', 'LA\ProjectsController');
 	Route::get(config('laraadmin.adminRoute') . '/project_dt_ajax', 'LA\ProjectsController@dtajax');
+	Route::post(config('laraadmin.adminRoute') . '/projectList', 'LA\ProjectsController@ajaxProjectList');
 
 	/* ================== Tasks ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/tasks', 'LA\TasksController');
@@ -140,4 +141,9 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	/* ================== Holidays_Lists ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/holidays_lists', 'LA\Holidays_ListsController');
 	Route::get(config('laraadmin.adminRoute') . '/holidays_list_dt_ajax', 'LA\Holidays_ListsController@dtajax');
+
+	/* ================== Projects_Sprints ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/projects_sprints', 'LA\Projects_SprintsController');
+	Route::post(config('laraadmin.adminRoute') . '/sprintList', 'LA\Projects_SprintsController@ajaxSprintList');
+	Route::post(config('laraadmin.adminRoute') . '/checkProjectDates', 'LA\Projects_SprintsController@ajaxProjectDatesCheck');
 });

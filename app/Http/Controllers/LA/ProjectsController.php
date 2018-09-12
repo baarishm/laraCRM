@@ -197,7 +197,7 @@ class ProjectsController extends Controller {
             $Exists = $row->count();
 
             if ($Exists > 0 && !in_array($id, $row->toArray())) {
-                return redirect()->route(config('laraadmin.adminRoute') . '.projects.edit' , ['id' => $id])->withErrors(['message' => 'Project with this name already exists. Please check or contact Admin to revoke it.']);
+                return redirect()->route(config('laraadmin.adminRoute') . '.projects.edit', ['id' => $id])->withErrors(['message' => 'Project with this name already exists. Please check or contact Admin to revoke it.']);
             }
 
             $update_data = $request->all();
@@ -271,6 +271,19 @@ class ProjectsController extends Controller {
         }
         $out->setData($data);
         return $out;
+    }
+
+    /**
+     * To get running projects as per the date
+     * @param string $date date against which running projects are to be bought
+     * @return array list of projects
+     */
+    public function ajaxProjectList(Request $request) {
+        $projects = Project::where('start_date', '<=', $request->date)
+                ->where('end_date', '>=', $request->date)
+                ->get();
+        
+        return $projects;
     }
 
 }

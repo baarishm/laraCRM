@@ -20,14 +20,15 @@ use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Timesheet;
 use App\Models\Employee;
 use App\Models\Project;
+use App\Models\Projects_Sprint;
 use Mail;
 
 class TimesheetsController extends Controller {
 
     public $show_action = false;
     public $view_col = '';
-    public $listing_cols = ['id', 'submitor_id', 'project_id', 'task_id', 'date', 'hours', 'minutes', 'comments', 'dependency', 'dependency_for', 'dependent_on', 'lead_id', 'manager_id'];
-    public $custom_cols = ['id', 'submitor_id', 'project_id', 'task_id', 'date', 'hours', 'minutes', 'comments', 'dependency', 'dependency_for', 'dependent_on', 'lead_id', 'manager_id'];
+    public $listing_cols = ['id', 'submitor_id', 'project_id', 'task_id', 'projects_sprint_id', 'date', 'hours', 'minutes', 'comments', 'dependency', 'dependency_for', 'dependent_on', 'lead_id', 'manager_id'];
+    public $custom_cols = ['id', 'submitor_id', 'project_id', 'task_id', 'projects_sprint_id', 'date', 'hours', 'minutes', 'comments', 'dependency', 'dependency_for', 'dependent_on', 'lead_id', 'manager_id'];
 
     public function __construct() {
         // Field Access of Listing Columns
@@ -50,7 +51,7 @@ class TimesheetsController extends Controller {
         session(['task_removed' => '']);
         $module = Module::get('Timesheets');
 
-        $this->custom_cols = ['Id', 'project_id', 'task_id', 'date', 'Time (in hrs)', 'Status'];
+        $this->custom_cols = ['Id', 'project_id', 'task_id', 'projects_sprint_id', 'date', 'Time (in hrs)', 'Status'];
 
         $projects = DB::table('timesheets')
                 ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
@@ -137,12 +138,14 @@ class TimesheetsController extends Controller {
         $module = Module::get('Timesheets');
         if (Module::hasAccess("Timesheets", "create")) {
             $forward = Timesheet::leads_managers_tasks_notSubmitted();
+            $projects = Project::whereNull('deleted_at')->where('start_date', '<=', date('Y-m-d'))->where('end_date', '>=', date('Y-m-d'))->get();
             return view('la.timesheets.add', [
                 'module' => $module,
                 'leads' => $forward['leads'],
                 'managers' => $forward['managers'],
                 'tasks' => $forward['tasks'],
-                'projects' => Project::whereNull('deleted_at')->get(),
+                'projects' => Project::whereNull('deleted_at')->where('start_date', '<=', date('Y-m-d'))->where('end_date', '>=', date('Y-m-d'))->get(),
+                'projects_sprints' => Projects_Sprint::where('project_id', $projects[0]->project_id)->where('end_date', '>=', date('Y-m-d'))->where('start_date', '<=', date('Y-m-d'))->get(),
                 'records' => $forward['notSubmitted'],
                 'task_removed' => '',
             ]);
@@ -197,7 +200,6 @@ class TimesheetsController extends Controller {
 
             $insert_data['submitor_id'] = base64_decode(base64_decode($request->submitor_id));
             $insert_data['date'] = date('Y-m-d', strtotime($request->date));
-
             $insert_row = Timesheet::create($insert_data);
 
             $forward = Timesheet::leads_managers_tasks_notSubmitted();
@@ -272,6 +274,8 @@ class TimesheetsController extends Controller {
                                 'leads' => $forward['leads'],
                                 'managers' => $forward['managers'],
                                 'tasks' => $forward['tasks'],
+                                'projects' => Project::whereNull('deleted_at')->where('start_date', '<=', $timesheet->date)->where('end_date', '>=', $timesheet->date)->get(),
+                                'projects_sprints' => Projects_Sprint::where('project_id', $timesheet->project_id)->where('end_date', '>=', $timesheet->date)->where('start_date', '<=', $timesheet->date)->get(),
                             ])->with('timesheet', $timesheet);
                 } else {
                     return redirect()->back()->withErrors(['Trying to be smart!!!']);
@@ -418,7 +422,7 @@ class TimesheetsController extends Controller {
 
         $out = Datatables::of($values)->make();
         $data = $out->getData();
-        $col_arr = [($request->teamMember) ? 'submitor_id' : 'id', 'project_id', 'task_id', 'date', 'hours', 'mail_sent'];
+        $col_arr = [($request->teamMember) ? 'submitor_id' : 'id', 'project_id', 'task_id', 'projects_sprint_id', 'date', 'hours', 'mail_sent'];
         $fields_popup = ModuleFields::getModuleFields('Timesheets');
         foreach ($fields_popup as $column => $val) {
             if (!in_array($column, $col_arr)) {
