@@ -5,31 +5,49 @@ Team Leave Dashboard
 @section("main-content")
 
 
-<div class="">
-    <br />
-    @if (\Session::has('success'))
-    <div class="alert alert-success">
-        <p>{{ \Session::get('success') }}</p>
-    </div><br />
+<br />
+@if (\Session::has('success'))
+<div class="alert alert-success">
+    <p>{{ \Session::get('success') }}</p>
+</div><br />
 
-    @endif
-    <div class="card" style="background: #FFF">
+@endif
+
+<div class="box box-success">
+    <div class="box-body" style="background: #FFF">
         @if(!empty($leaveMaster))
-        <button type="button" class="days btn" id="P"  onclick="DateSorting('P')">Previous Day</button>
-        <button type="button" class="days btn" id="T"   onclick="DateSorting('T')">Today</button>
-        <button type="button" class="days btn" id="N" onclick="DateSorting('N')">Next Day</button>
+        <div class="row">
+            <div class="col-md-3 col-md-offset-2">
+                <div class="input-group date">
+                    <input class="form-control date_search" placeholder="Enter From Date" required="" name="start_date" id="start_date" type="text" value="" autocomplete="off">
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+            <div class="col-md-3 col-md-offset-1">
+                <div class="input-group date">
+                    <input class="form-control date_search" placeholder="Enter To Date" required="" name="end_date" id="end_date" type="text" value="" autocomplete="off">
+                    <span class="input-group-addon">
+                        <span class="fa fa-calendar"></span>
+                    </span>
+                </div>
+            </div>
+        </div>
         <input type="text" readonly="true" id="holder" class="pull-right" style="border:none;">
         <table class="table table-striped table-bordered"  id="searchdate">
 
 
             <tr>
             <thead>
+            <th>Emp ID</th>
             <th>Name</th>
             <th>From Date</th>
             <th>To Date</th>
             <th>No Of Days</th>
             <th>Leave Type</th>
             <th>Purpose</th>
+            <th>Leave Status</th>
             <th style="width:155px; text-align:center;">Action</th>
             </thead>
             </tr>
@@ -44,7 +62,7 @@ Team Leave Dashboard
                 @endphp
 
                 <tr>
-
+                    <td>{{$leaveMasterRow->EmpId}}</td>
                     <td>{{$leaveMasterRow->Employees_name}}</td>
 
                     <td>{{$FromDate}}</td>
@@ -52,34 +70,56 @@ Team Leave Dashboard
                     <td>{{$leaveMasterRow->NoOfDays}}</td>
                     <td>{{(($leaveMasterRow->leave_name != '')? $leaveMasterRow->leave_name : "Not Specified" ) }}</td> 
 
-<!--                    <td>{{$leaveMasterRow->LeaveReason}}</td>-->
-                    <td><span  id="btn2" data-toggle="popover"  title="{{$leaveMasterRow->LeaveReason}}" data-content="Default popover">Leave Reason ..</span>
+                    <td><span class="tooltips" title="{{$leaveMasterRow->LeaveReason}}" >{{((strlen($leaveMasterRow->LeaveReason)>20) ? substr($leaveMasterRow->LeaveReason, 0, 20).'...' : $leaveMasterRow->LeaveReason)}}</span>
 
                     </td>
-                     <!--<td>{{(($leaveMasterRow->Approved != '')? $leaveMasterRow->Approved : 'Pending' ) }}</td>-->
-                    <td class="text-center"> 
+                    <td class="status">
                         @if($Approved=='1')
-                       
-                        <span class="text-success">Approved</span>
-                            
-                       
+                            <span class="text-success">Approved</span>
                         @elseif($Approved=='0')
-                    
-                        <span class="text-danger">Rejected</span>
-                    
+                            <span class="text-danger">Rejected</span>
                         @else
-                       
-                        <div class="">
-                            @if($Approved=='0' || $Approved=='')
-                            <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" data-days="{{$leaveMasterRow->NoOfDays}}">Approve</button>
-                            @endif
-                            @if($Approved=='1' || $Approved=='')
-                            <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" data-days='{{$leaveMasterRow->NoOfDays}}'>Reject</button> 
-                            @endif
-                        </div>
-                      
+                            Pending
                         @endif
+                    </td>
+                    <td class="text-center"> 
+                        @if($role == 'lead')
+                            @if($Approved=='1' || $Approved=='0')
+                                Action Taken
+                            @else
 
+                            <div class="">
+                                <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
+                                <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+                            </div>
+
+                            @endif
+                        @elseif($role == 'manager')
+                            @if($Approved=='1' && $leaveMasterRow->RejectedBy == '')
+
+                            <div class="">
+                                <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+                            </div>
+
+                            @elseif($Approved=='0' && $leaveMasterRow->ApprovedBy == '')
+
+                            <div class="">
+                                <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
+                            </div>
+
+                            @elseif(($Approved=='1' || $Approved=='0') && $leaveMasterRow->RejectedBy != '' && $leaveMasterRow->ApprovedBy != '')
+
+                            <span class="text-success">Action Taken</span>
+
+                            @else
+
+                            <div class="">
+                                <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
+                                <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
+                            </div>
+
+                            @endif
+                        @endif
 
                     </td>
 
@@ -91,80 +131,68 @@ Team Leave Dashboard
         <div>No Record found!</div>
         @endif
     </div>
+</div>
 
 
 
-    @endsection
-    @push('scripts')
-    <script type="text/javascript">
-        function DateSorting(date) {
-
-            $.ajax({
-                url: "{{ url(config('laraadmin.adminRoute') . '/datesearch') }}",
-                type: 'POST',
-                data: {'date': date, _token: "{{ csrf_token() }}"},
-                success: function (data) {
-                    data = $.parseJSON(data);
-                    $("#searchdate tbody").html(data.html);
-                    $(".days").removeClass('btn-success');
-                    $("#" + data.day).addClass('btn-success');
-                    if (data.day == 'T') {
-                        $('#N').hide();
-                    } else {
-                        $('#N').show();
-                    }
-                }
-            });
-        }
-
-
-        function myfunction(button)
-        {
-
-            var controlid = $(button).attr('id');
-
-            var approved = 0;
-            if (controlid == 'Approved')
-            {
-                approved = 1;
-               
-
+@endsection
+@push('scripts')
+<script type="text/javascript">
+    function dateSorting() {
+        $("#searchdate").html('');
+        $.ajax({
+            url: "{{ url(config('laraadmin.adminRoute') . '/datesearch') }}",
+            type: 'POST',
+            data: {'start_date': $('#start_date.date_search').val(), 'end_date': $('#end_date.date_search').val(), _token: "{{ csrf_token() }}"},
+            success: function (data) {
+                data = $.parseJSON(data);
+                $("#searchdate").html(data.html);
             }
+        });
+    }
+
+
+    function myfunction(button)
+    {
+
+        var controlid = $(button).attr('id');
+
+        var approved = 0;
+        if (controlid == 'Approved')
+        {
+            approved = 1;
+        }
+        swal({
+            title: "Enter Comment",
+            input: "textarea",
+            showCancelButton: true,
+            closeOnConfirm: false,
+            inputPlaceholder: "Comment on approval"
+        }).then(function (inputValue) {
             $.ajax({
                 url: "{{ url('/approveLeave') }}",
                 type: 'GET',
-                data: {'approved': approved, 'id': $(button).attr('data-id'), 'days' : $(button).attr('data-days')},
+                data: {'approved': approved, 'id': $(button).attr('data-id'), 'days': $(button).attr('data-days'), 'actionReason': inputValue.value},
                 success: function (data) {
+                    console.log(data);
                     swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
-               
                 }
             });
             var vid = $(button).attr('data-id');
-            $(button).parent('td').html((approved) ? '<span class="text-success">Approved</span>' : '<span class="text-danger">Rejected</span>');
+            $(button).parents('td').siblings(".status").html((approved) ? '<span class="text-success">Approved</span>' : '<span class="text-danger">Rejected</span>');
+            $(button).parents('td').html('Action Taken');
             $('[data-id=' + vid + ']').remove();
-        }
-        
-        $(function () {
-            $('.days').click(function () {
-                var elem_id = $(this).attr('id');
-                var add_day = ((elem_id == 'N') ? 1 : ((elem_id == 'T') ? 0 : -1));
-                var today = new Date();
-                var dd = today.getDate() + add_day;
-                var mm = today.getMonth() + 1; //January is 0!
-                var yyyy = today.getFullYear();
-                if (dd < 10) {
-                    dd = '0' + dd;
-                }
-                if (mm < 10) {
-                    mm = '0' + mm;
-                }
-                var today = yyyy + '-' + mm + '-' + dd;
-
-                $('#holder').val(new Date(today).toShortFormat());
-            });
         });
 
-    </script>
+    }
 
-    @endpush
+    $(document).ready(function () {
+        $('.date').on('dp.change', function (e) {
+            dateSorting();
+        });
+    })
+
+</script>
+
+@endpush
 

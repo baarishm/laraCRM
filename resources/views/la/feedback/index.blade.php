@@ -1,14 +1,14 @@
 @extends("la.layouts.app")
 
-@section("contentheader_title", "Departments")
-@section("contentheader_description", "Departments listing")
-@section("section", "Departments")
+@section("contentheader_title", "Feedback")
+@section("contentheader_description", "Feedback listing")
+@section("section", "Feedback")
 @section("sub_section", "Listing")
-@section("htmlheader_title", "Departments Listing")
+@section("htmlheader_title", "Feedback Listing")
 
 @section("headerElems")
-@la_access("Departments", "create")
-<!--<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Department</button>-->
+@la_access("Feedback", "create")
+<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Feedback</button>
 @endla_access
 @endsection
 
@@ -45,24 +45,31 @@
     </div>
 </div>
 
-@la_access("Departments", "create")
+@la_access("Feedback", "create")
 <div class="modal fade" id="AddModal" role="dialog" aria-labelledby="myModalLabel">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title" id="myModalLabel">Add Department</h4>
+                <h4 class="modal-title" id="myModalLabel">Add Feedback</h4>
             </div>
-            {!! Form::open(['action' => 'LA\DepartmentsController@store', 'id' => 'department-add-form']) !!}
+            {!! Form::open(['action' => 'LA\FeedbackController@store', 'id' => 'feedback-add-form']) !!}
             <div class="modal-body">
                 <div class="box-body">
-                    @la_form($module)
-
-                    {{--
-					@la_input($module, 'name')
-					@la_input($module, 'color')
-					@la_input($module, 'tags')
-					--}}
+                    <div class="form-group">
+                        <label for="type">Suggestion Type* :</label>
+                        <select class="form-control select2-hidden-accessible" required="1" data-placeholder="Enter Suggestion Type" rel="select2" name="type" id="type" tabindex="-1" aria-hidden="true" aria-required="true">
+                            <option value="Technical" selected="selected">Technical</option>
+                            <option value="Others">Others</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="suggestion">Suggestion* :</label>
+                        <textarea class="form-control" placeholder="Enter Suggestion" required="1" cols="30" rows="3" name="suggestion" aria-required="true"></textarea>
+                    </div>
+                    <div class="form-group">
+                        <input type="hidden" value="{{ base64_encode(base64_encode(Auth::user()->context_id))}}" />
+                    </div>
                 </div>
             </div>
             <div class="modal-footer">
@@ -88,7 +95,7 @@ $(function () {
     $("#example1").DataTable({
     processing: true,
             serverSide: true,
-            ajax: "{{ url(config('laraadmin.adminRoute') . '/department_dt_ajax') }}",
+            ajax: "{{ url(config('laraadmin.adminRoute') . '/feedback_dt_ajax') }}",
             language: {
             lengthMenu: "_MENU_",
                     search: "_INPUT_",
@@ -97,9 +104,11 @@ $(function () {
             @if ($show_actions)
     columnDefs: [ { orderable: false, targets: [ - 1] }],
             @endif
-    });
-
-    $("#department-add-form").validate({
+    }
+    );
+    
+    $('#type').select2();
+    $("#feedback-add-form").validate({
 
     });
 });

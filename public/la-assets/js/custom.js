@@ -3,18 +3,33 @@ $('document').ready(function () {
     $('div.overlay').addClass('hide');
 
     //date search
-    $('#date_search').datetimepicker({
+    $('#date_search, .date_search').datetimepicker({
         format: 'DD MMM YYYY',
         minDate: moment('2016-08-29')
     });
+
     //stop keyboard entry
-    $('#date_search').on('paste keydown', function (e) {
+    $('#date_search, .date_search').on('paste keydown', function (e) {
         var charCode = (e.which) ? e.which : e.keyCode;
         if (charCode != 8) {
             e.preventDefault();
             return false;
         }
     });
+
+    //disable end date
+    if ($('[name="start_date"]').val() == '') {
+        $('[name="end_date"]').attr('disabled', true);
+    }
+    if ($('[name="FromDate"]').val() == '') {
+        $('[name="ToDate"]').attr('disabled', true);
+    }
+    $('[name="FromDate"]').change(function () {
+        $('[name="ToDate"]').attr('disabled', false);
+        if ($('[name="FromDate"]').val() == '') {
+            $('[name="ToDate"]').attr('disabled', true);
+        }
+    })
 
     //date inputs
     if ($('.date').length > 0) {
@@ -42,8 +57,16 @@ $('document').ready(function () {
 
             //stop keyboard entry
             $(this).on('paste keydown', function (e) {
-                e.preventDefault();
-                return false;
+                if ($(this).find('input').hasClass('date_search') || $(this).hasClass('date_search')) {
+                    var charCode = (e.which) ? e.which : e.keyCode;
+                    if (charCode != 8) {
+                        e.preventDefault();
+                        return false;
+                    }
+                } else {
+                    e.preventDefault();
+                    return false;
+                }
             });
 
             //start date and end date validation
@@ -52,6 +75,9 @@ $('document').ready(function () {
                     var start_date = $('input[name="start_date"]').val();
                     if (start_date != '') {
                         $('[name="end_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date(start_date)));
+                        $('[name="end_date"]').attr('disabled', false);
+                    } else {
+                        $('[name="end_date"]').attr('disabled', true);
                     }
                     if (new Date($('input[name="start_date"]').val()) > new Date($('input[name="end_date"]').val())) {
                         $('input[name="end_date"]').parents('.date').data('DateTimePicker').date(start_date);
@@ -124,6 +150,9 @@ $('document').ready(function () {
     $('.modal-footer [data-dismiss]').on('click', function () {
         $('.modal-body div.form-group>input').val('');
     });
+
+    //tooltip
+    $('.tooltips').tooltip({'placement': 'bottom'});
 });
 
 
@@ -141,10 +170,16 @@ Date.prototype.toShortFormat = function () {
     return "" + day + " " + month_names[month_index] + " " + year;
 }
 
+function dateFormatDB(date) {
+    var date = new Date(date);
+    return date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
+}
+
+
 function validateFields(el) {
     var isValid = true;
     el.each(function () {
-        if ($(this).val() === '')
+        if ($(this).val() === '' || $(this).val() === null)
             isValid = false;
     });
     return isValid;
@@ -162,29 +197,24 @@ function binding() {
                     form.find('button[type="submit"]').on("click", function (e) {
                         e.preventDefault();
                         $('div.overlay').addClass('hide');
-                        if (confirm("Are you sure to delete?")) {
-                            $('div.overlay').removeClass('hide');
-                            form.submit();
-                        } else {
-                            return false;
-                        }
-                        // swal({
-                        // title: "Are you sure?",
-                        // text: "You will not be able to recover this action!",
-                        // type: "warning",
-                        // showCancelButton: true,
-                        // confirmButtonClass: "btn-danger",
-                        // confirmButtonText: "Delete",
-                        // cancelButtonText: "Cancel",
-                        // closeOnConfirm: false,
-                        // closeOnCancel: false
-                        // },
-                        // function(isConfirm) {
-                        // console.log(isConfirm);
-                        // if(isConfirm){
-                        // form.submit();
-                        // }
-                        // });
+                        swal({
+                            title: "Are you sure?",
+                            text: "You will not be able to recover this action!",
+                            type: "warning",
+                            showCancelButton: true,
+                            confirmButtonClass: "btn-danger",
+                            confirmButtonText: "Delete",
+                            cancelButtonText: "Cancel",
+                            closeOnConfirm: false,
+                            closeOnCancel: false
+                        }).then(function (isConfirm) {
+                            if (isConfirm.value) {
+                                $('div.overlay').removeClass('hide');
+                                form.submit();
+                            } else {
+                                return false;
+                            }
+                        });
                     });
 
                     form.addClass('binded');

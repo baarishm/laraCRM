@@ -1,25 +1,5 @@
 @extends("la.layouts.app")
-<style>
-    .group{
-        background-color: #eee;
-    }
-    .group td{
-        text-align:center;
-    }
-    .search {
-        float: right;
-        margin: 3px;
-        border: none;
-        border: 1px solid #9a9999;
-        border-radius: 4px;
-        text-align: center;
-        height: 28px;
-    }
-    .search:focus {
-        outline: none; 
-        border: 1px solid #48b7d2;
-    }
-</style>
+
 @section("contentheader_title", "Timesheets")
 @section("contentheader_description", "Timesheets listing")
 @section("section", "Timesheets")
@@ -54,7 +34,7 @@
 
             <div class="col-md-2 pull-right">
                 <select id="project_search" name="project_search">
-                    <option value="0" selected="selected" >Select Project Name</option>
+                    <option value="0" selected="selected" >Select Project</option>
                     <?php
                     if (!empty($projects)) {
                         foreach ($projects as $value) {
@@ -64,6 +44,20 @@
                     ?>
                 </select>
             </div>
+            @if($teamMember)
+            <div class="col-md-2 pull-right">
+                <select id="employee_search" name="employee_search">
+                    <option value="" selected="selected" >Select Employee</option>
+                    <?php
+                    if (!empty($employees)) {
+                        foreach ($employees as $value) {
+                            echo '<option value="' . $value->submitor_id . '">' . $value->employee_name . '</option>';
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
+            @endif
             <div class="col-md-3 pull-right week-div" data-value="0">
                 <a class="btn btn-success week" id="minus"><<</a>
                 <span><b> Current Week </b></span>
@@ -101,7 +95,7 @@
 <script>
 $(function () {
 
-    var groupColumn = 3;
+    var groupColumn = 4;
     var table = $("#example1").DataTable({
     processing: true,
             serverSide: true,
@@ -112,6 +106,7 @@ $(function () {
                     data:function(d){
                     d.project_search = $('#project_search').val();
                             d.date_search = $('#date_search').val();
+                            d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
                             d.teamMember = "{{$teamMember}}";
                             d.week_search = $('div.week-div').attr('data-value');
                     }
@@ -130,7 +125,7 @@ $(function () {
             if (last !== group) {
             var date_to_show = new Date(group);
                     $(rows).eq(i).before(
-                    '<tr class="group"><td colspan="6">' + date_to_show.toShortFormat() + '</td></tr>'
+                    '<tr class="group"><td colspan="7">' + date_to_show.toShortFormat() + '</td></tr>'
                     );
                     last = group;
             }
@@ -150,16 +145,17 @@ $(function () {
     { "visible": false, "targets": groupColumn },
     { "width": "7%", "targets": 0 },
     { "width": "25%", "targets": 1 },
-    { "width": "25%", "targets": 2 },
+    { "width": "18%", "targets": 2 },
     { "width": "25%", "targets": 3 },
-    { "width": "4%", "targets": 4 },
-    { "width": "10%", "targets": 5 },
-    { "width": "10%", "targets": 6 }
+//    { "width": "4%", "targets": 4 },
+    { "width": "8%", "targets": 5 },
+    { "width": "10%", "targets": 6 },
+    { "width": "20%", "targets": 7 }
     ],
             @endif
     }
     );
-    $("#project_search, #date_search").on('change dp.change', function () {
+    $("#project_search, #date_search, #employee_search").on('change dp.change', function () {
         table.draw();
     });
 
@@ -185,7 +181,7 @@ $(function () {
         $('div.overlay').addClass('hide');
     });
 
-    $('#project_search').select2();
+    $('#project_search, #employee_search').select2();
     $('input[type="search"][aria-controls="example1"]').hide();
 });
 </script>

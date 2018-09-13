@@ -118,7 +118,7 @@ class DepartmentsController extends Controller
 			} else {
 				return view('errors.404', [
 					'record_id' => $id,
-					'record_name' => ucfirst("department"),
+					'record_name' => ucwords("department"),
 				]);
 			}
 		} else {
@@ -148,7 +148,7 @@ class DepartmentsController extends Controller
 			} else {
 				return view('errors.404', [
 					'record_id' => $id,
-					'record_name' => ucfirst("department"),
+					'record_name' => ucwords("department"),
 				]);
 			}
 		} else {

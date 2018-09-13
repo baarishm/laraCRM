@@ -83,20 +83,20 @@ Leave Dashboard
                     <td>
                         <a href="" class="btn btn-default withdraw" data-removed="{{$leaveMasterRow->id}}">Withdraw</a>
                     </td>
-                    @elseif(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->withdraw && (date('Y-m-d') <= $leaveMasterRow->FromDate)) 
+                    @elseif(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->withdraw && (date('Y-m-d') >= $leaveMasterRow->FromDate)) 
                     <td>
                         Withdrawn
                     </td>
-                    @elseif($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL')
+                    @elseif((($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL') && date('Y-m-d', strtotime('-'.$before_days.' days')) <= $leaveMasterRow->FromDate))
                     <td class="text-center">
 
-                        <form action="{{action('LA\LeaveMasterController@destroy', $leaveMasterRow->id)}}" method="post">
+                        <form action="{{action('LA\LeaveMasterController@destroy', $leaveMasterRow->id)}}" method="post" class="delete">
                             <input type="hidden" name="_token" value="{{ csrf_token()}}">
 
 
                             <a href="{{action('LA\LeaveMasterController@edit',$leaveMasterRow->id)}}" class="btn btn-warning "><i class="fa fa-edit"></i></a>
                             <input name="_method" type="hidden" value="DELETE" >
-                            <button class="btn btn-danger pull-left" type="submit"><i class="fa fa-remove"></i></button>
+                            <button class="btn btn-danger pull-left delete-btn" type="submit"><i class="fa fa-remove"></i></button>
                             @endif
                         </form>
                     </td>
@@ -117,9 +117,9 @@ $(function () {
                 method: "POST",
                 url: "{{ url(config('laraadmin.adminRoute') . '/leave/withdraw') }}",
                 data: {id: link.attr('data-removed'),  _token : "{{ csrf_token()}}"}
-            }).success(function (totalHours) {
+            }).success(function (message) {
                 link.parents('td').html('Withdrawn');
-                swal('Leave withdrawn successfully!');
+                swal(message);
             });
     });
 });

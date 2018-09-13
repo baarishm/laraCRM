@@ -30,10 +30,10 @@
                 @la_form($module)
 
                 {{--
+					@la_input($module, 'client_id')
 					@la_input($module, 'name')
 					@la_input($module, 'manager_id')
 					@la_input($module, 'lead_id')
-					@la_input($module, 'client_id')
 					@la_input($module, 'start_date')
 					@la_input($module, 'end_date')
 					--}}
@@ -55,6 +55,7 @@
         $("#project-edit-form").validate({
 
         });
+        $('[name="start_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date('2016-08-29')));
     });
 </script>
 @endpush

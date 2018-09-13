@@ -19,7 +19,7 @@
 <script src="{{ asset('la-assets/js/custom.js') }}"></script>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-datepicker/1.5.0/js/bootstrap-datepicker.js"></script>  
- 
+
 <!-- Sweet Alert -->
 <!--<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>-->
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.11/dist/sweetalert2.all.min.js"></script>
@@ -32,10 +32,28 @@
 <script>
 $(document).ready(function () {
     setTimeout(function () {
-        $('.btn-delete, .btn-danger[type="submit"]').click(function () {
-            if (!confirm("Are you sure to delete?")) {
-                return false;
-            }
+        $('.delete-btn').click(function (e) {
+            e.preventDefault();
+            $('div.overlay').addClass('hide');
+            var form = $(this).parents('form.delete');
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this action!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Delete",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            }).then(function (isConfirm) {
+                if (isConfirm.value) {
+                    $('div.overlay').removeClass('hide');
+                    form.submit();
+                } else {
+                    return false;
+                }
+            });
         });
     }, 300);
     $('.bg-primary .dats1, .row.stats').hide();

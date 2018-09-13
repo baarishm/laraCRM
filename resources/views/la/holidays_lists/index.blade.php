@@ -1,14 +1,14 @@
 @extends("la.layouts.app")
 
-@section("contentheader_title", "Tasks")
-@section("contentheader_description", "Tasks listing")
-@section("section", "Tasks")
+@section("contentheader_title", "Holidays Lists")
+@section("contentheader_description", "Holidays Lists listing")
+@section("section", "Holidays Lists")
 @section("sub_section", "Listing")
-@section("htmlheader_title", "Tasks Listing")
+@section("htmlheader_title", "Holidays Lists Listing")
 
 @section("headerElems")
-@la_access("Tasks", "create")
-<!--	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Task</button>-->
+@la_access("Holidays_Lists", "create")
+	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Holidays List</button>
 @endla_access
 @endsection
 
@@ -45,21 +45,22 @@
 	</div>
 </div>
 
-@la_access("Tasks", "create")
+@la_access("Holidays_Lists", "create")
 <div class="modal fade" id="AddModal" role="dialog" aria-labelledby="myModalLabel">
 	<div class="modal-dialog" role="document">
 		<div class="modal-content">
 			<div class="modal-header">
 				<button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-				<h4 class="modal-title" id="myModalLabel">Add Task</h4>
+				<h4 class="modal-title" id="myModalLabel">Add Holidays List</h4>
 			</div>
-			{!! Form::open(['action' => 'LA\TasksController@store', 'id' => 'task-add-form']) !!}
+			{!! Form::open(['action' => 'LA\Holidays_ListsController@store', 'id' => 'holidays_list-add-form']) !!}
 			<div class="modal-body">
 				<div class="box-body">
                     @la_form($module)
 					
 					{{--
-					@la_input($module, 'name')
+					@la_input($module, 'day')
+					@la_input($module, 'occasion')
 					--}}
 				</div>
 			</div>
@@ -86,7 +87,7 @@ $(function () {
 	$("#example1").DataTable({
 		processing: true,
         serverSide: true,
-        ajax: "{{ url(config('laraadmin.adminRoute') . '/task_dt_ajax') }}",
+        ajax: "{{ url(config('laraadmin.adminRoute') . '/holidays_list_dt_ajax') }}",
 		language: {
 			lengthMenu: "_MENU_",
 			search: "_INPUT_",
@@ -96,7 +97,7 @@ $(function () {
 		columnDefs: [ { orderable: false, targets: [-1] }],
 		@endif
 	});
-	$("#task-add-form").validate({
+	$("#holidays_list-add-form").validate({
 		
 	});
 });

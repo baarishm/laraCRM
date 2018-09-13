@@ -17,37 +17,36 @@ use Datatables;
 use Collective\Html\FormFacade as Form;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
-use App\Models\Lead;
-use App\Models\Employee;
+use App\Models\Holidays_List;
 
-class LeadsController extends Controller {
+class Holidays_ListsController extends Controller {
 
     public $show_action = true;
-    public $view_col = 'employee_id';
-    public $listing_cols = ['id', 'employee_id'];
+    public $view_col = 'occasion';
+    public $listing_cols = ['id', 'day', 'occasion'];
 
     public function __construct() {
         // Field Access of Listing Columns
         if (\Dwij\Laraadmin\Helpers\LAHelper::laravel_ver() == 5.3) {
             $this->middleware(function ($request, $next) {
-                $this->listing_cols = ModuleFields::listingColumnAccessScan('Leads', $this->listing_cols);
+                $this->listing_cols = ModuleFields::listingColumnAccessScan('Holidays_Lists', $this->listing_cols);
                 return $next($request);
             });
         } else {
-            $this->listing_cols = ModuleFields::listingColumnAccessScan('Leads', $this->listing_cols);
+            $this->listing_cols = ModuleFields::listingColumnAccessScan('Holidays_Lists', $this->listing_cols);
         }
     }
 
     /**
-     * Display a listing of the Leads.
+     * Display a listing of the Holidays_Lists.
      *
      * @return \Illuminate\Http\Response
      */
     public function index() {
-        $module = Module::get('Leads');
+        $module = Module::get('Holidays_Lists');
 
         if (Module::hasAccess($module->id)) {
-            return View('la.leads.index', [
+            return View('la.holidays_lists.index', [
                 'show_actions' => $this->show_action,
                 'listing_cols' => $this->listing_cols,
                 'module' => $module
@@ -58,81 +57,64 @@ class LeadsController extends Controller {
     }
 
     /**
-     * Show the form for creating a new lead.
+     * Show the form for creating a new holidays_list.
      *
      * @return \Illuminate\Http\Response
      */
     public function create() {
-        $module = Module::get('Leads');
-        if (Module::hasAccess("Leads", "create")) {
-            return view('la.leads.add', [
-                'module' => $module
-            ]);
-        } else {
-            return redirect(config('laraadmin.adminRoute') . "/");
-        }
+        //
     }
 
     /**
-     * Store a newly created lead in database.
+     * Store a newly created holidays_list in database.
      *
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        if (Module::hasAccess("Leads", "create")) {
+        if (Module::hasAccess("Holidays_Lists", "create")) {
 
-            $rules = Module::validateRules("Leads", $request);
+            $rules = Module::validateRules("Holidays_Lists", $request);
 
             $validator = Validator::make($request->all(), $rules);
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
+            $insert_date = $request->all();
+            $insert_date['day'] = date("Y-m-d", strtotime($insert_date['day']));
+            $insert_id = Holidays_List::create($insert_date);
 
-            $row = Lead::where('employee_id', $request->employee_id)
-                    ->withTrashed()
-                    ->get();
-
-            $Exists = $row->count();
-
-            if ($Exists > 0) {
-                return redirect()->route(config('laraadmin.adminRoute') . '.leads.create')->withErrors(['message' => 'Lead already exists. Please check or contact Admin to revoke it.']);
-            }
-
-            $insert_id = Module::insert("Leads", $request);
-            Employee::updateRole('LEAD', $request->employee_id);
-
-            return redirect()->route(config('laraadmin.adminRoute') . '.leads.index');
+            return redirect()->route(config('laraadmin.adminRoute') . '.holidays_lists.index');
         } else {
             return redirect(config('laraadmin.adminRoute') . "/");
         }
     }
 
     /**
-     * Display the specified lead.
+     * Display the specified holidays_list.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        if (Module::hasAccess("Leads", "view")) {
+        if (Module::hasAccess("Holidays_Lists", "view")) {
 
-            $lead = Lead::find($id);
-            if (isset($lead->id)) {
-                $module = Module::get('Leads');
-                $module->row = $lead;
+            $holidays_list = Holidays_List::find($id);
+            if (isset($holidays_list->id)) {
+                $module = Module::get('Holidays_Lists');
+                $module->row = $holidays_list;
 
-                return view('la.leads.show', [
+                return view('la.holidays_lists.show', [
                             'module' => $module,
                             'view_col' => $this->view_col,
                             'no_header' => true,
                             'no_padding' => "no-padding"
-                        ])->with('lead', $lead);
+                        ])->with('holidays_list', $holidays_list);
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucwords("lead"),
+                    'record_name' => ucfirst("holidays_list"),
                 ]);
             }
         } else {
@@ -141,27 +123,27 @@ class LeadsController extends Controller {
     }
 
     /**
-     * Show the form for editing the specified lead.
+     * Show the form for editing the specified holidays_list.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        if (Module::hasAccess("Leads", "edit")) {
-            $lead = Lead::find($id);
-            if (isset($lead->id)) {
-                $module = Module::get('Leads');
+        if (Module::hasAccess("Holidays_Lists", "edit")) {
+            $holidays_list = Holidays_List::find($id);
+            if (isset($holidays_list->id)) {
+                $module = Module::get('Holidays_Lists');
 
-                $module->row = $lead;
+                $module->row = $holidays_list;
 
-                return view('la.leads.edit', [
+                return view('la.holidays_lists.edit', [
                             'module' => $module,
                             'view_col' => $this->view_col,
-                        ])->with('lead', $lead);
+                        ])->with('holidays_list', $holidays_list);
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucwords("lead"),
+                    'record_name' => ucfirst("holidays_list"),
                 ]);
             }
         } else {
@@ -170,16 +152,16 @@ class LeadsController extends Controller {
     }
 
     /**
-     * Update the specified lead in storage.
+     * Update the specified holidays_list in storage.
      *
      * @param  \Illuminate\Http\Request  $request
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-        if (Module::hasAccess("Leads", "edit")) {
+        if (Module::hasAccess("Holidays_Lists", "edit")) {
 
-            $rules = Module::validateRules("Leads", $request, true);
+            $rules = Module::validateRules("Holidays_Lists", $request, true);
 
             $validator = Validator::make($request->all(), $rules);
 
@@ -188,37 +170,29 @@ class LeadsController extends Controller {
                 ;
             }
 
-            $row = Lead::where('employee_id', $request->employee_id)
-                    ->withTrashed()
-                    ->pluck('id');
+            $update_data = $request->all();
+            $update_data['day'] = date("Y-m-d", strtotime($update_data['day']));
 
-            $Exists = $row->count();
+            $update_id = Holidays_List::find($id)->update($update_data);
 
-            if ($Exists > 0 && !in_array($id, $row->toArray())) {
-                return redirect()->route(config('laraadmin.adminRoute') . '.leads.edit', ['id' => $id])->withErrors(['message' => 'Lead already exists. Please check or contact Admin to revoke it.']);
-            }
-
-            $insert_id = Module::updateRow("Leads", $request, $id);
-            Employee::updateRole('LEAD', $request->employee_id);
-
-            return redirect()->route(config('laraadmin.adminRoute') . '.leads.index');
+            return redirect()->route(config('laraadmin.adminRoute') . '.holidays_lists.index');
         } else {
             return redirect(config('laraadmin.adminRoute') . "/");
         }
     }
 
     /**
-     * Remove the specified lead from storage.
+     * Remove the specified holidays_list from storage.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-        if (Module::hasAccess("Leads", "delete")) {
-            Lead::find($id)->forceDelete();
+        if (Module::hasAccess("Holidays_Lists", "delete")) {
+            Holidays_List::find($id)->delete();
 
             // Redirecting to index() method
-            return redirect()->route(config('laraadmin.adminRoute') . '.leads.index');
+            return redirect()->route(config('laraadmin.adminRoute') . '.holidays_lists.index');
         } else {
             return redirect(config('laraadmin.adminRoute') . "/");
         }
@@ -230,11 +204,11 @@ class LeadsController extends Controller {
      * @return
      */
     public function dtajax() {
-        $values = DB::table('leads')->select($this->listing_cols)->whereNull('deleted_at');
+        $values = DB::table('holidays_lists')->select($this->listing_cols)->whereNull('deleted_at');
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 
-        $fields_popup = ModuleFields::getModuleFields('Leads');
+        $fields_popup = ModuleFields::getModuleFields('Holidays_Lists');
 
         for ($i = 0; $i < count($data->data); $i++) {
             for ($j = 0; $j < count($this->listing_cols); $j++) {
@@ -242,22 +216,22 @@ class LeadsController extends Controller {
                 if ($fields_popup[$col] != null && starts_with($fields_popup[$col]->popup_vals, "@")) {
                     $data->data[$i][$j] = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$j]);
                 }
-                if ($col == $this->view_col) {
-                    $data->data[$i][$j] = '<a href="' . url(config('laraadmin.adminRoute') . '/leads/' . $data->data[$i][0]) . '">' . $data->data[$i][$j] . '</a>';
+                if ($col == $this->view_col && $col != 'day') {
+                    $data->data[$i][$j] = '<a href="' . url(config('laraadmin.adminRoute') . '/holidays_lists/' . $data->data[$i][0]) . '">' . $data->data[$i][$j] . '</a>';
+                } 
+                if ($col == "day") {
+                    $data->data[$i][$j] = date('d M Y', strtotime($data->data[$i][$j]));
                 }
-                // else if($col == "author") {
-                //    $data->data[$i][$j];
-                // }
             }
 
             if ($this->show_action) {
                 $output = '';
-                if (Module::hasAccess("Leads", "edit")) {
-                    $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/leads/' . $data->data[$i][0] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
+                if (Module::hasAccess("Holidays_Lists", "edit")) {
+                    $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/holidays_lists/' . $data->data[$i][0] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
                 }
 
-                if (Module::hasAccess("Leads", "delete")) {
-                    $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.leads.destroy', $data->data[$i][0]], 'method' => 'delete', 'style' => 'display:inline', 'class' => 'delete']);
+                if (Module::hasAccess("Holidays_Lists", "delete")) {
+                    $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.holidays_lists.destroy', $data->data[$i][0]], 'method' => 'delete', 'style' => 'display:inline']);
                     $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
                     $output .= Form::close();
                 }

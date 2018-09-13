@@ -8,7 +8,7 @@
 
 @section("headerElems")
 @la_access("Employees", "create")
-<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Employee</button>
+<!--<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Employee</button>-->
 @endla_access
 @endsection
 
@@ -34,7 +34,7 @@
                     <th>{{ $module->fields[$col]['label'] or ucfirst($col) }}</th>
                     @endforeach
                     @if($show_actions)
-                    <th style="width: 52px;">Actions</th>
+                    <th style="width: 55px;">Actions</th>
                     @endif
                 </tr>
             </thead>
@@ -128,10 +128,9 @@ $(function () {
             @endif
     }
     );
-    
-    $("#employee-add-form").validate({
 
-    });
+    var date = new Date().toShortFormat();
+    $('[name="date_hire"]').val(date);
 });
 </script>
 @endpush

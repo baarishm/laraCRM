@@ -119,6 +119,163 @@ Project View
 
     </div>
 </div>
+<h3 class="ml10">Sprint Details</h3>
+<div class="box entry-form">
+    <div class="box-body">
+        <div class="row">
+            <div class="col-md-10 col-md-offset-1">
+                <table id="entry_table">
+                    <thead class="entry-header">
+                        <tr>
+                            <th style="width: 40%;">Sprint Name<span class="required">*</span></th>
+                            <th style="width: 20%;">Start Date<span class="required">*</span></th>
+                            <th style="width: 20%;">End Date<span class="required">*</span></th>
+                            <th style="width: 15%;">Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="entry_body">
+                        <tr class="entry-row">
+                            <td>
+                                <input class="form-control" placeholder="Enter Sprint Name" name="name" id="name" type="text" value="" required>
+                            </td>
+                            <td>
+                                <div class="input-group date">
+                                    <input class="form-control" placeholder="Start Date" required name="start_date" id="start_date" type="text" value="" autocomplete="off" required>
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <div class="input-group date">
+                                    <input class="form-control" placeholder="End Date" required name="end_date" id="end_date" type="text" value="" autocomplete="off" required>
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary add-entry submit-form " data-value=''><i class="fa fa-plus"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 </div>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(document).ready(function () {
+        $.ajax({
+            url: "{{ url(config('laraadmin.adminRoute').'/sprintList') }}",
+            method: "POST",
+            data: {
+                project_id: '{{ $project->id }}', _token: "{{ csrf_token()}}"
+            }
+        }).success(function (list) {
+            $(list).each(function (key, item) {
+                $('#entry_table').append("<tr class='recent-entry'>" +
+                        "<td class='name'>" + item.name + "</td>" +
+                        "<td class='start_date'>" + (new Date(item.start_date)).toShortFormat() + "</td>" +
+                        "<td class='end_date'>" + (new Date(item.end_date)).toShortFormat() + "</td>" +
+                        "<td>" +
+                        '<button class="btn btn-success update-entry submit-form " data-value=' + item.id + '><i class="fa fa-edit"></i></button>' +
+                        '<button class="btn btn-danger delete-entry submit-form " data-value=' + item.id + '><i class="fa fa-times"></i></button>' + "</td>" +
+                        "</tr>");
+            });
+        });
+
+        //form submition
+        $(document).on('click', 'button.submit-form', function () {
+            var send_data = {
+                _token: "{{ csrf_token() }}",
+                project_id: "{{ $project->id }}",
+                name: $('#name').val(),
+                start_date: dateFormatDB($('#start_date').val()),
+                end_date: dateFormatDB($('#end_date').val()),
+            };
+            var saved_data = {
+                _method: "POST",
+                _token: "{{ csrf_token() }}",
+                project_id: "{{ $project->id }}",
+                name: $('#name').val(),
+                start_date: dateFormatDB($('#start_date').val()),
+                end_date: dateFormatDB($('#end_date').val()),
+            };
+            var el = $(this);
+
+            if (el.hasClass('add-entry') || el.hasClass('update-entry-db')) {
+                var url = "{{ url(config('laraadmin.adminRoute') . '/projects_sprints') }}";
+                var method = "POST";
+                if (el.hasClass('update-entry-db')) {
+                    url = "{{ url(config('laraadmin.adminRoute') . '/projects_sprints') }}" + "/" + el.attr('data-value') + "?_method=PUT";
+                    method = "PUT";
+                }
+                saved_data['_method'] = method;
+                if (validateFields($('[required]'))) {
+                    $('div.overlay').removeClass('hide');
+                    $.ajax({
+                        method: "POST",
+                        url: "{{ url(config('laraadmin.adminRoute').'/checkProjectDates') }}",
+                        data: {project_id: saved_data['project_id'], name: saved_data['name'], start_date: saved_data['start_date'], end_date: saved_data['end_date'], _token: "{{ csrf_token()}}"}
+                    }).success(function (datesWithinRange) {
+                        if (datesWithinRange === 'false') {
+                            $('div.overlay').addClass('hide');
+                            swal("Sprint dates should be within project dates!");
+                            return false;
+                        } else {
+                            $.ajax({
+                                method: "POST",
+                                url: url,
+                                data: send_data,
+                                success: function (received) {
+                                    if ($.isNumeric(received)) {
+                                        update_row(saved_data, received);
+                                        $('tr.entry-row').find('.submit-form').addClass('add-entry').removeClass('update-entry-db').attr('data-value', '');
+                                        $('.add-entry').find('i').removeClass('fa-edit').addClass('fa-plus');
+                                        $('div.overlay').addClass('hide');
+                                    } else {
+                                        $('div.overlay').addClass('hide');
+                                        swal(received);
+                                    }
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    $('div.overlay').addClass('hide');
+                    swal('Please fill all required fields!');
+                }
+
+            } else if (el.hasClass('update-entry')) {
+                if ($('tr.entry-row button.submit-form').hasClass('update-entry-db')) {
+                    $('div.overlay').addClass('hide');
+                    swal('Submit last row first!');
+                    return false;
+                }
+                show_update_row(el);
+            } else if (el.hasClass('delete-entry')) {
+                var parent_row = el.parents('tr.recent-entry');
+                $('div.overlay').removeClass('hide');
+                $.ajax({
+                    method: 'POST',
+                    url: "{{ url(config('laraadmin.adminRoute') . '/projects_sprints') }}" + "/" + el.attr('data-value'),
+                    data: {_token: "{{ csrf_token() }}", id: el.attr('data-value'), ajax: true, _method: 'DELETE'},
+                    success: function () {
+                        $('div.overlay').addClass('hide');
+                        parent_row.remove();
+                        swal('Row deleted successfully!');
+                    }
+                });
+            }
+
+        });
+    });
+</script>
+<script src="{{ asset('la-assets/js/pages/projects.js') }}"></script>
+@endpush

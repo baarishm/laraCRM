@@ -151,7 +151,7 @@ class RolesController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("role"),
+                    'record_name' => ucwords("role"),
                 ]);
             }
         } else {
@@ -181,7 +181,7 @@ class RolesController extends Controller {
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucfirst("role"),
+                    'record_name' => ucwords("role"),
                 ]);
             }
         } else {

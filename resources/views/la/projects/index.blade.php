@@ -8,7 +8,7 @@
 
 @section("headerElems")
 @la_access("Projects", "create")
-	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Project</button>
+<!--	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Project</button>-->
 @endla_access
 @endsection
 
@@ -59,10 +59,10 @@
                     @la_form($module)
 					
 					{{--
+					@la_input($module, 'client_id')
 					@la_input($module, 'name')
 					@la_input($module, 'manager_id')
 					@la_input($module, 'lead_id')
-					@la_input($module, 'client_id')
 					@la_input($module, 'start_date')
 					@la_input($module, 'end_date')
 					--}}

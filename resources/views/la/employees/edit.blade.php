@@ -51,6 +51,7 @@
 					@la_input($module, 'date_hire')
 					@la_input($module, 'is_confirmed')
 					--}}
+                @if(Entrust::hasRole('SUPER_ADMIN'))
                 <div class="form-group">
                     <label for="role">Role* :</label>
                     <select class="form-control" required="1" data-placeholder="Select Role" rel="select2" name="role">
@@ -66,6 +67,7 @@
                         @endforeach
                     </select>
                 </div>
+                @endif
                 <br>
                 <div class="form-group">
                     {!! Form::submit( 'Update', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/employees') }}">Cancel</a></button>
