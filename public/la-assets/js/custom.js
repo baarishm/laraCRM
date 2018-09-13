@@ -179,7 +179,7 @@ function dateFormatDB(date) {
 function validateFields(el) {
     var isValid = true;
     el.each(function () {
-        if ($(this).val() === '')
+        if ($(this).val() === '' || $(this).val() === null)
             isValid = false;
     });
     return isValid;
