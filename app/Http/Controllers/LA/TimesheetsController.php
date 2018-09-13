@@ -440,7 +440,7 @@ class TimesheetsController extends Controller {
                     $data->data[$i][$j] = '<a href="' . url(config('laraadmin.adminRoute') . '/timesheets/' . $data->data[$i][0]) . '">' . $data->data[$i][$j] . '</a>';
                 }
             }
-            
+
             if ($this->show_action || !$request->teamMember) {
                 $output = '';
                 if ($data->data[$i][count($this->custom_cols) - 1] != 'Mail Sent' && ($data->data[$i][4] >= date('Y-m-d', strtotime('-1 week')))) {
@@ -572,12 +572,13 @@ class TimesheetsController extends Controller {
     public function ajaxExportTimeSheetToAuthority(Request $request) {
         //code to export excel
         $sheet_data = Timesheet::
-                        select([DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
+                        select([DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
                         ->where('date', '>=', date('Y-m-d', strtotime($request->start_date)))
                         ->where('date', '<=', date('Y-m-d', strtotime($request->end_date)))
                         ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
                         ->leftJoin('tasks', 'timesheets.task_id', '=', 'tasks.id')
                         ->leftJoin('employees', 'timesheets.submitor_id', '=', 'employees.id')
+                        ->leftJoin('projects_sprints', 'timesheets.projects_sprint_id', '=', 'projects_sprints.id')
                         ->groupBy('date', 'timesheets.submitor_id', 'timesheets.project_id', 'timesheets.task_id')
                         ->orderBy(DB::raw("STR_TO_DATE(date,'%Y-%m-%d')"), 'desc')
                         ->get()->toArray();
