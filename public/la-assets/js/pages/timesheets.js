@@ -64,6 +64,7 @@ function update_row(saved_data, id, removeable_options) {
             '<tr class="recent-entry">' +
             '<td class="date">' + saved_data.date + '</td>' +
             '<td class="project_name" data-value="' + saved_data.project_id + '">' + saved_data.project_name + '</td>' +
+            '<td class="projects_sprint_name" data-value="' + saved_data.projects_sprint_id + '">' + saved_data.projects_sprint_name + '</td>' +
             '<td class="task_name" data-value="' + saved_data.task_id + '">' + saved_data.task_name + '</td>' +
             '<td class="comments">' + saved_data.comments + '</td>' +
             '<td class="hours">' + saved_data.hours + '</td>' +
@@ -81,6 +82,7 @@ function show_update_row(el) {
     var parent = el.parents('tr.recent-entry');
     $('tr.entry-row input#date').val(parent.find('td.date').html());
     $('tr.entry-row select#project_id').val(parent.find('td.project_name').attr('data-value')).trigger('change');
+    $('tr.entry-row select#projects_sprint_id').val(parent.find('td.projects_sprint_name').attr('data-value')).trigger('change');
     $('tr.entry-row select#task_id').val(parent.find('td.task_name').attr('data-value')).trigger('change');
     $('tr.entry-row input#comments').val(parent.find('td.comments').html());
     $('tr.entry-row select#hours').val(parent.find('td.hours').html()).trigger('change');

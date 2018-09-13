@@ -55,7 +55,7 @@
                             <td>
                                 <select class="form-control" name="projects_sprint_id" id="projects_sprint_id" required>
                                     @foreach($projects_sprints as $projects_sprint)
-                                    <option data-name="{{$projects_sprint->name}}" value="{{$projects_sprint->id}}">{{$projects_sprint->name}}</option>
+                                        <option data-name="{{$projects_sprint->name}}" value="{{$projects_sprint->id}}">{{$projects_sprint->name}}</option>
                                     @endforeach
                                 </select>
                             </td>
@@ -122,6 +122,7 @@ $(document).ready(function () {
             projects_sprint_id: $('select#projects_sprint_id').val(),
             task_id: $('select#task_id').val(),
             project_name: $('select#project_id option:selected').attr('data-name'),
+            projects_sprint_name: $('select#projects_sprint_id option:selected').attr('data-name'),
             task_name: $('select#task_id option:selected').attr('data-name'),
             date: $('#date').val(),
             comments: $('#comments').val(),
@@ -208,7 +209,7 @@ $(document).ready(function () {
         }).success(function (project_list) {
             $('select#project_id option').remove();
             $(project_list).each(function (key, item) {
-                $('select#project_id').append('<option val="' + item.id + '">' + item.name + '</option>');
+                $('select#project_id').append('<option data-name="'+item.name+'" value="' + item.id + '">' + item.name + '</option>');
             });
         });
         $('#project_id').trigger('change');
@@ -224,7 +225,7 @@ $(document).ready(function () {
         }).success(function (sprint_list) {
             $('select#projects_sprint_id option').remove();
             $(sprint_list).each(function (key, item) {
-                $('select#projects_sprint_id').append('<option val="' + item.id + '">' + item.name + '</option>');
+                $('select#projects_sprint_id').append('<option data-name="'+item.name+'" value="' + item.id + '">' + item.name + '</option>');
             });
         });
     });

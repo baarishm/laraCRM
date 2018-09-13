@@ -36,6 +36,7 @@ class Projects_Sprint extends Model {
                 ->orWhere(function($q) use ($project_id, $start_date, $end_date) {
                     $q->where('start_date', '<=', $end_date)->where('end_date', '>=', $end_date);
                 })
+                ->whereNull('deleted_at')
                 ->pluck('id');
         return $row;
     }
