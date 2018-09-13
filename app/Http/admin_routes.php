@@ -146,4 +146,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::resource(config('laraadmin.adminRoute') . '/projects_sprints', 'LA\Projects_SprintsController');
 	Route::post(config('laraadmin.adminRoute') . '/sprintList', 'LA\Projects_SprintsController@ajaxSprintList');
 	Route::post(config('laraadmin.adminRoute') . '/checkProjectDates', 'LA\Projects_SprintsController@ajaxProjectDatesCheck');
+
+	/* ================== Feedback ================== */
+	Route::resource(config('laraadmin.adminRoute') . '/feedback', 'LA\FeedbackController');
+	Route::get(config('laraadmin.adminRoute') . '/feedback_dt_ajax', 'LA\FeedbackController@dtajax');
 });
