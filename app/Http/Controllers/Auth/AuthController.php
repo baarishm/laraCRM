@@ -145,6 +145,7 @@ use AuthenticatesAndRegistersUsers,
             } else {
                 $holiday_list = collect(Holidays_List::select(['day', 'occasion'])->get())->keyBy('day');
                 $request->session()->put('holiday_list', json_encode($holiday_list));
+                $request->session()->put('role', Employee::employeeRole());
                 return redirect($this->redirectTo);
             }
         } else {

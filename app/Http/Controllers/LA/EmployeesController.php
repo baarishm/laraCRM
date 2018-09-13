@@ -24,6 +24,7 @@ use App\Role;
 use Mail;
 use Log;
 use Dwij\Laraadmin\Models\LAConfigs;
+use Session;
 
 class EmployeesController extends Controller {
 
@@ -52,7 +53,7 @@ class EmployeesController extends Controller {
     public function index() {
         $module = Module::get('Employees');
 
-        if (Module::hasAccess($module->id)) {
+        if (Module::hasAccess($module->id) && (Session::get('role') == 'superAdmin')) {
             return View('la.employees.index', [
                 'show_actions' => $this->show_action,
                 'listing_cols' => ['id', 'name', 'role', 'gender', 'mobile', 'email', 'date_birth', 'first_approver', 'second_approver', 'date_hire'],
@@ -145,8 +146,7 @@ class EmployeesController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function show($id) {
-        if (Module::hasAccess("Employees", "view")) {
-
+        if (Module::hasAccess("Employees", "view") && ((Session::get('role') == 'superAdmin') || (Session::get('role') != 'superAdmin' && $id == Auth::user()->context_id))) {
             $employee = Employee::find($id);
             if (isset($employee->id)) {
                 $module = Module::get('Employees');
@@ -180,7 +180,7 @@ class EmployeesController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        if (Module::hasAccess("Employees", "edit")) {
+        if (Module::hasAccess("Employees", "edit") && ((Session::get('role') == 'superAdmin') || (Session::get('role') != 'superAdmin' && $id == Auth::user()->context_id))) {
             $employee = Employee::find($id);
             if (isset($employee->id)) {
                 $module = Module::get('Employees');
@@ -214,7 +214,7 @@ class EmployeesController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-        if (Module::hasAccess("Employees", "edit")) {
+        if (Module::hasAccess("Employees", "edit") && ((Session::get('role') == 'superAdmin') || (Session::get('role') != 'superAdmin' && $id == Auth::user()->context_id))) {
 
             $rules = Module::validateRules("Employees", $request, true);
 
@@ -232,7 +232,7 @@ class EmployeesController extends Controller {
             $update_data['name'] = ucwords($request->name);
             unset($update_data['role']);
             unset($update_data['is_confirmed_hidden']);
-            
+
             $row = Employee::where('email', $request->email)
                     ->withTrashed()
                     ->pluck('id');
@@ -254,8 +254,11 @@ class EmployeesController extends Controller {
             $user->detachRoles();
             $role = Role::find($request->role);
             $user->attachRole($role);
-
-            return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
+            if (Session::get('role') == 'superAdmin') {
+                return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
+            } else if (Session::get('role') != 'superAdmin' && $id == Auth::user()->context_id) {
+                return redirect(config('laraadmin.adminRoute') . '/employees/' . Auth::user()->context_id);
+            }
         } else {
             return redirect(config('laraadmin.adminRoute') . "/");
         }
@@ -270,7 +273,7 @@ class EmployeesController extends Controller {
     public function destroy($id) {
         if (Module::hasAccess("Employees", "delete")) {
             Employee::find($id)->delete();
-            User::where('context_id', '=', $id)->update(['deleted_at'=> date('Y-m-d H:i:s')]);
+            User::where('context_id', '=', $id)->update(['deleted_at' => date('Y-m-d H:i:s')]);
 
             // Redirecting to index() method
             return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
@@ -322,8 +325,7 @@ class EmployeesController extends Controller {
                     $output .= Form::close();
                 }
                 $data->data[$i][] = (string) $output;
-            }
-            else{
+            } else {
                 $data->data[$i][] = '';
             }
         }
@@ -358,8 +360,7 @@ class EmployeesController extends Controller {
         if (env('MAIL_USERNAME') != null && env('MAIL_USERNAME') != "null" && env('MAIL_USERNAME') != "") {
             // Send mail to User his new Password
             Mail::send('emails.send_login_cred_change', ['user' => $user, 'password' => $request->password], function ($m) use ($user) {
-                $m->from(LAConfigs::getByKey('default_email'), LAConfigs::getByKey('sitename'));
-                $m->to($user->email, $user->name)->subject('LaraAdmin - Login Credentials chnaged');
+                $m->to($user->email, $user->name)->subject('LaraAdmin - Login Credentials changed');
             });
         } else {
             Log::info("User change_password: username: " . $user->email . " Password: " . $request->password);
