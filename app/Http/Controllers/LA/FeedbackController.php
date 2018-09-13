@@ -221,6 +221,21 @@ class FeedbackController extends Controller {
     public function dtajax() {
         $this->show_action = false;
         $values = DB::table('feedback')->select($this->listing_cols)->whereNull('deleted_at');
+
+        $role = Employee::employeeRole();
+        if ($role != 'superAdmin') {
+            $values = $values->where('employee_id', Auth::user()->context_id);
+        }
+//        else if ($role == 'manager') {
+//            $people_under_manager = Employee::getEngineersUnder('Manager');
+//            if ($people_under_manager != '')
+//                $values = $values->whereRaw('employee_id IN (' . $people_under_manager . ')');
+//        }
+//        else if ($role == 'lead') {
+//            $people_under_lead = Employee::getEngineersUnder('Lead');
+//            if ($people_under_lead != '')
+//                $values = $values->whereRaw('employee_id IN (' . $people_under_lead . ')');
+//        }
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 
