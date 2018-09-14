@@ -5,21 +5,21 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Employee;
 
-class LeaveAdditionCron extends Command {
+class LeaveCarryForward extends Command {
 
     /**
      * The name and signature of the console command.
      *
      * @var string
      */
-    protected $signature = 'leave:add';
+    protected $signature = 'leave:carryForward';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Runs cron for adding the leave on specific date.';
+    protected $description = 'Carry Forward leave on 1st Jan';
 
     /**
      * Create a new command instance.
@@ -39,18 +39,12 @@ class LeaveAdditionCron extends Command {
         $employees = Employee::get();
 
         foreach ($employees as $employee) {
-            if (date('Y-m-d', strtotime('-15 days')) >= $employee->date_hire) {
-                if ($employee->is_confirmed) {
-                    $leave = $employee->total_leaves + 2;
-                } else {
-                    $leave = $employee->total_leaves + 1.5;
-                }
-            }else{
-                $leave = $employee->total_leaves + 1;
+            if ($employee->available_leaves > 6) {
+                Employee::find($employee->id)->update(['available_leaves' => '6']);
             }
-            Employee::find($employee->id)->update(['total_leaves' => $leave]);
         }
-        $this->info('Leaves added successfully!');
+        
+        $this->info('Leaves Forwarded successfully!');
     }
 
 }

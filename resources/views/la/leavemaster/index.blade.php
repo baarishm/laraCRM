@@ -17,26 +17,26 @@ Leave Dashboard
     </div><br />
 
     @endif
-    <div class="row">
+    <div class="row" style="background: #dee2f7;">
 
 
-        <div class="form-group col-md-3">
-            <label for="Name">Total Leaves : {{$empdetail->total_leaves}}</label>
-
-        </div>
-
-        <div class="form-group col-md-3">
-            <label for="Name">Availed leave : {{number_format($empdetail->total_leaves)-($empdetail->available_leaves)}}</label>
-
+        <div class="col-md-3 mt5">
+            <label for="Name" style="color:blue;">Total Leaves : {{$empdetail->total_leaves}}</label>
 
         </div>
-        <div class="form-group col-md-3">
-            <label for="Name">Available Leaves : {{$empdetail->available_leaves}}</label>
+
+        <div class="col-md-3 mt5">
+            <label for="Name" style="color:red;">Availed leave : {{$empdetail->availed_leaves}}</label>
 
 
         </div>
-        <div class="form-group col-md-3" style="margin-bottom: 15px">
-            <a  href="leaves/create" class="btn btn-info">Apply Leave</a>
+        <div class="col-md-3 mt5">
+            <label for="Name" style="color:green;">Available Leaves : {{$empdetail->available_leaves}}</label>
+
+
+        </div>
+        <div class="col-md-3">
+            <a  href="leaves/create" class="btn btn-info pull-right">Apply Leave</a>
 
 
         </div>

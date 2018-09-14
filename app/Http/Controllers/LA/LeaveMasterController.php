@@ -245,11 +245,13 @@ class LeaveMasterController extends Controller {
         $employee = Employee::find($leavemaster->EmpId);
         if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
             $available_leaves = $employee->available_leaves - $_GET['days'];
+            $availed_leaves = $employee->availed_leaves + $_GET['days'];
         } else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
             $available_leaves = $employee->available_leaves + $_GET['days'];
+            $availed_leaves = $employee->availed_leaves - $_GET['days'];
         }
 
-        DB::update("update employees set available_leaves = $available_leaves where id = ?", [$leavemaster->EmpId]);
+        DB::update("update employees set available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leavemaster->EmpId]);
 
 
         $employee_update = Employee::find($leavemaster->EmpId);
@@ -462,11 +464,14 @@ class LeaveMasterController extends Controller {
         if ($leaveRecord->withdraw != 1) {
             LeaveMaster::where('id', $request->id)->update(['withdraw' => 1]);
             if ($leaveRecord->approved == 1) {
-                $employee_update = DB::table('employees')->where('id', $leaveRecord->EmpId)->increment('available_leaves', $leaveRecord->NoOfDays);
+                $employee = Employee::find($leavemaster->EmpId);
+                $available_leaves = $employee->available_leaves + $leaveRecord->NoOfDays;
+                $availed_leaves = $employee->availed_leaves - $leaveRecord->NoOfDays;
+                DB::update("update employees set available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leaveRecord->EmpId]);
             }
             return 'Leave withdrawn successfully!';
         } else {
-            return 'Being Smart! Already Withdrawn!';
+            return 'Being Smart, ahaan! Already Withdrawn!';
         }
     }
 

@@ -142,3 +142,7 @@ div.dropdown-menu tr td{
     color: White !important;
     border-radius: 50% !important;
 }
+
+.withdraw{
+    border-color : #e8c8c8;
+}
