@@ -460,7 +460,7 @@ class LeaveMasterController extends Controller {
      * Withdraw a Leave
      */
     public function ajaxWithdraw(Request $request) {
-        $leaveRecord = LeaveMaster::find($_GET['id']);
+        $leaveRecord = LeaveMaster::find($request->id);
         if ($leaveRecord->withdraw != 1) {
             LeaveMaster::where('id', $request->id)->update(['withdraw' => 1]);
             if ($leaveRecord->approved == 1) {
