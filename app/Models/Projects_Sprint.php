@@ -19,7 +19,7 @@ class Projects_Sprint extends Model {
     ];
     protected $guarded = [];
     protected $dates = ['deleted_at'];
-    
+
     /**
      * To check if sprint with dates already exists
      * @param int $project_id project's id
@@ -30,11 +30,14 @@ class Projects_Sprint extends Model {
      */
     public static function sprintExists($project_id, $start_date, $end_date) {
         $row = Projects_Sprint::where('project_id', $project_id)
-                ->where(function($q) use ($project_id, $start_date, $end_date) {
-                    $q->where('start_date', '<=', $start_date)->where('end_date', '>=', $start_date);
-                })
-                ->orWhere(function($q) use ($project_id, $start_date, $end_date) {
-                    $q->where('start_date', '<=', $end_date)->where('end_date', '>=', $end_date);
+                ->where(function($q) use ($start_date, $end_date) {
+                    $q->where(
+                            function($qin) use ($start_date, $end_date) {
+                        $qin->where('start_date', '<=', $start_date)->where('end_date', '>=', $start_date);
+                    })
+                    ->orWhere(function($qin) use ($start_date, $end_date) {
+                        $qin->where('start_date', '<=', $end_date)->where('end_date', '>=', $end_date);
+                    });
                 })
                 ->whereNull('deleted_at')
                 ->pluck('id');
