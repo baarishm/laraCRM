@@ -318,7 +318,7 @@ class LeaveMasterController extends Controller {
      */
     private function sendApprovalMail($data) {
         $html = "Greetings of the day " . $data['mail_to_name'] . "!<br><br>"
-                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b> for with a reason stated as <b>" . (($data['comment'] != '') ? $data['comment'] : 'No reason given') . "</b> on " . $data['action_date'] . "."
+                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b> with a reason stated as <b>" . (($data['comment'] != '') ? $data['comment'] : 'No reason given') . "</b> on " . $data['action_date'] . "."
                 . "<br><br>"
                 . "Regards,<br>"
                 . "Team Ganit Track Management";
