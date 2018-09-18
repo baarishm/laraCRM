@@ -153,5 +153,7 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 
 	/* ================== Comp_Off_Managements ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/comp_off_managements', 'LA\Comp_Off_ManagementsController');
-	Route::get(config('laraadmin.adminRoute') . '/comp_off_management_dt_ajax', 'LA\Comp_Off_ManagementsController@dtajax');
+	Route::get(config('laraadmin.adminRoute') . '/comp_off_management_dt_ajax/{teamMember}', 'LA\Comp_Off_ManagementsController@dtajax');
+	Route::get(config('laraadmin.adminRoute') .'/comp_off_management/teamMemberCompOff', 'LA\Comp_Off_ManagementsController@teamMemberList');
+	Route::get('/approveCompOff', 'LA\Comp_Off_ManagementsController@ajaxApproveCompOff');
 });
