@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel {
     protected $commands = [
         'App\Console\Commands\LeaveAdditionCron',
         'App\Console\Commands\LeaveCarryForward',
+        'App\Console\Commands\TimesheetEmail',
     ];
 
     /**
@@ -28,6 +29,8 @@ class Kernel extends ConsoleKernel {
                 ->cron('0 10 24 * *');
         $schedule->command('leave:carryForward')
                 ->cron('0 10 1 1 *');
+        $schedule->command('timesheet:dailyReport')
+                ->cron('0 10 * * *');
     }
 
 }

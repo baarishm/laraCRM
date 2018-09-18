@@ -571,18 +571,31 @@ class TimesheetsController extends Controller {
      */
     public function ajaxExportTimeSheetToAuthority(Request $request) {
         //code to export excel
-        $sheet_data = Timesheet::
-                        select([DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
+        $sheet_data = Employee::
+                        select([DB::raw('employees.id as id'), DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
                         ->where('date', '>=', date('Y-m-d', strtotime($request->start_date)))
                         ->where('date', '<=', date('Y-m-d', strtotime($request->end_date)))
+                        ->leftJoin('timesheets', 'timesheets.submitor_id', '=', 'employees.id')
                         ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
                         ->leftJoin('tasks', 'timesheets.task_id', '=', 'tasks.id')
-                        ->leftJoin('employees', 'timesheets.submitor_id', '=', 'employees.id')
                         ->leftJoin('projects_sprints', 'timesheets.projects_sprint_id', '=', 'projects_sprints.id')
-                        ->groupBy('date', 'timesheets.submitor_id', 'timesheets.project_id', 'timesheets.task_id')
+                        ->groupBy('employees.id', 'date', 'timesheets.project_id', 'timesheets.task_id')
                         ->orderBy(DB::raw("STR_TO_DATE(date,'%Y-%m-%d')"), 'desc')
                         ->get()->toArray();
-
+        $existingEmployees = [];
+        
+        foreach ($sheet_data as $row) {
+            if (!in_array($row['id'], $existingEmployees)) {
+                $existingEmployees[] = $row['id'];
+            }
+        }
+        
+        $employees_No_timesheet = Employee::select('name')->whereNull('deleted_at')->whereNotIn('id', $existingEmployees)->get()->toArray();
+        
+        foreach($employees_No_timesheet as $defected_employee){
+            $sheet_data[] = ['No entry', $defected_employee] ;
+        }
+        
         $file = \Excel::create('Timesheet_' . date('d M Y'), function($excel) use ($sheet_data) {
                     $excel->sheet('Timesheets', function($sheet) use ($sheet_data) {
                         $sheet->fromArray($sheet_data);
