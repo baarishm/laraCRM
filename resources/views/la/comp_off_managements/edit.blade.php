@@ -67,5 +67,11 @@
 
 @push('scripts')
 <script>
+    $(function () {
+        $(function () {
+            $('[name="start_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date('2016-08-29'))).maxDate(moment(new Date()));//.daysOfWeekDisabled([1,2,3,4,5]).initialDate('');
+            $('[name="end_date"]').parents('.date').data('DateTimePicker').maxDate(moment(new Date()));
+        });
+    });
 </script>
 @endpush
