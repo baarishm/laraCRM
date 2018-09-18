@@ -251,9 +251,11 @@ class EmployeesController extends Controller {
             $user->save();
 
             // update user role
-            $user->detachRoles();
-            $role = Role::find($request->role);
-            $user->attachRole($role);
+            if ($request->role != '') {
+                $user->detachRoles();
+                $role = Role::find($request->role);
+                $user->attachRole($role);
+            }
             if (Session::get('role') == 'superAdmin') {
                 return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
             } else if (Session::get('role') != 'superAdmin' && $id == Auth::user()->context_id) {
