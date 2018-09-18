@@ -39,7 +39,10 @@ $('document').ready(function () {
             if (child_input.attr('name') == 'end_date') {
                 date = '';
             }
-            if (child_input.val() != '' || child_input.attr('value') != '') {
+            if (child_input.val() != '') {
+                date = new Date(child_input.val());
+            }
+            else if(child_input.attr('value') != ''){
                 date = new Date(child_input.attr('value'));
             }
             $(this).data('DateTimePicker').date(date).useStrict(true).keepInvalid(true);
