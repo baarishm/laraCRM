@@ -8,7 +8,6 @@
 
 @section("headerElems")
 @la_access("Comp_Off_Managements", "create")
-<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Comp Off Management</button>
 <!--	<button class="btn btn-success btn-sm pull-right" data-toggle="modal" data-target="#AddModal">Add Comp Off Management</button>-->
 @endla_access
 @endsection
