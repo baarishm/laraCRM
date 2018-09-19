@@ -87,6 +87,8 @@
         if (role === false) {
             $('[name = "is_confirmed"]').siblings('.Switch').css({'pointer-events': 'none'});
             $('[name = "emp_code"]').attr('disabled', 'true');
+            $('[name = "first_approver"]').attr('disabled', 'true');
+            $('[name = "second_approver"]').attr('disabled', 'true');
         }
     });
 </script>

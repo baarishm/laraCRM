@@ -233,6 +233,8 @@ class EmployeesController extends Controller {
             } else {
                 unset($update_data['is_confirmed']);
                 unset($update_data['emp_code']);
+                unset($update_data['first_approver']);
+                unset($update_data['second_approver']);
             }
             $update_data['name'] = ucwords($request->name);
             unset($update_data['role']);
