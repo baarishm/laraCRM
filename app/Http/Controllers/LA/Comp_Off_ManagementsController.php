@@ -297,7 +297,7 @@ class Comp_Off_ManagementsController extends Controller {
                 //    $data->data[$i][$j];
                 // }
             }
-            if ($teamMember === 'false' && $this->show_action) {
+            if ($teamMember === 'false' && $this->show_action && $data->data[$i][4] == '') {
                 $output = '';
                 if (Module::hasAccess("Comp_Off_Managements", "edit")) {
                     $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/comp_off_managements/' . $data->data[$i][0] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
@@ -357,15 +357,12 @@ class Comp_Off_ManagementsController extends Controller {
         $compoffRow = Comp_Off_Management::find($_GET['id']);
         $employee = Employee::find($compoffRow->employee_id);
         if ($compoffRow->approved && $compoffRow->approved_by != '') {
-            $available_leaves = $employee->available_leaves + $days;
-            $total_leaves = $employee->total_leaves + $days;
+            $comp_off = $employee->comp_off + $days;
         } else if (!$compoffRow->approved && $compoffRow->approved_by != '' && $compoffRow->rejected_by != '') {
-            $available_leaves = $employee->available_leaves - $days;
-            $total_leaves = $employee->total_leaves - $days;
+            $comp_off = $employee->comp_off - $days;
         }
 
-        DB::update("update employees set available_leaves = $available_leaves, total_leaves = $total_leaves where id = ?", [$compoffRow->employee_id]);
-
+        DB::update("update employees set comp_off = $comp_off where id = ?", [$compoffRow->employee_id]);
 
         $employee_update = Employee::find($compoffRow->employee_id);
 
