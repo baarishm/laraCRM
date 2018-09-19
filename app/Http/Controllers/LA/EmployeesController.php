@@ -228,7 +228,7 @@ class EmployeesController extends Controller {
             $update_data = $request->all();
             $update_data['date_hire'] = date('Y-m-d', strtotime($request->date_hire));
             $update_data['date_birth'] = date('Y-m-d', strtotime($request->date_birth));
-            if (Entrust::hasRole("SUPER_ADMIN")) {
+            if ((Session::get('role') == 'superAdmin')) {
                 $update_data['is_confirmed'] = ($request->is_confirmed) ? 1 : 0;
             } else {
                 unset($update_data['is_confirmed']);
