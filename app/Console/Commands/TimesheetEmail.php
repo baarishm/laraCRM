@@ -63,7 +63,7 @@ class TimesheetEmail extends Command {
         $employees_No_timesheet = Employee::select('name', 'id')->whereNull('deleted_at')->whereNotIn('id', $existingEmployees)->get()->toArray();
 
         foreach ($employees_No_timesheet as $ganda_bacha) {
-            $sheet_data[] = [$ganda_bacha['id'], $ganda_bacha['name']];
+            $sheet_data[] = [$ganda_bacha['id'], date('d M Y', strtotime('-1 days')), $ganda_bacha['name'], '-', '-', '-', '-', '-'];
         }
 
         $file = \Excel::create('Timesheet_' . date('d-M-Y', strtotime('-1 days')), function($excel) use ($sheet_data) {
@@ -80,7 +80,7 @@ class TimesheetEmail extends Command {
         $html = "Dear Ashok Chand,"
                 . "<br>"
                 . "<br>"
-                . "Please find the attached file for timesheet of all members as on " . date('Y-m-d', strtotime('-1 days'))
+                . "Please find the attached file for timesheet of all members as on " . date('d M Y', strtotime('-1 days'))
                 . "<br><br>"
                 . "Regards,<br>"
                 . "Team Ganit Track Management";

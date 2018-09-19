@@ -95,8 +95,8 @@ class FeedbackController extends Controller {
                     . "Regards,<br>"
                     . "Team Ganit Track Management";
 
-            $recipients['to'] = ['varsha.mittal@ganitsoftech.com'];
-            $recipients['cc'] = ['varsha.mittal@ganitsoftech.com'];
+            $recipients['to'] = ['mohit.arora@ganitsoftech.com'];
+            $recipients['cc'] = ['ashok.chand@ganitsoft.com', 'varsha.mittal@ganitsoftech.com'];
             Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
                 $m->to($recipients['to'])
                         ->cc($recipients['cc']) //need to add this recipent in mailgun
