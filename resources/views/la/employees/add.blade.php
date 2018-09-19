@@ -52,7 +52,7 @@
                         <?php $roles = App\Role::all(); ?>
                         @foreach($roles as $role)
                         @if($role->id != 1 || Entrust::hasRole("SUPER_ADMIN"))
-                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                        <option value="{{ $role->id }}">{{ $role->display_name }}</option>
                         @endif
                         @endforeach
                     </select>
