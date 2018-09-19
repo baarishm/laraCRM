@@ -83,7 +83,7 @@ class TimesheetEmail extends Command {
                 . "Please find the attached file for timesheet of all members as on " . date('d M Y', strtotime('-1 days'))
                 . "<br><br>"
                 . "Regards,<br>"
-                . "Team Ganit Track Management";
+                . "Team Ganit PlusMinus";
         $recipients['to'] = ['ashok.chand@ganitsoft.com']; 
 
         Mail::send('emails.test', ['html' => $html], function ($m) use($recipients, $attachement) {

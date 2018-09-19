@@ -15,6 +15,7 @@ class Kernel extends ConsoleKernel {
     protected $commands = [
         'App\Console\Commands\LeaveAdditionCron',
         'App\Console\Commands\LeaveCarryForward',
+        'App\Console\Commands\LeaveWeekTrack',
         'App\Console\Commands\TimesheetEmail',
         'App\Console\Commands\TimesheetEntryTrack',
     ];
@@ -34,6 +35,8 @@ class Kernel extends ConsoleKernel {
                 ->cron('0 10 * * *');
         $schedule->command('timesheet:weekTrack')
                 ->cron('0 18 5 * *');
+        $schedule->command('leave:weekTrack')
+                ->cron('0 10 1 * *');
     }
 
 }

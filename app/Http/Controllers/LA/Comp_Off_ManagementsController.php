@@ -398,7 +398,7 @@ class Comp_Off_ManagementsController extends Controller {
                 . "Your comp off are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for dates from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b> on " . $data['action_date'] . "."
                 . "<br><br>"
                 . "Regards,<br>"
-                . "Team Ganit Track Management";
+                . "Team Ganit PlusMinus";
 
         $recipients['to'] = [$data['mail_to']];
 

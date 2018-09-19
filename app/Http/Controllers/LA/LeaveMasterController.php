@@ -291,7 +291,7 @@ class LeaveMasterController extends Controller {
                 . "<b>" . ucwords($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>."
                 . "<br><br>"
                 . "Regards,<br>"
-                . "Team Ganit Track Management";
+                . "Team Ganit PlusMinus";
 
         $recipients['to'] = [$lead_manager->lead_email, $lead_manager->manager_email];
         $recipients['cc'] = ['ashok.chand@ganitsoft.com'];
@@ -321,7 +321,7 @@ class LeaveMasterController extends Controller {
                 . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b> with a reason stated as <b>" . (($data['comment'] != '') ? $data['comment'] : 'No reason given') . "</b> on " . $data['action_date'] . "."
                 . "<br><br>"
                 . "Regards,<br>"
-                . "Team Ganit Track Management";
+                . "Team Ganit PlusMinus";
 
         $recipients['to'] = [$data['mail_to']];
 

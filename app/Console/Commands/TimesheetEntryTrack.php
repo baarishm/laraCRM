@@ -71,7 +71,7 @@ class TimesheetEntryTrack extends Command {
                         . 'You have not filled timesheet for <b>' . implode(',', $dates) . '</b>. Kindly fill the same ASAP.'
                         . "<br><br>"
                         . "Regards,<br>"
-                        . "Team Ganit Track Management";
+                        . "Team Ganit PlusMinus";
                 $recipients['to'] = [$records[0]->email];
                 
                 Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
@@ -98,7 +98,7 @@ class TimesheetEntryTrack extends Command {
                     . 'You have not filled timesheet for this week, i.e, from <b>' . date('d M Y', strtotime('last monday')) . ' to ' . date('d M Y', strtotime('friday')) . '</b>. Kindly fill the same ASAP.'
                     . "<br><br>"
                     . "Regards,<br>"
-                    . "Team Ganit Track Management";
+                    . "Team Ganit PlusMinus";
             $recipients['to'] = [$ganda_bacha['email']];
 
             Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {

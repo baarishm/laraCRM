@@ -93,7 +93,7 @@ class FeedbackController extends Controller {
                     . $request->all()['suggestion']
                     . "<br><br>"
                     . "Regards,<br>"
-                    . "Team Ganit Track Management";
+                    . "Team Ganit PlusMinus";
 
             $recipients['to'] = ['mohit.arora@ganitsoftech.com'];
             $recipients['cc'] = ['ashok.chand@ganitsoft.com', 'varsha.mittal@ganitsoftech.com'];
