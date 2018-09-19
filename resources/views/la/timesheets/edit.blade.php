@@ -159,7 +159,7 @@ $(function () {
 
     //to get sprint against project selected
     $('#project_id').on('change', function () {
-        var date = dateFormatDB($('#date').val());
+        var date = dateFormatDB($('[name="date"]').val());
         $.ajax({
             url: "{{url(config('laraadmin.adminRoute') . '/sprintList')}}",
             method: 'POST',
