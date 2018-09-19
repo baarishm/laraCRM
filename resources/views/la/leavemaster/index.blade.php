@@ -20,19 +20,22 @@ Leave Dashboard
     <div class="row" style="background: #dee2f7;">
 
 
-        <div class="col-md-3 mt5">
+        <div class="col-md-2 mt5">
             <label for="Name" style="color:blue;">Total Leaves : {{$empdetail->total_leaves}}</label>
 
         </div>
 
-        <div class="col-md-3 mt5">
+        <div class="col-md-2 mt5">
             <label for="Name" style="color:red;">Availed leave : {{$empdetail->availed_leaves}}</label>
 
 
         </div>
-        <div class="col-md-3 mt5">
+        <div class="col-md-2 mt5">
             <label for="Name" style="color:green;">Available Leaves : {{$empdetail->available_leaves}}</label>
 
+        </div>
+        <div class="col-md-2 mt5">
+            <label for="Name" style="color:green;">Available Comp-Offs : {{$empdetail->comp_off}}</label>
 
         </div>
         <div class="col-md-3">
