@@ -84,7 +84,7 @@ class TimesheetsController extends Controller {
 
         $role = Employee::employeeRole();
 
-        $this->custom_cols = ['submitor_id', 'project_id', 'task_id', 'date', 'Time (in hrs)', 'Status'];
+        $this->custom_cols = ['submitor_id', 'project_id', 'projects_sprint_id', 'task_id', 'date', 'Time (in hrs)', 'Status'];
 
         $projects = DB::table('timesheets')
                 ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
@@ -583,19 +583,19 @@ class TimesheetsController extends Controller {
                         ->orderBy(DB::raw("STR_TO_DATE(date,'%Y-%m-%d')"), 'desc')
                         ->get()->toArray();
         $existingEmployees = [];
-        
+
         foreach ($sheet_data as $row) {
             if (!in_array($row['id'], $existingEmployees)) {
                 $existingEmployees[] = $row['id'];
             }
         }
-        
+
         $employees_No_timesheet = Employee::select('name')->whereNull('deleted_at')->whereNotIn('id', $existingEmployees)->get()->toArray();
-        
-        foreach($employees_No_timesheet as $defected_employee){
-            $sheet_data[] = ['No entry', $defected_employee] ;
+
+        foreach ($employees_No_timesheet as $defected_employee) {
+            $sheet_data[] = ['No entry', $defected_employee];
         }
-        
+
         $file = \Excel::create('Timesheet_' . date('d M Y'), function($excel) use ($sheet_data) {
                     $excel->sheet('Timesheets', function($sheet) use ($sheet_data) {
                         $sheet->fromArray($sheet_data);
