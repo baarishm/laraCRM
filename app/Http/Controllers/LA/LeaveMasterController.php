@@ -170,7 +170,7 @@ class LeaveMasterController extends Controller {
         $comp_off_date = '';
         if ($leaveType->name == 'Comp Off' && $request->get('comp_off_id') != '') {
             $leaveMaster->comp_off_id = $request->get('comp_off_id');
-            $comp_off_date = Comp_Off_Management::find('id')['start_date'];
+            $comp_off_date = Comp_Off_Management::find($request->get('comp_off_id'))->start_date;
         }
         //check existance        
         $LeaveRecord = LeaveMaster::where('EmpId', $request->get('EmpId'))
@@ -218,7 +218,7 @@ class LeaveMasterController extends Controller {
         $comp_off_date = '';
         if ($leaveType->name == 'Comp Off' && $request->get('comp_off_id') != '') {
             $leaveMaster->comp_off_id = $request->get('comp_off_id');
-            $comp_off_date = Comp_Off_Management::find('id')['start_date'];
+            $comp_off_date = Comp_Off_Management::find($request->get('comp_off_id'))->start_date;
         }
         //check
         $row = LeaveMaster::where('EmpId', $request->get('EmpId'))
