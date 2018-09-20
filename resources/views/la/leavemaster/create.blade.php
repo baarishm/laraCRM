@@ -64,7 +64,7 @@ Apply For Leave
                                         $datetime2 = date_create($value->end_date);
                                         $interval = date_diff($datetime1, $datetime2);
                                         $days = $interval->format('%a') + 1;
-                                        echo '<option value="' . $value->id . '" data-days="' . $days . '">' . date('d M', strtotime($value->start_date)) . ' - ' . date('d M', strtotime($value->end_date)) . '</option>';
+                                        echo '<option value="' . $value->id . '" data-days="' . $days . '" data-start = "' . $value->start_date . '">' . date('d M', strtotime($value->start_date)) . ' - ' . date('d M', strtotime($value->end_date)) . '</option>';
                                     }
                                 }
                                 ?>
@@ -199,10 +199,13 @@ Apply For Leave
             if ($(leaveType).find('option:selected').length > 0) {
                 if ($(leaveType).find('option:selected').html() === 'Comp Off') {
                     $('#comp_off').attr('required', true).parents('div.col-md-3').show();
+                    datesAgainstCompoff(true, $('#comp_off'));
                 } else {
                     $('#comp_off').attr('required', false).parents('div.col-md-3').hide();
+                    datesAgainstCompoff(false, '');
                 }
             } else {
+                datesAgainstCompoff(false, '');
                 $('#comp_off').attr('required', false).parents('div.col-md-3').hide();
             }
         }
@@ -225,6 +228,24 @@ Apply For Leave
                 }
             }
         });
+
+        $('#comp_off').on('change', function () {
+            datesAgainstCompoff(this);
+        });
+
+        function datesAgainstCompoff(isCompOff, compOffSelected) {
+            if (isCompOff) {
+                var start_date = new Date($(compOffSelected).find('option:selected').attr('data-start'));
+                var end_date = new Date($(compOffSelected).find('option:selected').attr('data-start'));
+                end_date.setDate(end_date.getDate() + 30);
+                console.log(start_date);
+                console.log(end_date);
+            } else {
+                var start_date = '-{{ $before_days }}d';
+                var end_date = '+{{ $after_days }}d';
+                $('#datepicker, #datepickerto').datepicker('setStartDate', ).datepicker('setEndDate', );
+            }
+        }
     });
 
 

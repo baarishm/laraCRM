@@ -49,7 +49,7 @@ Team Leave Dashboard
             <th>Purpose</th>
             <th>Leave Status</th>
             @if($role != 'superAdmin')
-                <th style="width:155px; text-align:center;">Action</th>
+            <th style="width:155px; text-align:center;">Action</th>
             @endif
             </thead>
             </tr>
@@ -88,13 +88,15 @@ Team Leave Dashboard
                         @if($role == 'lead')
                         @if($Approved=='1' || $Approved=='0')
                         Action Taken
-                        @else
+                        @elseif($leaveMasterRow->comp_off_id == '' || (($leaveMasterRow->comp_off_deleted == '' || $leaveMasterRow->comp_off_deleted == null)))
 
                         <div class="">
                             <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
                             <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
                         </div>
 
+                        @else
+                        <span class="text-danger">Comp Off Lapsed</span>
                         @endif
                         @elseif($role == 'manager')
                         @if($Approved=='1' && $leaveMasterRow->RejectedBy == '')
@@ -113,13 +115,19 @@ Team Leave Dashboard
 
                         <span class="text-success">Action Taken</span>
 
-                        @else
+                        @elseif(($Approved=='1' || $Approved=='0') && $leaveMasterRow->RejectedBy != '' && $leaveMasterRow->ApprovedBy != '')
+
+                        <span class="text-success">Action Taken</span>
+
+                        @elseif($leaveMasterRow->comp_off_id == '' || (($leaveMasterRow->comp_off_deleted == '' || $leaveMasterRow->comp_off_deleted == null)))
 
                         <div class="">
                             <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
                             <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
                         </div>
 
+                        @else
+                        <span class="text-danger">Comp Off Lapsed</span>
                         @endif
                         @endif
 

@@ -111,7 +111,8 @@ class Comp_Off_ManagementsController extends Controller {
             //check existance  
             $comp_off_record['employee_id'] = base64_decode(base64_decode($request->get('employee_id')));
             $comp_off_record['start_date'] = date('Y-m-d', strtotime($request->get('start_date')));
-            $comp_off_record['end_date'] = date('Y-m-d', strtotime($request->get('end_date')));
+            $comp_off_record['end_date'] = date('Y-m-d', strtotime($request->get('start_date')));
+//            $comp_off_record['end_date'] = date('Y-m-d', strtotime($request->get('end_date')));
             $comp_off_record['description'] = $request->get('description');
             $record = Comp_Off_Management::where('employee_id', $comp_off_record['employee_id'])
                     ->where('start_date', '>=', $comp_off_record['start_date'])
@@ -215,7 +216,8 @@ class Comp_Off_ManagementsController extends Controller {
             $update_data = $request->all();
             $update_data['employee_id'] = base64_decode(base64_decode($request->get('employee_id')));
             $update_data['start_date'] = date('Y-m-d', strtotime($request->get('start_date')));
-            $update_data['end_date'] = date('Y-m-d', strtotime($request->get('end_date')));
+            $update_data['end_date'] = date('Y-m-d', strtotime($request->get('start_date')));
+//            $update_data['end_date'] = date('Y-m-d', strtotime($request->get('end_date')));
 
             $row = Comp_Off_Management::where('employee_id', $update_data['employee_id'])
                     ->where('start_date', '>=', $update_data['start_date'])

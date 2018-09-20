@@ -18,6 +18,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\LeaveWeekTrack',
         'App\Console\Commands\TimesheetEmail',
         'App\Console\Commands\TimesheetEntryTrack',
+        'App\Console\Commands\CompOffCollapse',
     ];
 
     /**
@@ -37,6 +38,8 @@ class Kernel extends ConsoleKernel {
                 ->cron('0 18 5 * *');
         $schedule->command('leave:weekTrack')
                 ->cron('0 10 1 * *');
+        $schedule->command('compOff:collapse')
+                ->cron('0 10 * * *');
     }
 
 }

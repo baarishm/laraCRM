@@ -29,7 +29,7 @@
                 {!! Form::open(['action' => 'LA\Comp_Off_ManagementsController@store', 'id' => 'comp_off_management-add-form']) !!}
                 <div class="modal-body">
                     <div class="form-group col-md-3">
-                        <label for="start_date">Start Date* :</label>
+                        <label for="start_date">Date* :</label>
                         <div class="input-group date">
                             <input class="form-control comp-off" placeholder="Enter Start Date" required="1" name="start_date" id="start_date" type="text" value="" autocomplete="off">
                             <span class="input-group-addon">
@@ -37,9 +37,9 @@
                             </span>
                         </div>
                     </div>
-                    <div class="form-group col-md-3">
+                    <div class="form-group col-md-3 hide">
                         <label for="end_date">End Date* :</label>
-                        <div class="input-group date">
+                        <div class="input-group date" style="pointer-events: none;">
                             <input class="form-control comp-off" placeholder="Enter End Date" required="1" name="end_date" id="end_date" type="text" value="" autocomplete="off">
                             <span class="input-group-addon">
                                 <span class="fa fa-calendar"></span>
@@ -67,7 +67,10 @@
 <script>
     $(function () {
         $('[name="start_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date('2016-08-29'))).maxDate(moment(new Date()));//.daysOfWeekDisabled([1,2,3,4,5]).initialDate('');
-         $('[name="end_date"]').parents('.date').data('DateTimePicker').maxDate(moment(new Date()));
+        $('[name="start_date"]').parents('.date').on('dp.change', function () {
+            $('[name="end_date"]').parents('.date').data('DateTimePicker')
+                    .date(moment(new Date($('[name="start_date"]').val())));
+        });
     });
 </script>
 @endpush

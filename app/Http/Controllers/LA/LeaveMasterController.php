@@ -65,12 +65,12 @@ class LeaveMasterController extends Controller {
                 ->first();
 
         $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves')])
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
+                ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
                 ->whereRaw($where)
                 ->get();
-
 
         return view('la.leavemaster.' . $view, [
             'before_days' => LAConfigs::getByKey('before_days_leave'),
@@ -105,9 +105,10 @@ class LeaveMasterController extends Controller {
         }
 
         $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+                ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                 ->whereRaw($where)
                 ->get();
 
@@ -354,32 +355,6 @@ class LeaveMasterController extends Controller {
         return true;
     }
 
-    public function Teamindex(Request $request) {
-        $role = Employee::employeeRole();
-        $where = 'employees.deleted_at IS NULL ';
-        $view = 'Manager_index';
-        if ($role == "manager" || $role == "lead") {
-            //manager  
-            $engineersUnder = Employee::getEngineersUnder(($role == "manager") ? "Manager" : "Lead");
-            if ($engineersUnder != '')
-                $where .= " and EmpId IN( " . $engineersUnder . " )";
-            else
-                $where .= " and EmpId IN( '' )";
-        } else {
-            //other users
-            $where .= 'and leavemaster.EmpId = ' . Auth::user()->context_id;
-        }
-
-        $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
-                ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
-                ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
-                ->whereRaw($where)
-                ->get();
-
-        return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role]);
-    }
-
     public function ajaxDateSearch(Request $request) {
 
         $role = Employee::employeeRole();
@@ -488,12 +463,15 @@ class LeaveMasterController extends Controller {
             if ($leaveRecord->approved == 1) {
                 $employee = Employee::find($leavemaster->EmpId);
                 $leaveType = Leave_Type::find($leaveRecord->LeaveType);
+                $comp_off = $employee->comp_off;
+                $available_leaves = $employee->available_leaves;
+                $availed_leaves = $employee->availed_leaves;
                 if ($leaveType['name'] == 'Comp Off') {//compoff
-                    $comp_off = $employee->comp_off + $leaveRecord->NoOfDays;
-                    $available_leaves = $employee->available_leaves;
-                    $availed_leaves = $employee->availed_leaves;
+                    $comp_off_record = Comp_Off_Management::find($leaveRecord->comp_off_id);
+                    if ($comp_off_record->deleted_at == '' || $comp_off_record->deleted_at == null) {
+                        $comp_off = $employee->comp_off + $leaveRecord->NoOfDays;
+                    }
                 } else {//other
-                    $comp_off = $employee->comp_off;
                     $available_leaves = $employee->available_leaves + $leaveRecord->NoOfDays;
                     $availed_leaves = $employee->availed_leaves - $leaveRecord->NoOfDays;
                 }

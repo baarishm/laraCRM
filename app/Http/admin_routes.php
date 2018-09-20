@@ -112,11 +112,7 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::get(config('laraadmin.adminRoute') . '/leave/teamMember', 'LA\LeaveMasterController@teamMemberIndex');
 	Route::post(config('laraadmin.adminRoute') . '/leave/withdraw', 'LA\LeaveMasterController@ajaxWithdraw');
         
-        
-        /* ================== Leaves_Of_Team_member================== */
-        Route::get(config('laraadmin.adminRoute') . '/teamMemberOnLeave', 'LA\LeaveMasterController@Teamindex');
-//	Route::post(config('laraadmin.adminRoute') . '/leaves/index', 'LA\LeaveMasterController@Teamindex');
-        
+                
 	/* ================== Sidebar_Menu_Leaves_ViewData ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
 	
