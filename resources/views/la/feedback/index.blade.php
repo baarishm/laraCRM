@@ -68,7 +68,7 @@
                         <textarea class="form-control" placeholder="Enter Suggestion" required="1" cols="30" rows="3" name="suggestion" aria-required="true"></textarea>
                     </div>
                     <div class="form-group">
-                        <input type="hidden" value="{{ base64_encode(base64_encode(Auth::user()->context_id))}}" />
+                        <input type="hidden" name="employee_id" id="employee_id" value="{{ base64_encode(base64_encode(Auth::user()->context_id))}}" />
                     </div>
                 </div>
             </div>

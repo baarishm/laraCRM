@@ -83,9 +83,10 @@ class FeedbackController extends Controller {
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
             }
-            $request->all()['employee_id'] = base64_decode(base64_decode($request->employee_id));
-            $insert_id = Module::insert("Feedback", $request);
-
+            $insert_data = $request->all();
+            $insert_data['employee_id'] = base64_decode(base64_decode($insert_data['employee_id']));
+            $insert_id = Feedback::create($insert_data);
+            
             //send mail to authority
             $html = "Dear Ganit,<br><br>"
                     . ucwords(Auth::user()->name)
@@ -220,22 +221,19 @@ class FeedbackController extends Controller {
      */
     public function dtajax() {
         $this->show_action = false;
-        $values = DB::table('feedback')->select($this->listing_cols)->whereNull('deleted_at');
 
         $role = Employee::employeeRole();
+        $where = '';
         if ($role != 'superAdmin') {
-            $values = $values->where('employee_id', Auth::user()->context_id);
+            $where = 'employee_id = ' . Auth::user()->context_id;
         }
-//        else if ($role == 'manager') {
-//            $people_under_manager = Employee::getEngineersUnder('Manager');
-//            if ($people_under_manager != '')
-//                $values = $values->whereRaw('employee_id IN (' . $people_under_manager . ')');
-//        }
-//        else if ($role == 'lead') {
-//            $people_under_lead = Employee::getEngineersUnder('Lead');
-//            if ($people_under_lead != '')
-//                $values = $values->whereRaw('employee_id IN (' . $people_under_lead . ')');
-//        }
+        $value = DB::table('feedback')->select($this->listing_cols)->whereNull('deleted_at');
+        if ($where != '') {
+            $value->whereRaw($where);
+        }
+
+        $values = $value;
+
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 
