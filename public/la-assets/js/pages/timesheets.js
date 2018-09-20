@@ -66,7 +66,7 @@ function update_row(saved_data, id, removeable_options) {
             '<td class="project_name" data-value="' + saved_data.project_id + '">' + saved_data.project_name + '</td>' +
             '<td class="projects_sprint_name" data-value="' + saved_data.projects_sprint_id + '">' + saved_data.projects_sprint_name + '</td>' +
             '<td class="task_name" data-value="' + saved_data.task_id + '">' + saved_data.task_name + '</td>' +
-            '<td class="comments"><span class="tooltips" title=' + saved_data.comments + '>' + ((saved_data.comments.length > 20) ? (saved_data.comments.substring(0, 20) + '...') : saved_data.comments) + '</span></td>' +
+            '<td class="comments"><span class="tooltips" title="' + saved_data.comments + '">' + ((saved_data.comments.length > 20) ? (saved_data.comments.substring(0, 20) + '...') : saved_data.comments) + '</span></td>' +
             '<td class="hours">' + saved_data.hours + '</td>' +
             '<td class="minutes">' + saved_data.minutes + '</td>' +
             '<td>' +
@@ -85,7 +85,7 @@ function show_update_row(el) {
     $('tr.entry-row select#project_id').val(parent.find('td.project_name').attr('data-value')).trigger('change');
     $('tr.entry-row select#projects_sprint_id').val(parent.find('td.projects_sprint_name').attr('data-value')).trigger('change');
     $('tr.entry-row select#task_id').val(parent.find('td.task_name').attr('data-value')).trigger('change');
-    $('tr.entry-row input#comments').val(parent.find('td.comments').html());
+    $('tr.entry-row input#comments').val(parent.find('td.comments span').attr('data-original-title'));
     $('tr.entry-row select#hours').val(parent.find('td.hours').html()).trigger('change');
     $('tr.entry-row select#minutes').val(parent.find('td.minutes').html()).trigger('change');
     $('tr.entry-row').find('.submit-form').removeClass('add-entry').addClass('update-entry-db').attr('data-value', parent.find('button.update-entry').attr('data-value'));

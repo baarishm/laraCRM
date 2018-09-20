@@ -193,7 +193,10 @@ $(function () {
     $('[name="dependency"][value="No"]').trigger('click');
     $('.date').data("DateTimePicker").minDate(moment().subtract(7, 'days').millisecond(0).second(0).minute(0).hour(0));
     $('.date').data("DateTimePicker").daysOfWeekDisabled([0]);
-    //    $('.date').data("DateTimePicker").maxDate(moment());
+    
+    
+    //maxlength of comment
+    $('[name="comments"]').prop('maxlength', '250');
 });
 </script>
 @endpush

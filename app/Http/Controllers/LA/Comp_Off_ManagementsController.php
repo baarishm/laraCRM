@@ -1,4 +1,5 @@
 <?php
+
 /**
  * Controller genrated using LaraAdmin
  * Help: http://laraadmin.com
@@ -173,7 +174,7 @@ class Comp_Off_ManagementsController extends Controller {
     public function edit($id) {
         if (Module::hasAccess("Comp_Off_Managements", "edit")) {
             $comp_off_management = Comp_Off_Management::find($id);
-            if (isset($comp_off_management->id)) {
+            if (isset($comp_off_management->id) && (date('Y-m-d') <= date('Y-m-d', strtotime('+30 days', strtotime($comp_off_management->start_date))))) {
                 $module = Module::get('Comp_Off_Managements');
 
                 $module->row = $comp_off_management;
@@ -246,7 +247,9 @@ class Comp_Off_ManagementsController extends Controller {
      */
     public function destroy($id) {
         if (Module::hasAccess("Comp_Off_Managements", "delete")) {
-            Comp_Off_Management::find($id)->delete();
+            $comp_off_management = Comp_Off_Management::find($id);
+            if (date('Y-m-d') <= date('Y-m-d', strtotime('+30 days', strtotime($comp_off_management->start_date))))
+                Comp_Off_Management::find($id)->delete();
 
             // Redirecting to index() method
             return redirect()->route(config('laraadmin.adminRoute') . '.comp_off_managements.index');
@@ -280,7 +283,7 @@ class Comp_Off_ManagementsController extends Controller {
             if ($engineersUnder != '')
                 $values = $values->whereRaw('employee_id IN (' . $engineersUnder . ')');
         }
-        
+
         $out = Datatables::of($values)->make();
         $data = $out->getData();
 
@@ -299,7 +302,7 @@ class Comp_Off_ManagementsController extends Controller {
                 //    $data->data[$i][$j];
                 // }
             }
-            if ($teamMember === 'false' && $this->show_action && $data->data[$i][4] == '') {
+            if ($teamMember === 'false' && $this->show_action && $data->data[$i][4] == 'Pending' && (date('Y-m-d') <= date('Y-m-d', strtotime('+30 days', strtotime($data->data[$i][1]))))) {
                 $output = '';
                 if (Module::hasAccess("Comp_Off_Managements", "edit")) {
                     $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/comp_off_managements/' . $data->data[$i][0] . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
@@ -311,6 +314,8 @@ class Comp_Off_ManagementsController extends Controller {
                     $output .= Form::close();
                 }
                 $data->data[$i][7] = (string) $output;
+            } else if ($teamMember === 'false' && $this->show_action) {
+                $data->data[$i][7] = '';
             } else if ($teamMember === 'true') {
                 $output = '';
                 $role = Employee::employeeRole();
@@ -318,19 +323,19 @@ class Comp_Off_ManagementsController extends Controller {
                     if ($data->data[$i][4] == '1' || $data->data[$i][4] == '0') {
                         $output .= 'Action Taken';
                     } else {
-                        $output .= '<button type="button" class="btn btn-success actionCompOff mr10" name="Approved" id="Approved" data-id =' . $data->data[$i][7] . ' data-start-date="'.$data->data[$i][1].'" data-end-date="'.$data->data[$i][2].'">Approve</button>';
-                        $output .= '<button type="button" class="btn btn actionCompOff" name="Rejected" id="Rejected" data-id =' . $data->data[$i][7] . ' style="background-color: #f55753;border-color: #f43f3b;color: white"  data-start-date="'.$data->data[$i][1].'" data-end-date="'.$data->data[$i][2].'">Reject</button> ';
+                        $output .= '<button type="button" class="btn btn-success actionCompOff mr10" name="Approved" id="Approved" data-id =' . $data->data[$i][7] . ' data-start-date="' . $data->data[$i][1] . '" data-end-date="' . $data->data[$i][2] . '">Approve</button>';
+                        $output .= '<button type="button" class="btn btn actionCompOff" name="Rejected" id="Rejected" data-id =' . $data->data[$i][7] . ' style="background-color: #f55753;border-color: #f43f3b;color: white"  data-start-date="' . $data->data[$i][1] . '" data-end-date="' . $data->data[$i][2] . '">Reject</button> ';
                     }
                 } else if ($role == 'manager') {
                     if (($data->data[$i][4] == 'Approved' || $data->data[$i][4] == 'Rejected') && $data->data[$i][5] != '' && $data->data[$i][6] != '') {
                         $output .= 'Action Taken';
                     } else if ($data->data[$i][4] == 'Approved' && ($data->data[$i][6] == '' || $data->data[$i][6] == null)) {
-                        $output .= '<button type="button" class="btn btn actionCompOff" name="Rejected" id="Rejected" data-id =' . $data->data[$i][7] . ' style="background-color: #f55753;border-color: #f43f3b;color: white" data-start-date="'.$data->data[$i][1].'" data-end-date="'.$data->data[$i][2].'" >Reject</button> ';
-                    } else if ($data->data[$i][4] == 'Rejected' &&  ($data->data[$i][5] == '' || $data->data[$i][5] == null)) {
-                        $output .= '<button type="button" class="btn btn-success actionCompOff mr10" name="Approved" id="Approved" data-id =' . $data->data[$i][7] . ' data-start-date="'.$data->data[$i][1].'" data-end-date="'.$data->data[$i][2].'">Approve</button>';
+                        $output .= '<button type="button" class="btn btn actionCompOff" name="Rejected" id="Rejected" data-id =' . $data->data[$i][7] . ' style="background-color: #f55753;border-color: #f43f3b;color: white" data-start-date="' . $data->data[$i][1] . '" data-end-date="' . $data->data[$i][2] . '" >Reject</button> ';
+                    } else if ($data->data[$i][4] == 'Rejected' && ($data->data[$i][5] == '' || $data->data[$i][5] == null)) {
+                        $output .= '<button type="button" class="btn btn-success actionCompOff mr10" name="Approved" id="Approved" data-id =' . $data->data[$i][7] . ' data-start-date="' . $data->data[$i][1] . '" data-end-date="' . $data->data[$i][2] . '">Approve</button>';
                     } else {
-                        $output .= '<button type="button" class="btn btn-success actionCompOff mr10" name="Approved" id="Approved" data-id =' . $data->data[$i][7] . ' data-start-date="'.$data->data[$i][1].'" data-end-date="'.$data->data[$i][2].'">Approve</button>';
-                        $output .= '<button type="button" class="btn btn actionCompOff" name="Rejected" id="Rejected" data-id =' . $data->data[$i][7] . ' data-start-date="'.$data->data[$i][1].'" data-end-date="'.$data->data[$i][2].'" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                        $output .= '<button type="button" class="btn btn-success actionCompOff mr10" name="Approved" id="Approved" data-id =' . $data->data[$i][7] . ' data-start-date="' . $data->data[$i][1] . '" data-end-date="' . $data->data[$i][2] . '">Approve</button>';
+                        $output .= '<button type="button" class="btn btn actionCompOff" name="Rejected" id="Rejected" data-id =' . $data->data[$i][7] . ' data-start-date="' . $data->data[$i][1] . '" data-end-date="' . $data->data[$i][2] . '" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
                     }
                 }
                 $data->data[$i][7] = (string) $output;
@@ -407,4 +412,5 @@ class Comp_Off_ManagementsController extends Controller {
         });
         return true;
     }
+
 }

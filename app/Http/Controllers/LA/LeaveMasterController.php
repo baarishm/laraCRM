@@ -263,20 +263,22 @@ class LeaveMasterController extends Controller {
         $leavemaster = LeaveMaster::find($_GET['id']);
         $employee = Employee::find($leavemaster->EmpId);
         if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
-            if ($leaveType['name'] == 'Comp Off') {//compoff
+            if ($leaveType->name == 'Comp Off') {//compoff
                 $comp_off = $employee->comp_off - $_GET['days'];
                 $available_leaves = $employee->available_leaves;
                 $availed_leaves = $employee->availed_leaves;
+                Comp_Off_Management::find($leavemaster->comp_off_id)->update(['availed' => '1']);
             } else {//other
                 $comp_off = $employee->comp_off;
                 $available_leaves = $employee->available_leaves - $_GET['days'];
                 $availed_leaves = $employee->availed_leaves + $_GET['days'];
             }
         } else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
-            if ($leaveType['name'] == 'Comp Off') {//compoff
+            if ($leaveType->name == 'Comp Off') {//compoff
                 $comp_off = $employee->comp_off + $_GET['days'];
                 $available_leaves = $employee->available_leaves;
                 $availed_leaves = $employee->availed_leaves;
+                Comp_Off_Management::find($leavemaster->comp_off_id)->update(['availed' => '0']);
             } else {//other
                 $comp_off = $employee->comp_off;
                 $available_leaves = $employee->available_leaves + $_GET['days'];
