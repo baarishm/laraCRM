@@ -259,8 +259,8 @@ class LeaveMasterController extends Controller {
         }
 
         LeaveMaster::where('id', $_GET['id'])->update($update_field);
-        $leaveType = Leave_Type::find($leavemaster->LeaveType);
         $leavemaster = LeaveMaster::find($_GET['id']);
+        $leaveType = Leave_Type::find($leavemaster->LeaveType);
         $employee = Employee::find($leavemaster->EmpId);
         if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
             if ($leaveType->name == 'Comp Off') {//compoff

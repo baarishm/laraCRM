@@ -179,19 +179,23 @@ Team Leave Dashboard
             closeOnConfirm: false,
             inputPlaceholder: "Comment on approval"
         }).then(function (inputValue) {
-            $.ajax({
-                url: "{{ url('/approveLeave') }}",
-                type: 'GET',
-                data: {'approved': approved, 'id': $(button).attr('data-id'), 'days': $(button).attr('data-days'), 'actionReason': inputValue.value},
-                success: function (data) {
-                    console.log(data);
-                    swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
-                }
-            });
-            var vid = $(button).attr('data-id');
-            $(button).parents('td').siblings(".status").html((approved) ? '<span class="text-success">Approved</span>' : '<span class="text-danger">Rejected</span>');
-            $(button).parents('td').html('Action Taken');
-            $('[data-id=' + vid + ']').remove();
+            if (inputValue.dismiss === 'cancel') {
+                return false;
+            } else {
+                $.ajax({
+                    url: "{{ url('/approveLeave') }}",
+                    type: 'GET',
+                    data: {'approved': approved, 'id': $(button).attr('data-id'), 'days': $(button).attr('data-days'), 'actionReason': inputValue.value},
+                    success: function (data) {
+                        console.log(data);
+                        swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
+                    }
+                });
+                var vid = $(button).attr('data-id');
+                $(button).parents('td').siblings(".status").html((approved) ? '<span class="text-success">Approved</span>' : '<span class="text-danger">Rejected</span>');
+                $(button).parents('td').html('Action Taken');
+                $('[data-id=' + vid + ']').remove();
+            }
         });
 
     }
