@@ -66,7 +66,7 @@ function update_row(saved_data, id, removeable_options) {
             '<td class="project_name" data-value="' + saved_data.project_id + '">' + saved_data.project_name + '</td>' +
             '<td class="projects_sprint_name" data-value="' + saved_data.projects_sprint_id + '">' + saved_data.projects_sprint_name + '</td>' +
             '<td class="task_name" data-value="' + saved_data.task_id + '">' + saved_data.task_name + '</td>' +
-            '<td class="comments">' + saved_data.comments + '</td>' +
+            '<td class="comments"><span class="tooltips" title=' + saved_data.comments + '>' + ((saved_data.comments.length > 20) ? (saved_data.comments.substring(0, 20) + '...') : saved_data.comments) + '</span></td>' +
             '<td class="hours">' + saved_data.hours + '</td>' +
             '<td class="minutes">' + saved_data.minutes + '</td>' +
             '<td>' +
@@ -76,6 +76,7 @@ function update_row(saved_data, id, removeable_options) {
             '</tr>'
             );
     $('select[name="task_id"]').append(removeable_options);
+    $('.tooltips').tooltip({'placement': 'bottom'});
 }
 
 function show_update_row(el) {
