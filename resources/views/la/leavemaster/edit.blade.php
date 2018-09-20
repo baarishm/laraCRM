@@ -36,7 +36,7 @@ Edit Apply  Leave
                         </div>
                         <div class="form-group col-md-3">
                             <label>Leave Type</label>
-                            <select name="LeaveType" class="form-control" >
+                            <select name="LeaveType" id="LeaveType" class="form-control" >
 
                                 <?php
                                 if (!empty($leaveMaster->leave_type)) {
@@ -50,7 +50,7 @@ Edit Apply  Leave
                         </div>
                         <div class="form-group col-md-3">
                             <label>Comp Off Against*</label>
-                            <select name="comp_off" id="comp_off" class="form-control" >
+                            <select name="comp_off_id" id="comp_off" class="form-control" >
                                 <?php
                                 if (!empty($comp_off_list)) {
                                     foreach ($comp_off_list as $value) {
@@ -181,7 +181,9 @@ Edit Apply  Leave
         $('#LeaveType').on('change', function () {
             leaveType(this);
         });
+        
         leaveType($('#LeaveType'));
+        
         function leaveType(leaveType) {
             if ($(leaveType).find('option:selected').length > 0) {
                 if ($(leaveType).find('option:selected').html() === 'Comp Off') {
@@ -226,12 +228,10 @@ Edit Apply  Leave
                 var start_date = new Date($(compOffSelected).find('option:selected').attr('data-start'));
                 var end_date = new Date($(compOffSelected).find('option:selected').attr('data-start'));
                 end_date.setDate(end_date.getDate() + 30);
-                console.log(start_date);
-                console.log(end_date);
             } else {
                 var start_date = '-{{ $before_days }}d';
                 var end_date = '+{{ $after_days }}d';
-                $('#datepicker, #datepickerto').datepicker('setStartDate', ).datepicker('setEndDate', );
+                $('#datepicker, #datepickerto').datepicker('setStartDate', start_date).datepicker('setEndDate', end_date);
             }
         }
     }

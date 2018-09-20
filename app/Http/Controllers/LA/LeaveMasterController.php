@@ -166,7 +166,12 @@ class LeaveMasterController extends Controller {
         $leaveMaster->NoOfDays = $days = $request->get('NoOfDays');
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
-//	$leaveMaster->Approved=$request->get('Approved');
+        $leaveType = Leave_Type::find($leaveMaster->LeaveType);
+        $comp_off_date = '';
+        if ($leaveType->name == 'Comp Off' && $request->get('comp_off_id') != '') {
+            $leaveMaster->comp_off_id = $request->get('comp_off_id');
+            $comp_off_date = Comp_Off_Management::find('id')['start_date'];
+        }
         //check existance        
         $LeaveRecord = LeaveMaster::where('EmpId', $request->get('EmpId'))
                 ->where('FromDate', $FromDate)
@@ -181,7 +186,7 @@ class LeaveMasterController extends Controller {
         }
 
         if ($leaveMaster->save()) {
-            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
+            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveType->name, 'comp_off_date' => $comp_off_date]);
         }
 
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been added');
@@ -209,7 +214,12 @@ class LeaveMasterController extends Controller {
         $leaveMaster->NoOfDays = $days = $request->get('NoOfDays');
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
-//	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
+        $leaveType = Leave_Type::find($leaveMaster->LeaveType);
+        $comp_off_date = '';
+        if ($leaveType->name == 'Comp Off' && $request->get('comp_off_id') != '') {
+            $leaveMaster->comp_off_id = $request->get('comp_off_id');
+            $comp_off_date = Comp_Off_Management::find('id')['start_date'];
+        }
         //check
         $row = LeaveMaster::where('EmpId', $request->get('EmpId'))
                 ->where('FromDate', $FromDate)
@@ -223,7 +233,7 @@ class LeaveMasterController extends Controller {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'You have already applied leave for these dates.');
         }
         if ($leaveMaster->save()) {
-            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
+            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveType->name, 'comp_off_date' => $comp_off_date]);
         }
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been Update');
     }
@@ -301,6 +311,8 @@ class LeaveMasterController extends Controller {
      * end_date
      * days
      * reason
+     * leaveType
+     * comp_off_date
      */
     private function sendLeaveMail($updated = false, $data) {
         $lead_manager = DB::table('employees')
@@ -311,7 +323,13 @@ class LeaveMasterController extends Controller {
                 ->first();
 
         $html = "Greetings of the day!<br><br>"
-                . "<b>" . ucwords($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>."
+                . "<b>" . ucwords($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>";
+
+        if ($data['leaveType'] == 'Comp Off') {
+            $html .= " against Comp off date " . date('d M Y', strtotime($comp_off_date));
+        }
+
+        $html .= "."
                 . "<br><br>"
                 . "Regards,<br>"
                 . "Team Ganit PlusMinus";
