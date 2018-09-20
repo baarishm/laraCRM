@@ -17,7 +17,7 @@ class LeaveMasterController extends Controller {
 
     public function edit($id) {
         $leaveMaster = DB::table('leavemaster')
-                ->select(['id', 'EmpId', DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), 'NoOfDays', 'LeaveReason', 'LeaveType', 'approved'])
+                ->select(['id', 'EmpId', DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), 'NoOfDays', 'LeaveReason', 'LeaveType', 'approved', 'comp_off_id'])
                 ->where('id', $id)
                 ->first();
 
@@ -326,7 +326,7 @@ class LeaveMasterController extends Controller {
                 . "<b>" . ucwords($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>";
 
         if ($data['leaveType'] == 'Comp Off') {
-            $html .= " against Comp off date " . date('d M Y', strtotime($comp_off_date));
+            $html .= " against Comp off date " . date('d M Y', strtotime($data['comp_off_date']));
         }
 
         $html .= "."
