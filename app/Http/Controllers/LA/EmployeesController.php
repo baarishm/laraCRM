@@ -369,7 +369,7 @@ class EmployeesController extends Controller {
         if (env('MAIL_USERNAME') != null && env('MAIL_USERNAME') != "null" && env('MAIL_USERNAME') != "") {
             // Send mail to User his new Password
             Mail::send('emails.send_login_cred_change', ['user' => $user, 'password' => $request->password], function ($m) use ($user) {
-                $m->to($user->email, $user->name)->subject('LaraAdmin - Login Credentials changed');
+                $m->to($user->email, $user->name)->subject('PlusMinus - Login Credentials changed');
             });
         } else {
             Log::info("User change_password: username: " . $user->email . " Password: " . $request->password);
