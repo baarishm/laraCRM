@@ -65,7 +65,7 @@ class LeaveMasterController extends Controller {
                 ->first();
 
         $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.emp_code AS emp_code'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                 ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
