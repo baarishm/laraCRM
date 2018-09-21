@@ -355,7 +355,7 @@ class EmployeesController extends Controller {
         ]);
 
         if ($validator->fails()) {
-            return \Redirect::to(config('laraadmin.adminRoute') . '/employees/' . $id)->withErrors($validator);
+            return \Redirect::to(config('laraadmin.adminRoute') . '/employees/' . $id.'#tab-account-settings')->withErrors($validator);
         }
 
         $employee = Employee::find($id);
