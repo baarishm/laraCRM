@@ -228,6 +228,16 @@ $(document).ready(function () {
                 $('select#projects_sprint_id').append('<option data-name="'+item.name+'" value="' + item.id + '">' + item.name + '</option>');
             });
         });
+        $('#task_id').trigger('change');
+    });
+    
+    $('#task_id').on('change', function(){
+        if(($('#project_id').find('option:selected').html() == "Others") || ($('#task_id').find('option:selected').html() == "Research and Development")){
+            $('[name="comments"]').attr('required', true);
+        }
+        else{
+             $('[name="comments"]').attr('required', false);
+        }
     });
     
     $('#project_id').trigger('change');
