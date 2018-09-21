@@ -66,7 +66,7 @@
 @push('scripts')
 <script>
     $(function () {
-        $('[name="start_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date()).subtract('25', 'days')).maxDate(moment(new Date()));//.daysOfWeekDisabled([1,2,3,4,5]).initialDate('');
+        $('[name="start_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date()).subtract('30', 'days')).maxDate(moment(new Date()));//.daysOfWeekDisabled([1,2,3,4,5]).initialDate('');
         $('[name="start_date"]').parents('.date').on('dp.change', function () {
             $('[name="end_date"]').parents('.date').data('DateTimePicker')
                     .date(moment(new Date($('[name="start_date"]').val())));

@@ -40,8 +40,9 @@ Team Leave Dashboard
 
             <tr>
             <thead>
-            <th>Emp ID</th>
+            <th>Emp Code</th>
             <th>Name</th>
+            <th>Applied Date</th>
             <th>From Date</th>
             <th>To Date</th>
             <th>No Of Days</th>
@@ -64,9 +65,9 @@ Team Leave Dashboard
                 @endphp
 
                 <tr>
-                    <td>{{$leaveMasterRow->EmpId}}</td>
+                    <td>{{$leaveMasterRow->emp_code}}</td>
                     <td>{{$leaveMasterRow->Employees_name}}</td>
-
+                    <td>{{date('d M Y',strtotime($leaveMasterRow->updated_at))}}</td>
                     <td>{{$FromDate}}</td>
                     <td>{{$ToDate}}</td>
                     <td>{{$leaveMasterRow->NoOfDays}}</td>

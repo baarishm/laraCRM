@@ -124,6 +124,8 @@ class Comp_Off_ManagementsController extends Controller {
 
             if ($Exists > 0) {
                 return redirect(config('laraadmin.adminRoute') . '/comp_off_managements')->withErrors(['message' => 'You Smarty! Already applied comp off for these dates.']);
+            } else if (($comp_off_record['start_date'] < date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d'))))) || ($comp_off_record['end_date'] < date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d')))))) {
+                return redirect(config('laraadmin.adminRoute') . '/comp_off_managements')->with('error', 'Smarty! Your dates are out of applicable range.');
             }
 
             $insert_id = Comp_Off_Management::create($comp_off_record)->id;
@@ -229,6 +231,8 @@ class Comp_Off_ManagementsController extends Controller {
 
             if ($Exists > 0 && !in_array($id, $row->toArray())) {
                 return redirect(config('laraadmin.adminRoute') . '/comp_off_managements')->withErrors(['message' => 'You Smarty! Already applied comp off for these dates.']);
+            } else if (($update_data['start_date'] < date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d'))))) || ($update_data['end_date'] < date('Y-m-d', strtotime('-30 days', strtotime(date('Y-m-d')))))) {
+                return redirect(config('laraadmin.adminRoute') . '/comp_off_managements')->with('error', 'Smarty! Your dates are out of applicable range.');
             }
 
             $insert_id = Comp_Off_Management::find($id)->update($update_data);

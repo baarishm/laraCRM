@@ -105,7 +105,7 @@ class LeaveMasterController extends Controller {
         }
 
         $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.emp_code AS emp_code'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
                 ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
@@ -183,6 +183,8 @@ class LeaveMasterController extends Controller {
 
         if ($LeaveRecordExists > 0) {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'You have already applied leave for these dates.');
+        } else if (($FromDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d')))))) {
+            return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'Smarty! Your dates are out of applicable range.');
         }
 
         if ($leaveMaster->save()) {
@@ -231,6 +233,8 @@ class LeaveMasterController extends Controller {
 
         if ($Exists > 0 && !in_array($id, $row->toArray())) {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'You have already applied leave for these dates.');
+        } else if (($FromDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d')))))) {
+            return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'Smarty! Your dates are out of applicable range.');
         }
         if ($leaveMaster->save()) {
             $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveType->name, 'comp_off_date' => $comp_off_date]);
@@ -396,7 +400,7 @@ class LeaveMasterController extends Controller {
         }
 
         $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.emp_code AS emp_code')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
                 ->whereRaw($where)
@@ -418,7 +422,7 @@ class LeaveMasterController extends Controller {
 
             foreach ($leaveMaster as $leaveMasterRow) {
                 $html .= '<tr>
-                     <td>' . $leaveMasterRow->EmpId . '</td>
+                     <td>' . $leaveMasterRow->emp_code . '</td>
                     <td>' . $leaveMasterRow->Employees_name . '</td>
 
                     <td>' . date('d M Y', strtotime($leaveMasterRow->FromDate)) . '</td>
