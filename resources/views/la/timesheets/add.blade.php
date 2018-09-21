@@ -29,7 +29,7 @@
                             <th style="width:15%;">Project<span class="required">*</span></th>
                             <th style="width:15%;">Sprint<span class="required">*</span></th>
                             <th style="width:15%;">Task<span class="required">*</span></th>
-                            <th>Description</th>
+                            <th><span class="required hide description">*</span>Description</th>
                             <th>Hours<span class="required">*</span></th>
                             <th>Minutes<span class="required">*</span></th>
                             <th>Action</th>
@@ -234,8 +234,10 @@ $(document).ready(function () {
     $('#task_id').on('change', function () {
         if (($('#project_id').find('option:selected').html() == "Internal") || ($('#project_id').find('option:selected').html() == "Pipeline") || ($('#task_id').find('option:selected').html() == "Research and Development")) {
             $('[name="comments"]').attr('required', true);
+            $('.description').removeClass('hide');
         } else {
             $('[name="comments"]').attr('required', false);
+            $('.description').addClass('hide');
         }
     });
 
