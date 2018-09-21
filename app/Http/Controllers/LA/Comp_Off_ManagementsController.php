@@ -330,7 +330,7 @@ class Comp_Off_ManagementsController extends Controller {
                         $output .= '<button type="button" class="btn btn actionCompOff" name="Rejected" id="Rejected" data-id =' . $data->data[$i][7] . ' style="background-color: #f55753;border-color: #f43f3b;color: white"  data-start-date="' . $data->data[$i][1] . '" data-end-date="' . $data->data[$i][2] . '">Reject</button> ';
                     }
                 } else if ($role == 'manager') {
-                    if (($data->data[$i][4] == 'Approved' || $data->data[$i][4] == 'Rejected') && $data->data[$i][5] != '' || $data->data[$i][6] != '') {
+                    if (($data->data[$i][4] == 'Approved' || $data->data[$i][4] == 'Rejected') && $data->data[$i][5] != '' && $data->data[$i][6] != '') {
                         $output .= 'Action Taken';
                     } else if ($data->data[$i][4] == 'Approved' && ($data->data[$i][6] == '' || $data->data[$i][6] == null)) {
                         $output .= '<button type="button" class="btn btn actionCompOff" name="Rejected" id="Rejected" data-id =' . $data->data[$i][7] . ' style="background-color: #f55753;border-color: #f43f3b;color: white" data-start-date="' . $data->data[$i][1] . '" data-end-date="' . $data->data[$i][2] . '" >Reject</button> ';
