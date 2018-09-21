@@ -71,6 +71,8 @@
             $('[name="end_date"]').parents('.date').data('DateTimePicker')
                     .date(moment(new Date($('[name="start_date"]').val())));
         });
+        $('[name="end_date"]').parents('.date').data('DateTimePicker')
+                .date(moment(new Date($('[name="start_date"]').val())));
     });
 </script>
 @endpush
