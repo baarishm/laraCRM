@@ -55,7 +55,7 @@
                             <td>
                                 <select class="form-control" name="projects_sprint_id" id="projects_sprint_id" required>
                                     @foreach($projects_sprints as $projects_sprint)
-                                        <option data-name="{{$projects_sprint->name}}" value="{{$projects_sprint->id}}">{{$projects_sprint->name}}</option>
+                                    <option data-name="{{$projects_sprint->name}}" value="{{$projects_sprint->id}}">{{$projects_sprint->name}}</option>
                                     @endforeach
                                 </select>
                             </td>
@@ -209,7 +209,7 @@ $(document).ready(function () {
         }).success(function (project_list) {
             $('select#project_id option').remove();
             $(project_list).each(function (key, item) {
-                $('select#project_id').append('<option data-name="'+item.name+'" value="' + item.id + '">' + item.name + '</option>');
+                $('select#project_id').append('<option data-name="' + item.name + '" value="' + item.id + '">' + item.name + '</option>');
             });
         });
         $('#project_id').trigger('change');
@@ -225,21 +225,20 @@ $(document).ready(function () {
         }).success(function (sprint_list) {
             $('select#projects_sprint_id option').remove();
             $(sprint_list).each(function (key, item) {
-                $('select#projects_sprint_id').append('<option data-name="'+item.name+'" value="' + item.id + '">' + item.name + '</option>');
+                $('select#projects_sprint_id').append('<option data-name="' + item.name + '" value="' + item.id + '">' + item.name + '</option>');
             });
         });
         $('#task_id').trigger('change');
     });
-    
-    $('#task_id').on('change', function(){
-        if(($('#project_id').find('option:selected').html() == "Others") || ($('#task_id').find('option:selected').html() == "Research and Development")){
+
+    $('#task_id').on('change', function () {
+        if (($('#project_id').find('option:selected').html() == "Internal") || ($('#project_id').find('option:selected').html() == "Pipeline") || ($('#task_id').find('option:selected').html() == "Research and Development")) {
             $('[name="comments"]').attr('required', true);
-        }
-        else{
-             $('[name="comments"]').attr('required', false);
+        } else {
+            $('[name="comments"]').attr('required', false);
         }
     });
-    
+
     $('#project_id').trigger('change');
 
 });
