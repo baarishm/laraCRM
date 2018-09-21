@@ -59,9 +59,9 @@
                         @foreach($roles as $role)
                         @if($role->id != 1 || Entrust::hasRole("SUPER_ADMIN"))
                         @if($user->hasRole($role->name))
-                        <option value="{{ $role->id }}" selected>{{ $role->name }}</option>
+                        <option value="{{ $role->id }}" selected>{{ $role->display_name }}</option>
                         @else
-                        <option value="{{ $role->id }}">{{ $role->name }}</option>
+                        <option value="{{ $role->id }}">{{ $role->display_name }}</option>
                         @endif
                         @endif
                         @endforeach
@@ -83,9 +83,13 @@
 @push('scripts')
 <script>
     $(function () {
-        $("#employee-edit-form").validate({
-
-        });
+        var role = <?php echo ((Entrust::hasRole("SUPER_ADMIN") != '') ? 'true' : 'false'); ?>;
+        if (role === false) {
+            $('[name = "is_confirmed"]').siblings('.Switch').css({'pointer-events': 'none'});
+            $('[name = "emp_code"]').attr('disabled', 'true');
+            $('[name = "first_approver"]').attr('disabled', 'true');
+            $('[name = "second_approver"]').attr('disabled', 'true');
+        }
     });
 </script>
 @endpush

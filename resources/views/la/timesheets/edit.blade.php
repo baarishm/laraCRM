@@ -159,7 +159,7 @@ $(function () {
 
     //to get sprint against project selected
     $('#project_id').on('change', function () {
-        var date = dateFormatDB($('#date').val());
+        var date = dateFormatDB($('[name="date"]').val());
         $.ajax({
             url: "{{url(config('laraadmin.adminRoute') . '/sprintList')}}",
             method: 'POST',
@@ -193,7 +193,10 @@ $(function () {
     $('[name="dependency"][value="No"]').trigger('click');
     $('.date').data("DateTimePicker").minDate(moment().subtract(7, 'days').millisecond(0).second(0).minute(0).hour(0));
     $('.date').data("DateTimePicker").daysOfWeekDisabled([0]);
-    //    $('.date').data("DateTimePicker").maxDate(moment());
+    
+    
+    //maxlength of comment
+    $('[name="comments"]').prop('maxlength', '250');
 });
 </script>
 @endpush

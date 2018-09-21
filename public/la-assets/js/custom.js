@@ -17,20 +17,6 @@ $('document').ready(function () {
         }
     });
 
-    //disable end date
-    if ($('[name="start_date"]').val() == '') {
-        $('[name="end_date"]').attr('disabled', true);
-    }
-    if ($('[name="FromDate"]').val() == '') {
-        $('[name="ToDate"]').attr('disabled', true);
-    }
-    $('[name="FromDate"]').change(function () {
-        $('[name="ToDate"]').attr('disabled', false);
-        if ($('[name="FromDate"]').val() == '') {
-            $('[name="ToDate"]').attr('disabled', true);
-        }
-    })
-
     //date inputs
     if ($('.date').length > 0) {
         $('.date').each(function () {
@@ -48,10 +34,16 @@ $('document').ready(function () {
             $(this).data('DateTimePicker').format('DD MMM YYYY').widgetPositioning({vertical: 'auto'});
 
             //fill in old date or today's date
-            var date = new Date();
             var child_input = $(this).find('input');
+            var date = new Date();
+            if (child_input.attr('name') == 'end_date') {
+                date = '';
+            }
             if (child_input.val() != '') {
                 date = new Date(child_input.val());
+            }
+            else if(child_input.attr('value') != ''){
+                date = new Date(child_input.attr('value'));
             }
             $(this).data('DateTimePicker').date(date).useStrict(true).keepInvalid(true);
 
@@ -73,12 +65,7 @@ $('document').ready(function () {
             if (child_input.attr('name') == 'start_date' || child_input.attr('name') == 'end_date') {
                 $(this).on('dp.change', function (e) {
                     var start_date = $('input[name="start_date"]').val();
-                    if (start_date != '') {
-                        $('[name="end_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date(start_date)));
-                        $('[name="end_date"]').attr('disabled', false);
-                    } else {
-                        $('[name="end_date"]').attr('disabled', true);
-                    }
+                    $('[name="end_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date(start_date)));
                     if (new Date($('input[name="start_date"]').val()) > new Date($('input[name="end_date"]').val())) {
                         $('input[name="end_date"]').parents('.date').data('DateTimePicker').date(start_date);
                     }

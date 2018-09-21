@@ -5,7 +5,9 @@ namespace App\Http\Controllers\LA;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LeaveMaster;
+use App\Models\Leave_Type;
 use App\Models\Employee;
+use App\Models\Comp_Off_Management;
 use Auth;
 use DB;
 use Mail;
@@ -15,7 +17,7 @@ class LeaveMasterController extends Controller {
 
     public function edit($id) {
         $leaveMaster = DB::table('leavemaster')
-                ->select(['id', 'EmpId', DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), 'NoOfDays', 'LeaveReason', 'LeaveType', 'approved'])
+                ->select(['id', 'EmpId', DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), 'NoOfDays', 'LeaveReason', 'LeaveType', 'approved', 'comp_off_id'])
                 ->where('id', $id)
                 ->first();
 
@@ -23,6 +25,7 @@ class LeaveMasterController extends Controller {
                 ->whereNull('deleted_at')
                 ->get();
 
+        $comp_off = Comp_Off_Management::select(['start_date', 'end_date', 'id'])->where('employee_id', Auth::user()->context_id)->where('availed', '0')->where('approved', '1')->whereNull('deleted_at')->get();
 
         if (date('Y-m-d', strtotime($leaveMaster->FromDate)) >= date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days'))) {
 
@@ -32,6 +35,7 @@ class LeaveMasterController extends Controller {
                 'before_days' => LAConfigs::getByKey('before_days_leave'),
                 'after_days' => LAConfigs::getByKey('after_days_leave'),
                 'number_of_leaves' => LAConfigs::getByKey('number_of_leaves'),
+                'comp_off_list' => $comp_off,
                 'manager' => ucwords($manager->name),
             ];
 
@@ -61,12 +65,12 @@ class LeaveMasterController extends Controller {
                 ->first();
 
         $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves')])
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
+                ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
                 ->whereRaw($where)
                 ->get();
-
 
         return view('la.leavemaster.' . $view, [
             'before_days' => LAConfigs::getByKey('before_days_leave'),
@@ -101,9 +105,10 @@ class LeaveMasterController extends Controller {
         }
 
         $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.emp_code AS emp_code'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+                ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                 ->whereRaw($where)
                 ->get();
 
@@ -118,11 +123,14 @@ class LeaveMasterController extends Controller {
 
         $manager = Employee::getManagerDetails(Auth::user()->context_id);
 
+        $comp_off = Comp_Off_Management::select(['start_date', 'end_date', 'id'])->where('employee_id', Auth::user()->context_id)->where('availed', '0')->where('approved', '1')->whereNull('deleted_at')->get();
+
         return view('la.leavemaster.create', [
             'leave_types' => $leave_types,
             'before_days' => LAConfigs::getByKey('before_days_leave'),
             'after_days' => LAConfigs::getByKey('after_days_leave'),
             'number_of_leaves' => LAConfigs::getByKey('number_of_leaves'),
+            'comp_off_list' => $comp_off,
             'manager' => ucwords($manager->name),
         ]);
     }
@@ -158,7 +166,12 @@ class LeaveMasterController extends Controller {
         $leaveMaster->NoOfDays = $days = $request->get('NoOfDays');
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
-//	$leaveMaster->Approved=$request->get('Approved');
+        $leaveType = Leave_Type::find($leaveMaster->LeaveType);
+        $comp_off_date = '';
+        if ($leaveType->name == 'Comp Off' && $request->get('comp_off_id') != '') {
+            $leaveMaster->comp_off_id = $request->get('comp_off_id');
+            $comp_off_date = Comp_Off_Management::find($request->get('comp_off_id'))->start_date;
+        }
         //check existance        
         $LeaveRecord = LeaveMaster::where('EmpId', $request->get('EmpId'))
                 ->where('FromDate', $FromDate)
@@ -170,10 +183,12 @@ class LeaveMasterController extends Controller {
 
         if ($LeaveRecordExists > 0) {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'You have already applied leave for these dates.');
+        } else if (($FromDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($FromDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d')))))) {
+            return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'Smarty! Your dates are out of applicable range.');
         }
 
         if ($leaveMaster->save()) {
-            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
+            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveType->name, 'comp_off_date' => $comp_off_date]);
         }
 
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been added');
@@ -201,7 +216,12 @@ class LeaveMasterController extends Controller {
         $leaveMaster->NoOfDays = $days = $request->get('NoOfDays');
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
-//	$leaveMaster->LeaveDurationType=$request->get('LeaveDurationType');
+        $leaveType = Leave_Type::find($leaveMaster->LeaveType);
+        $comp_off_date = '';
+        if ($leaveType->name == 'Comp Off' && $request->get('comp_off_id') != '') {
+            $leaveMaster->comp_off_id = $request->get('comp_off_id');
+            $comp_off_date = Comp_Off_Management::find($request->get('comp_off_id'))->start_date;
+        }
         //check
         $row = LeaveMaster::where('EmpId', $request->get('EmpId'))
                 ->where('FromDate', $FromDate)
@@ -213,9 +233,11 @@ class LeaveMasterController extends Controller {
 
         if ($Exists > 0 && !in_array($id, $row->toArray())) {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'You have already applied leave for these dates.');
+        } else if (($FromDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($FromDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d')))))) {
+            return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'Smarty! Your dates are out of applicable range.');
         }
         if ($leaveMaster->save()) {
-            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason]);
+            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveType->name, 'comp_off_date' => $comp_off_date]);
         }
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been Update');
     }
@@ -242,16 +264,33 @@ class LeaveMasterController extends Controller {
 
         LeaveMaster::where('id', $_GET['id'])->update($update_field);
         $leavemaster = LeaveMaster::find($_GET['id']);
+        $leaveType = Leave_Type::find($leavemaster->LeaveType);
         $employee = Employee::find($leavemaster->EmpId);
         if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
-            $available_leaves = $employee->available_leaves - $_GET['days'];
-            $availed_leaves = $employee->availed_leaves + $_GET['days'];
+            if ($leaveType->name == 'Comp Off') {//compoff
+                $comp_off = $employee->comp_off - $_GET['days'];
+                $available_leaves = $employee->available_leaves;
+                $availed_leaves = $employee->availed_leaves;
+                Comp_Off_Management::find($leavemaster->comp_off_id)->update(['availed' => '1']);
+            } else {//other
+                $comp_off = $employee->comp_off;
+                $available_leaves = $employee->available_leaves - $_GET['days'];
+                $availed_leaves = $employee->availed_leaves + $_GET['days'];
+            }
         } else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
-            $available_leaves = $employee->available_leaves + $_GET['days'];
-            $availed_leaves = $employee->availed_leaves - $_GET['days'];
+            if ($leaveType->name == 'Comp Off') {//compoff
+                $comp_off = $employee->comp_off + $_GET['days'];
+                $available_leaves = $employee->available_leaves;
+                $availed_leaves = $employee->availed_leaves;
+                Comp_Off_Management::find($leavemaster->comp_off_id)->update(['availed' => '0']);
+            } else {//other
+                $comp_off = $employee->comp_off;
+                $available_leaves = $employee->available_leaves + $_GET['days'];
+                $availed_leaves = $employee->availed_leaves - $_GET['days'];
+            }
         }
 
-        DB::update("update employees set available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leavemaster->EmpId]);
+        DB::update("update employees set comp_off = $comp_off, available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leavemaster->EmpId]);
 
 
         $employee_update = Employee::find($leavemaster->EmpId);
@@ -278,6 +317,8 @@ class LeaveMasterController extends Controller {
      * end_date
      * days
      * reason
+     * leaveType
+     * comp_off_date
      */
     private function sendLeaveMail($updated = false, $data) {
         $lead_manager = DB::table('employees')
@@ -288,10 +329,16 @@ class LeaveMasterController extends Controller {
                 ->first();
 
         $html = "Greetings of the day!<br><br>"
-                . "<b>" . ucwords($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>."
+                . "<b>" . ucwords($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>";
+
+        if ($data['leaveType'] == 'Comp Off') {
+            $html .= " against Comp off date " . date('d M Y', strtotime($data['comp_off_date']));
+        }
+
+        $html .= "."
                 . "<br><br>"
                 . "Regards,<br>"
-                . "Team Ganit Track Management";
+                . "Team Ganit PlusMinus";
 
         $recipients['to'] = [$lead_manager->lead_email, $lead_manager->manager_email];
         $recipients['cc'] = ['ashok.chand@ganitsoft.com'];
@@ -318,10 +365,10 @@ class LeaveMasterController extends Controller {
      */
     private function sendApprovalMail($data) {
         $html = "Greetings of the day " . $data['mail_to_name'] . "!<br><br>"
-                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b> for with a reason stated as <b>" . (($data['comment'] != '') ? $data['comment'] : 'No reason given') . "</b> on " . $data['action_date'] . "."
+                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b> with a reason stated as <b>" . (($data['comment'] != '') ? $data['comment'] : 'No reason given') . "</b> on " . $data['action_date'] . "."
                 . "<br><br>"
                 . "Regards,<br>"
-                . "Team Ganit Track Management";
+                . "Team Ganit PlusMinus";
 
         $recipients['to'] = [$data['mail_to']];
 
@@ -330,32 +377,6 @@ class LeaveMasterController extends Controller {
                     ->subject('Approval of your Leave Application');
         });
         return true;
-    }
-
-    public function Teamindex(Request $request) {
-        $role = Employee::employeeRole();
-        $where = 'employees.deleted_at IS NULL ';
-        $view = 'Manager_index';
-        if ($role == "manager" || $role == "lead") {
-            //manager  
-            $engineersUnder = Employee::getEngineersUnder(($role == "manager") ? "Manager" : "Lead");
-            if ($engineersUnder != '')
-                $where .= " and EmpId IN( " . $engineersUnder . " )";
-            else
-                $where .= " and EmpId IN( '' )";
-        } else {
-            //other users
-            $where .= 'and leavemaster.EmpId = ' . Auth::user()->context_id;
-        }
-
-        $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
-                ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
-                ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
-                ->whereRaw($where)
-                ->get();
-
-        return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role]);
     }
 
     public function ajaxDateSearch(Request $request) {
@@ -379,7 +400,7 @@ class LeaveMasterController extends Controller {
         }
 
         $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name')])
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.emp_code AS emp_code')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
                 ->whereRaw($where)
@@ -401,7 +422,7 @@ class LeaveMasterController extends Controller {
 
             foreach ($leaveMaster as $leaveMasterRow) {
                 $html .= '<tr>
-                     <td>' . $leaveMasterRow->EmpId . '</td>
+                     <td>' . $leaveMasterRow->emp_code . '</td>
                     <td>' . $leaveMasterRow->Employees_name . '</td>
 
                     <td>' . date('d M Y', strtotime($leaveMasterRow->FromDate)) . '</td>
@@ -465,9 +486,20 @@ class LeaveMasterController extends Controller {
             LeaveMaster::where('id', $request->id)->update(['withdraw' => 1]);
             if ($leaveRecord->approved == 1) {
                 $employee = Employee::find($leavemaster->EmpId);
-                $available_leaves = $employee->available_leaves + $leaveRecord->NoOfDays;
-                $availed_leaves = $employee->availed_leaves - $leaveRecord->NoOfDays;
-                DB::update("update employees set available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leaveRecord->EmpId]);
+                $leaveType = Leave_Type::find($leaveRecord->LeaveType);
+                $comp_off = $employee->comp_off;
+                $available_leaves = $employee->available_leaves;
+                $availed_leaves = $employee->availed_leaves;
+                if ($leaveType['name'] == 'Comp Off') {//compoff
+                    $comp_off_record = Comp_Off_Management::find($leaveRecord->comp_off_id);
+                    if ($comp_off_record->deleted_at == '' || $comp_off_record->deleted_at == null) {
+                        $comp_off = $employee->comp_off + $leaveRecord->NoOfDays;
+                    }
+                } else {//other
+                    $available_leaves = $employee->available_leaves + $leaveRecord->NoOfDays;
+                    $availed_leaves = $employee->availed_leaves - $leaveRecord->NoOfDays;
+                }
+                DB::update("update employees set comp_off = $comp_off,available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leaveRecord->EmpId]);
             }
             return 'Leave withdrawn successfully!';
         } else {

@@ -67,11 +67,11 @@
                                 </select>
                             </td>
                             <td>
-                                <input class="form-control" placeholder="Enter Description" name="comments" id="comments" type="text" value="">
+                                <input class="form-control" placeholder="Enter Description" name="comments" id="comments" type="text" value="" maxlength="250">
                             </td>
                             <td>
                                 <select class="form-control" name="hours" id="hours" required>
-                                    @for($i = 1; $i <= 24 ; $i++)
+                                    @for($i = 0; $i <= 24 ; $i++)
                                     <option value="{{$i}}">{{$i}}</option>
                                     @endfor
                                 </select>

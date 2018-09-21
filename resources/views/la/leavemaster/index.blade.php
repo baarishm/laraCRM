@@ -20,19 +20,22 @@ Leave Dashboard
     <div class="row" style="background: #dee2f7;">
 
 
-        <div class="col-md-3 mt5">
+        <div class="col-md-2 mt5">
             <label for="Name" style="color:blue;">Total Leaves : {{$empdetail->total_leaves}}</label>
 
         </div>
 
-        <div class="col-md-3 mt5">
+        <div class="col-md-2 mt5">
             <label for="Name" style="color:red;">Availed leave : {{$empdetail->availed_leaves}}</label>
 
 
         </div>
-        <div class="col-md-3 mt5">
+        <div class="col-md-2 mt5">
             <label for="Name" style="color:green;">Available Leaves : {{$empdetail->available_leaves}}</label>
 
+        </div>
+        <div class="col-md-2 mt5">
+            <label for="Name" style="color:green;">Available Comp-Offs : {{$empdetail->comp_off}}</label>
 
         </div>
         <div class="col-md-3">
@@ -79,7 +82,7 @@ Leave Dashboard
                     <td>Pending </td>
                     @endif
 
-                    @if(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && !$leaveMasterRow->withdraw  && (date('Y-m-d') <= $leaveMasterRow->FromDate)) 
+                    @if(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && !$leaveMasterRow->withdraw  && (date('Y-m-d') <= $leaveMasterRow->FromDate) && (isset($leaveMasterRow->comp_off_deleted) && ($leaveMasterRow->comp_off_deleted == null || $leaveMasterRow->comp_off_deleted == ''))) 
                     <td>
                         <a href="" class="btn btn-default withdraw" data-removed="{{$leaveMasterRow->id}}">Withdraw</a>
                     </td>

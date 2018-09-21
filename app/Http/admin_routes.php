@@ -112,11 +112,7 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::get(config('laraadmin.adminRoute') . '/leave/teamMember', 'LA\LeaveMasterController@teamMemberIndex');
 	Route::post(config('laraadmin.adminRoute') . '/leave/withdraw', 'LA\LeaveMasterController@ajaxWithdraw');
         
-        
-        /* ================== Leaves_Of_Team_member================== */
-        Route::get(config('laraadmin.adminRoute') . '/teamMemberOnLeave', 'LA\LeaveMasterController@Teamindex');
-//	Route::post(config('laraadmin.adminRoute') . '/leaves/index', 'LA\LeaveMasterController@Teamindex');
-        
+                
 	/* ================== Sidebar_Menu_Leaves_ViewData ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
 	
@@ -153,5 +149,7 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 
 	/* ================== Comp_Off_Managements ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/comp_off_managements', 'LA\Comp_Off_ManagementsController');
-	Route::get(config('laraadmin.adminRoute') . '/comp_off_management_dt_ajax', 'LA\Comp_Off_ManagementsController@dtajax');
+	Route::get(config('laraadmin.adminRoute') . '/comp_off_management_dt_ajax/{teamMember}', 'LA\Comp_Off_ManagementsController@dtajax');
+	Route::get(config('laraadmin.adminRoute') .'/comp_off_management/teamMemberCompOff', 'LA\Comp_Off_ManagementsController@teamMemberList');
+	Route::get('/approveCompOff', 'LA\Comp_Off_ManagementsController@ajaxApproveCompOff');
 });
