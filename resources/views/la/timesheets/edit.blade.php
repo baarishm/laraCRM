@@ -232,7 +232,7 @@ $(function () {
     });
     
     $('#task_id').on('change', function(){
-        if(($('#project_id').find('option:selected').html() == "Others") || ($('#task_id').find('option:selected').html() == "Research and Development")){
+        if(($('#project_id').find('option:selected').html() == "Internal") || ($('#project_id').find('option:selected').html() == "Pipeline") || ($('#task_id').find('option:selected').html() == "Research and Development")){
             $('[name="comments"]').attr('required', true);
         }
         else{
