@@ -198,39 +198,6 @@ $(function () {
     //maxlength of comment
     $('[name="comments"]').prop('maxlength', '250');
     
-    
-    //to get project against date selected
-    $('.date').on('dp.change', function () {
-        var date = dateFormatDB($(this).find('input').val());
-        $.ajax({
-            url: "{{url(config('laraadmin.adminRoute') . '/projectList')}}",
-            method: 'POST',
-            data: {_token: "{{ csrf_token() }}", date: date}
-        }).success(function (project_list) {
-            $('select#project_id option').remove();
-            $(project_list).each(function (key, item) {
-                $('select#project_id').append('<option data-name="'+item.name+'" value="' + item.id + '">' + item.name + '</option>');
-            });
-        });
-        $('#project_id').trigger('change');
-    });
-
-    //to get sprint against project selected
-    $('#project_id').on('change', function () {
-        var date = dateFormatDB($('#date').val());
-        $.ajax({
-            url: "{{url(config('laraadmin.adminRoute') . '/sprintList')}}",
-            method: 'POST',
-            data: {_token: "{{ csrf_token() }}", date: date, project_id: $('#project_id').val()}
-        }).success(function (sprint_list) {
-            $('select#projects_sprint_id option').remove();
-            $(sprint_list).each(function (key, item) {
-                $('select#projects_sprint_id').append('<option data-name="'+item.name+'" value="' + item.id + '">' + item.name + '</option>');
-            });
-        });
-        $('#task_id').trigger('change');
-    });
-    
     $('#task_id').on('change', function(){
         if(($('#project_id').find('option:selected').html() == "Internal") || ($('#project_id').find('option:selected').html() == "Pipeline") || ($('#task_id').find('option:selected').html() == "Research and Development")){
             $('[name="comments"]').attr('required', true);
