@@ -99,7 +99,6 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
         Route::get(config('laraadmin.adminRoute') . "/timesheet/teamMembers", 'LA\TimesheetsController@teamMemberSheet');
         Route::get(config('laraadmin.adminRoute') . "/timesheet/sendMail", 'LA\TimesheetsController@sendMail');
 
-
 	/* ================== Sidebar_Menu_Accesses ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/sidebar_menu_accesses', 'LA\Sidebar_Menu_AccessesController');
 	Route::get(config('laraadmin.adminRoute') . '/sidebar_menu_access_dt_ajax', 'LA\Sidebar_Menu_AccessesController@dtajax');

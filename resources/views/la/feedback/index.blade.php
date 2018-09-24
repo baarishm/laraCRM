@@ -95,7 +95,13 @@ $(function () {
     $("#example1").DataTable({
     processing: true,
             serverSide: true,
-            ajax: "{{ url(config('laraadmin.adminRoute') . '/feedback_dt_ajax') }}",
+            ajax:  {
+            url: "{{ url(config('laraadmin.adminRoute') . '/feedback_dt_ajax') }}",
+                    type : 'get',
+                    data:function(d){
+                    filterDatatableData(d);
+                    }
+            },
             language: {
             lengthMenu: "_MENU_",
                     search: "_INPUT_",
@@ -106,7 +112,7 @@ $(function () {
             @endif
     }
     );
-    
+
     $('#type').select2();
     $("#feedback-add-form").validate({
 
