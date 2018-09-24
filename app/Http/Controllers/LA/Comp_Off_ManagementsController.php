@@ -280,7 +280,7 @@ class Comp_Off_ManagementsController extends Controller {
                 ->leftJoin('employees', 'employees.id', '=', 'comp_off_managements.employee_id')
                 ->whereNull('comp_off_managements.deleted_at');
 
-        if ($role == 'engineer' && $teamMember === 'false') {
+        if ($teamMember === 'false') {
             $values = $values->where('employee_id', Auth::user()->context_id);
         } else if ($teamMember === 'true') {
             $engineersUnder = Employee::getEngineersUnder(ucwords($role));
