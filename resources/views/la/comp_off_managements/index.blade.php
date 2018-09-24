@@ -92,7 +92,13 @@ $(function () {
     $("#example1").DataTable({
     processing: true,
             serverSide: true,
-            ajax: "{{ url(config('laraadmin.adminRoute') . '/comp_off_management_dt_ajax/'.$teamMember) }}",
+            ajax:  {
+            url: "{{ url(config('laraadmin.adminRoute') . '/comp_off_management_dt_ajax/'.$teamMember) }}",
+                    type : 'get',
+                    data:function(d){
+                    filterDatatableData(d);
+                    }
+            },
             language: {
             lengthMenu: "_MENU_",
                     search: "_INPUT_",
@@ -106,6 +112,7 @@ $(function () {
             @endif
     }
     );
+
     function approveCompOff(button) {
         $('div.overlay').removeClass('hide');
         var controlid = $(button).attr('id');
