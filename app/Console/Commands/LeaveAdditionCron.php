@@ -42,11 +42,14 @@ class LeaveAdditionCron extends Command {
             if (date('Y-m-d', strtotime('-15 days')) >= $employee->date_hire) {
                 if ($employee->is_confirmed) {
                     $leave = $employee->total_leaves + 2;
+                    $leave = $employee->available_leaves + 2;
                 } else {
                     $leave = $employee->total_leaves + 1.5;
+                    $leave = $employee->available_leaves + 1.5;
                 }
             }else{
                 $leave = $employee->total_leaves + 1;
+                    $leave = $employee->available_leaves + 1;
             }
             Employee::find($employee->id)->update(['total_leaves' => $leave]);
         }
