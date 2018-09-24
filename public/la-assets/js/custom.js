@@ -216,10 +216,10 @@ function binding() {
 function filterDatatableData(d){
 	for (var i = 0, len = d.columns.length; i < len; i++) {
 		if (!d.columns[i].search.value) delete d.columns[i].search;
-		if (d.columns[i].searchable === true) delete d.columns[i].searchable;
-		if (d.columns[i].orderable === true) delete d.columns[i].orderable;
+		if (d.columns[i].searchable == '') delete d.columns[i].searchable;
+		if (d.columns[i].orderable == '') delete d.columns[i].orderable;
 		if (d.columns[i].d === d.columns[i].name) delete d.columns[i].name;
 	  }
-	 delete d.search.regex;
+//	 delete d.search.regex;
 	 return d;
 }
