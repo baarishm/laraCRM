@@ -220,6 +220,6 @@ function filterDatatableData(d){
 		if (d.columns[i].orderable == '') delete d.columns[i].orderable;
 		if (d.columns[i].d === d.columns[i].name) delete d.columns[i].name;
 	  }
-//	 delete d.search.regex;
+	 delete d.search.regex;
 	 return d;
 }
