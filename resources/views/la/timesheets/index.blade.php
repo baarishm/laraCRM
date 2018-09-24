@@ -104,11 +104,13 @@ $(function () {
             url:"{{ url(config('laraadmin.adminRoute') . '/timesheet_dt_ajax') }}",
                     type : 'get',
                     data:function(d){
-                    d.project_search = $('#project_search').val();
-                            d.date_search = $('#date_search').val();
-                            d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
-                            d.teamMember = "{{$teamMember}}";
-                            d.week_search = $('div.week-div').attr('data-value');
+						d.project_search = $('#project_search').val();
+								d.date_search = $('#date_search').val();
+								d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
+								d.teamMember = "{{$teamMember}}";
+								d.week_search = $('div.week-div').attr('data-value');
+						
+						filterDatatableData(d);
                     }
             },
             language: {
