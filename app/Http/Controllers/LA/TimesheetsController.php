@@ -602,6 +602,7 @@ class TimesheetsController extends Controller {
                         ->leftJoin('projects_sprints', 'timesheets.projects_sprint_id', '=', 'projects_sprints.id')
                         ->groupBy('employees.id', 'date', 'timesheets.project_id', 'timesheets.task_id')
                         ->orderBy(DB::raw("STR_TO_DATE(date,'%Y-%m-%d')"), 'desc')
+                        ->orderBy('employees.name', 'asc')
                         ->get()->toArray();
         $existingEmployees = [];
 
