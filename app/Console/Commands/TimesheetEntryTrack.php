@@ -47,6 +47,7 @@ class TimesheetEntryTrack extends Command {
                         ->groupBy(['submitor_id', 'date'])->get())->groupBy('submitor_id');
 
         $empArray = [];
+        $bade_log = ['mohit.arora@ganitsoftech.com', 'tarun.chawla@ganitsoft.com', 'neeta.chawla@ganitsoft.com', 'ashok.chand@ganitsoft.com', 'priyanka.kandpal@ganitsoftech.com', 'sachin.mishra@ganitsoftech.com'];
 
         //foreach user, check if date are full or not means 5 records or not
         foreach ($timesheet as $acha_bacha => $records) {
@@ -73,11 +74,12 @@ class TimesheetEntryTrack extends Command {
                         . "Regards,<br>"
                         . "Team Ganit PlusMinus";
                 $recipients['to'] = [$records[0]->email];
-                
-                Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
-                    $m->to($recipients['to'])
-                            ->subject('Timesheets Not Found');
-                });
+                if (!in_array($records[0]->email, $bade_log)) {
+                    Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
+                        $m->to($recipients['to'])
+                                ->subject('Timesheets Not Found');
+                    });
+                }
             }
             //also keep emp_ids in array which have filled atleast one timesheet
             $empArray[] = $acha_bacha;
@@ -101,10 +103,12 @@ class TimesheetEntryTrack extends Command {
                     . "Team Ganit PlusMinus";
             $recipients['to'] = [$ganda_bacha['email']];
 
-            Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
-                $m->to($recipients['to'])
-                        ->subject('Timesheets Not Found');
-            });
+            if (!in_array($records[0]->email, $bade_log)) {
+                Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
+                    $m->to($recipients['to'])
+                            ->subject('Timesheets Not Found');
+                });
+            }
         }
     }
 
