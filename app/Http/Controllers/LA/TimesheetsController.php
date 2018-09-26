@@ -593,7 +593,7 @@ class TimesheetsController extends Controller {
     public function ajaxExportTimeSheetToAuthority(Request $request) {
         //code to export excel
         $sheet_data = Employee::
-                        select([DB::raw('employees.id as id'), DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
+                        select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
                         ->where('date', '>=', date('Y-m-d', strtotime($request->start_date)))
                         ->where('date', '<=', date('Y-m-d', strtotime($request->end_date)))
                         ->leftJoin('timesheets', 'timesheets.submitor_id', '=', 'employees.id')
@@ -606,15 +606,15 @@ class TimesheetsController extends Controller {
         $existingEmployees = [];
 
         foreach ($sheet_data as $row) {
-            if (!in_array($row['id'], $existingEmployees)) {
-                $existingEmployees[] = $row['id'];
+            if (!in_array($row['Emp_Code'], $existingEmployees)) {
+                $existingEmployees[] = $row['Emp_Code'];
             }
         }
 
-        $employees_No_timesheet = Employee::select('name')->whereNull('deleted_at')->whereNotIn('id', $existingEmployees)->get()->toArray();
+        $employees_No_timesheet = Employee::select([DB::raw('employees.emp_code as Emp_Code'),DB::raw('employees.name as Employee')])->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
 
         foreach ($employees_No_timesheet as $defected_employee) {
-            $sheet_data[] = ['No entry', $defected_employee];
+            $sheet_data[] = ['Emp_Code'=>$defected_employee['Emp_Code'], 'Date'=>'', 'Employee'=>$defected_employee['Employee'], 'Project'=>'No Record'];
         }
 
         $file = \Excel::create('Timesheet_' . date('d M Y'), function($excel) use ($sheet_data) {
@@ -622,6 +622,7 @@ class TimesheetsController extends Controller {
                         $sheet->fromArray($sheet_data);
                     });
                 });
+                
         $file = $file->string('xlsx');
         $response = array(
             'name' => 'Timesheet_' . date('d M Y'), //no extention needed
