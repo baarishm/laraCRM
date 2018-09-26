@@ -42,7 +42,7 @@ class TimesheetEmail extends Command {
     public function handle() {
         //code to export excel
         $sheet_data = Employee::
-                        select([DB::raw('employees.id as id'), DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
+                        select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
                         ->where('date', '>=', date('Y-m-d', strtotime('-1 days')))
                         ->where('date', '<=', date('Y-m-d', strtotime('-1 days')))
                         ->leftJoin('timesheets', 'timesheets.submitor_id', '=', 'employees.id')
@@ -55,15 +55,23 @@ class TimesheetEmail extends Command {
         $existingEmployees = [];
 
         foreach ($sheet_data as $row) {
-            if (!in_array($row['id'], $existingEmployees)) {
-                $existingEmployees[] = $row['id'];
+            if (!in_array($row['Emp_Code'], $existingEmployees)) {
+                $existingEmployees[] = $row['Emp_Code'];
             }
         }
-
-        $employees_No_timesheet = Employee::select('name', 'id')->whereNull('deleted_at')->whereNotIn('id', $existingEmployees)->get()->toArray();
+        $employees_No_timesheet = Employee::select('name', 'emp_code')->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
 
         foreach ($employees_No_timesheet as $ganda_bacha) {
-            $sheet_data[] = [$ganda_bacha['id'], date('d M Y', strtotime('-1 days')), $ganda_bacha['name'], '-', '-', '-', '-', '-'];
+            $sheet_data[] = [
+                'Emp_Code' => $ganda_bacha['emp_code'],
+                'Date' => date('d M Y', strtotime('-1 days')),
+                'Employee' => $ganda_bacha['name'],
+                'Project' => '-',
+                'Sprint_Name' => '-',
+                'Task' => '-',
+                'Description' => '-',
+                'Effort_Hours' => '-'
+            ];
         }
 
         $file = \Excel::create('Timesheet_' . date('d-M-Y', strtotime('-1 days')), function($excel) use ($sheet_data) {
@@ -84,12 +92,12 @@ class TimesheetEmail extends Command {
                 . "<br><br>"
                 . "Regards,<br>"
                 . "Team Ganit PlusMinus";
-        $recipients['to'] = ['ashok.chand@ganitsoft.com']; 
+        $recipients['to'] = ['ashok.chand@ganitsoft.com'];
 
         Mail::send('emails.test', ['html' => $html], function ($m) use($recipients, $attachement) {
             $m->attach($attachement['file'], ['as' => $attachement['name'], 'mime' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
             $m->to($recipients['to'])
-                    ->subject('Timesheet Report for  ' . date('Y-m-d', strtotime('-1 days')));
+                    ->subject('Timesheet Report for  ' . date('d M Y', strtotime('-1 days')));
         });
 //        unlink(public_path('exports\\' . $attachement['name'] . '.xls'));
         return true;
