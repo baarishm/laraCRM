@@ -9,6 +9,7 @@
             <word>endif</word>
             <word>endphp</word>
             <word>php</word>
+            <word>pushscript</word>
         </spellchecker-wordlist>
     </configuration>
 </project>

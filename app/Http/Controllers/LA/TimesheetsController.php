@@ -19,6 +19,7 @@ use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Timesheet;
 use App\Models\Employee;
+use App\Models\Notification;
 use App\Models\Project;
 use App\Models\Projects_Sprint;
 use Mail;
@@ -79,53 +80,57 @@ class TimesheetsController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function teamMemberSheet() {
-        session(['task_removed' => '']);
-        $module = Module::get('Timesheets');
-
         $role = Employee::employeeRole();
+        if ($role != 'engineer') {
+            session(['task_removed' => '']);
+            $module = Module::get('Timesheets');
 
-        $this->custom_cols = ['submitor_id', 'project_id', 'projects_sprint_id', 'task_id', 'date', 'Time (in hrs)', 'Status'];
+            $role = Employee::employeeRole();
 
-        $projects = DB::table('timesheets')
-                ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
-                ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
-                ->whereNull('projects.deleted_at')
-                ->get();
+            $this->custom_cols = ['submitor_id', 'project_id', 'projects_sprint_id', 'task_id', 'date', 'Time (in hrs)', 'Status'];
+
+            $projects = DB::table('timesheets')
+                    ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
+                    ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
+                    ->whereNull('projects.deleted_at')
+                    ->get();
 
 
-        $role = Employee::employeeRole();
-        $where = '';
-        if ($role == 'manager') {
-            $people_under_manager = Employee::getEngineersUnder('Manager');
-            if ($people_under_manager != '')
-                $where = 'submitor_id IN (' . $people_under_manager . ')';
-        } else if ($role == 'lead') {
-            $people_under_lead = Employee::getEngineersUnder('Lead');
-            if ($people_under_lead != '')
-                $where = 'submitor_id IN (' . $people_under_lead . ')';
-        }
+            $where = '';
+            if ($role == 'manager') {
+                $people_under_manager = Employee::getEngineersUnder('Manager');
+                if ($people_under_manager != '')
+                    $where = 'submitor_id IN (' . $people_under_manager . ')';
+            } else if ($role == 'lead') {
+                $people_under_lead = Employee::getEngineersUnder('Lead');
+                if ($people_under_lead != '')
+                    $where = 'submitor_id IN (' . $people_under_lead . ')';
+            }
 
-        $employees = DB::table('timesheets')
-                ->select([DB::raw('distinct(timesheets.submitor_id)'), DB::raw('employees.name AS employee_name')])
-                ->leftJoin('employees', 'timesheets.submitor_id', '=', 'employees.id')
-                ->whereNull('employees.deleted_at');
+            $employees = DB::table('timesheets')
+                    ->select([DB::raw('distinct(timesheets.submitor_id)'), DB::raw('employees.name AS employee_name')])
+                    ->leftJoin('employees', 'timesheets.submitor_id', '=', 'employees.id')
+                    ->whereNull('employees.deleted_at');
 
-        if ($where != '') {
-            $employees = $employees->whereRaw($where);
-        }
-        $employees = $employees->get();
+            if ($where != '') {
+                $employees = $employees->whereRaw($where);
+            }
+            $employees = $employees->get();
 
-        if (Module::hasAccess($module->id)) {
-            return View('la.timesheets.index', [
-                'show_actions' => $this->show_action,
-                'listing_cols' => $this->custom_cols,
-                'projects' => $projects,
-                'employees' => $employees,
-                'module' => $module,
-                'teamMember' => true
-            ]);
+            if (Module::hasAccess($module->id)) {
+                return View('la.timesheets.index', [
+                    'show_actions' => $this->show_action,
+                    'listing_cols' => $this->custom_cols,
+                    'projects' => $projects,
+                    'employees' => $employees,
+                    'module' => $module,
+                    'teamMember' => true
+                ]);
+            } else {
+                return redirect(config('laraadmin.adminRoute') . "/");
+            }
         } else {
-            return redirect(config('laraadmin.adminRoute') . "/");
+            return redirect()->back();
         }
     }
 
@@ -197,17 +202,33 @@ class TimesheetsController extends Controller {
             unset($insert_data['task_removed']);
             $insert_data['lead_id'] = $lead_manager_id->lead_id;
             $insert_data['manager_id'] = $lead_manager_id->manager_id;
-
             $insert_data['submitor_id'] = base64_decode(base64_decode($request->submitor_id));
             $insert_data['date'] = date('Y-m-d', strtotime($request->date));
             $insert_row = Timesheet::create($insert_data);
 
-            $forward = Timesheet::leads_managers_tasks_notSubmitted();
+            if (Timesheet::where('date', $insert_data['date'])->where('submitor_id', $insert_data['submitor_id'])->count() == 1) {
+                //send notification
+                $emp_detail = Employee::find(Auth::user()->context_id);
+                $notification_data = [
+                    'display_data' => json_encode(
+                            [
+                                'message' => ucwords(Auth::user()->name) . ' has added timesheet of date ' . $request->date,
+                                'type' => 'timesheet_by_junior'
+                            ]
+                    ),
+                    'display_to' => $emp_detail->first_approver
+                ];
+
+                Notification::create($notification_data);
+                $notification_data['display_to'] = $emp_detail->second_approver;
+                Notification::create($notification_data);
+            }
 
             if ($request->ajax()) {
                 return $insert_row->id;
             }
 
+            $forward = Timesheet::leads_managers_tasks_notSubmitted();
             return view('la.timesheets.add', [
                 'module' => $module,
                 'leads' => $forward['leads'],

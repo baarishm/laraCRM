@@ -8,6 +8,7 @@ use App\Models\LeaveMaster;
 use App\Models\Leave_Type;
 use App\Models\Employee;
 use App\Models\Comp_Off_Management;
+use App\Models\Notification;
 use Auth;
 use DB;
 use Mail;
@@ -86,33 +87,37 @@ class LeaveMasterController extends Controller {
     public function teamMemberIndex(Request $request) {
 
         $role = Employee::employeeRole();
-        $where = 'employees.deleted_at IS NULL ';
+        if ($role != 'engineer') {
+            $where = 'employees.deleted_at IS NULL ';
 
-        if ($role == 'engineer') {
-            //other users
-            $view = 'index';
-            $where .= ' and leavemaster.EmpId = ' . Auth::user()->context_id;
-        } else {
-            if ($role == "manager" || $role == "lead") {
-                $engineersUnder = Employee::getEngineersUnder(ucwords($role));
-                if ($engineersUnder != '') {
-                    $where .= ' and leavemaster.EmpId IN (' . $engineersUnder . ')';
-                } else {
-                    $where .= ' and leavemaster.EmpId = ""';
+            if ($role == 'engineer') {
+                //other users
+                $view = 'index';
+                $where .= ' and leavemaster.EmpId = ' . Auth::user()->context_id;
+            } else {
+                if ($role == "manager" || $role == "lead") {
+                    $engineersUnder = Employee::getEngineersUnder(ucwords($role));
+                    if ($engineersUnder != '') {
+                        $where .= ' and leavemaster.EmpId IN (' . $engineersUnder . ')';
+                    } else {
+                        $where .= ' and leavemaster.EmpId = ""';
+                    }
                 }
+                $view = 'Manager_index';
             }
-            $view = 'Manager_index';
+
+            $leaveMaster = DB::table('leavemaster')
+                    ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.emp_code AS emp_code'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
+                    ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
+                    ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+                    ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
+                    ->whereRaw($where)
+                    ->get();
+
+            return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role]);
+        } else {
+            return redirect()->back();
         }
-
-        $leaveMaster = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.emp_code AS emp_code'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
-                ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
-                ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
-                ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
-                ->whereRaw($where)
-                ->get();
-
-        return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role]);
     }
 
     public function create() {
@@ -188,7 +193,24 @@ class LeaveMasterController extends Controller {
         }
 
         if ($leaveMaster->save()) {
+            //send mail
             $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveType->name, 'comp_off_date' => $comp_off_date]);
+
+            //send notification
+            $emp_detail = Employee::find(Auth::user()->context_id);
+            $notification_data = [
+                'display_data' => json_encode(
+                        [
+                            'message' => ucwords(Auth::user()->name) . ' has applied for leave',
+                            'type' => 'leave_by_junior'
+                        ]
+                ),
+                'display_to' => $emp_detail->first_approver
+            ];
+
+            Notification::create($notification_data);
+            $notification_data['display_to'] = $emp_detail->second_approver;
+            Notification::create($notification_data);
         }
 
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been added');
@@ -237,7 +259,24 @@ class LeaveMasterController extends Controller {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'Smarty! Your dates are out of applicable range.');
         }
         if ($leaveMaster->save()) {
+            //send mail
             $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveType->name, 'comp_off_date' => $comp_off_date]);
+
+            //send notification
+            $emp_detail = Employee::find(Auth::user()->context_id);
+            $notification_data = [
+                'display_data' => json_encode(
+                        [
+                            'message' => ucwords(Auth::user()->name) . ' has applied updated leave details.',
+                            'type' => 'leave_by_junior'
+                        ]
+                ),
+                'display_to' => $emp_detail->first_approver
+            ];
+
+            Notification::create($notification_data);
+            $notification_data['display_to'] = $emp_detail->second_approver;
+            Notification::create($notification_data);
         }
         return redirect(config('laraadmin.adminRoute') . '/leaves')->with('success', 'Information has been Update');
     }
@@ -305,7 +344,23 @@ class LeaveMasterController extends Controller {
             'leave_from' => date('d M Y', strtotime($leavemaster->FromDate)),
             'leave_to' => date('d M Y', strtotime($leavemaster->ToDate))
         ];
+
+        //send mail
         $this->sendApprovalMail($mail_data);
+
+        //send notification
+        $emp_detail = Employee::find(Auth::user()->context_id);
+        $notification_data = [
+            'display_data' => json_encode(
+                    [
+                        'message' => ucwords(Auth::user()->name) . ' has ' . ($_GET['approved'] ? 'Approved' : 'Rejected') . ' your leaves from ' . $mail_data['leave_from'] . ' to ' . $mail_data['leave_from'] . '.',
+                        'type' => 'leave_action_by_senior'
+                    ]
+            ),
+            'display_to' => $leavemaster->EmpId
+        ];
+
+        Notification::create($notification_data);
         return "true";
     }
 
@@ -499,8 +554,26 @@ class LeaveMasterController extends Controller {
                     $available_leaves = $employee->available_leaves + $leaveRecord->NoOfDays;
                     $availed_leaves = $employee->availed_leaves - $leaveRecord->NoOfDays;
                 }
-                DB::update("update employees set comp_off = $comp_off,available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leaveRecord->EmpId]);
+                DB::update("update employees set comp_off = $comp_off, available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leaveRecord->EmpId]);
             }
+
+            //send notification
+            $emp_detail = Employee::find(Auth::user()->context_id);
+            $notification_data = [
+                'display_data' => json_encode(
+                        [
+                            'message' => ucwords(Auth::user()->name) . ' has withdrawn the leaves',
+                            'type' => 'leave_by_junior',
+                            'leave_id' => $leaveRecord->id
+                        ]
+                ),
+                'display_to' => $emp_detail->first_approver
+            ];
+
+            Notification::create($notification_data);
+            $notification_data['display_to'] = $emp_detail->second_approver;
+            Notification::create($notification_data);
+
             return 'Leave withdrawn successfully!';
         } else {
             return 'Being Smart, ahaan! Already Withdrawn!';
