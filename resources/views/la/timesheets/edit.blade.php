@@ -26,77 +26,74 @@
         <div class="row">
             <div class="col-md-12">
                 {!! Form::model($timesheet, ['route' => [config('laraadmin.adminRoute') . '.timesheets.update', $timesheet->id ], 'method'=>'PUT', 'id' => 'timesheet-edit-form']) !!}
-                <div id="entry_parent">
-                    <div class="entry" id="1">
-                        <div class="row">
-                            <div class="col-md-2">
-                                @la_input($module, 'date')
-                            </div>
-                            <div class="col-md-2">
-                                <label for="project_id">Project Name*:</label>
+                
+                <table id="entry_table">
+                    <thead class="entry-header">
+                        <tr>
+                            <th style="width: 16%;">Date<span class="required">*</span></th>
+                            <th style="width:15%;">Project<span class="required">*</span></th>
+                            <th style="width:15%;">Sprint<span class="required">*</span></th>
+                            <th style="width:15%;">Task<span class="required">*</span></th>
+                            <th><span class="required hide description">*</span>Description</th>
+                            <th>Hours<span class="required">*</span></th>
+                            <th>Minutes<span class="required">*</span></th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody class="entry_body">
+                        <tr class="entry-row">
+                            <td>
+                                <div class="input-group date">
+                                    <input class="form-control" placeholder="Enter Date" required name="date" id="date" type="text" value="{{$module->row->date}}" autocomplete="off">
+                                    <span class="input-group-addon">
+                                        <span class="fa fa-calendar"></span>
+                                    </span>
+                                </div>
+                            </td>
+                            <td>
                                 <select class="form-control" name="project_id" id="project_id" required>
                                     @foreach($projects as $project)
                                     <option data-name="{{$project->name}}" value="{{$project->id}}" <?php echo (($project->id == $module->row->project_id) ? 'selected' : ''); ?>>{{$project->name}}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                            <div class="col-md-1">
-                                <label for="projects_sprint_id">Sprint*:</label>
+                            </td>
+                            <td>
                                 <select class="form-control" name="projects_sprint_id" id="projects_sprint_id" required>
                                     @foreach($projects_sprints as $projects_sprint)
                                     <option data-name="{{$projects_sprint->name}}" value="{{$projects_sprint->id}}" <?php echo (($projects_sprint->id == $module->row->projects_sprint_id) ? 'selected' : ''); ?>>{{$projects_sprint->name}}</option>
                                     @endforeach
                                 </select>
-                            </div>
-                            <div class="col-md-2">
-                                <label for="task_id">Task Name:</label>
+                            </td>
+                            <td>
                                 <select class="form-control" name="task_id" id="task_id">
                                     @foreach($tasks as $task)
                                     <option value="{{$task->task_id}}" <?php echo (($task->task_id == $module->row->task_id) ? 'selected' : ''); ?>>{{$task->name}}</option>
                                     @endforeach
                                 </select>
-
-                                <!--                                </div>-->
-                            </div>
-                            <div class="col-md-2">
-                                @la_input($module, 'comments')
-
-                            </div>
-
-                            <div class="col-md-1">
-                                @la_input($module, 'hours')
-                            </div>
-                            <div class="col-md-1">
-                                @la_input($module, 'minutes')
-                            </div>
-                            <div class="col-md-1" style="margin-top: 20px;">
-                                {!! Form::submit( 'Submit', ['class'=>'btn btn-success pull-left']) !!} 
-                            </div>
-
-                        </div>
-                        <div class="hide">
-                            @la_input($module, 'dependency')
-                            @la_input($module, 'dependency_for')
-                            @la_input($module, 'dependent_on')
-                            <div class="form-group">
-                                <label for="lead_id">Lead Name:</label>
-                                <select class="form-control" name="lead_id">
-                                    @foreach($leads as $lead)
-                                    <option value="{{$lead->lead_id}}" data-mail = "{{$lead->lead_email}}">{{$lead->lead_name}}</option>
-                                    @endforeach
+                            </td>
+                            <td>
+                                <input class="form-control" placeholder="Enter Description" name="comments" id="comments" type="text" value="{{$module->row->comments}}" maxlength="250">
+                            </td>
+                            <td>
+                                <select class="form-control" name="hours" id="hours" required>
+                                    @for($i = 0; $i <= 24 ; $i++)
+                                    <option value="{{$i}}"  <?php echo (($i == $module->row->hours) ? 'selected' : ''); ?>>{{$i}}</option>
+                                    @endfor
                                 </select>
-                            </div>
-                            <div class="form-group">
-                                <label for="manager_id">Manager Name:</label>
-                                <select class="form-control" name="manager_id">
-                                    @foreach($managers as $manager)
-                                    <option value="{{$manager->manager_id}}" data-mail = "{{$manager->manager_email}}">{{$manager->manager_name}}</option>
-                                    @endforeach
+                            </td>
+                            <td>
+                                <select class="form-control" name="minutes" id="minutes" required>
+                                    <option value="00"  <?php echo (('00' == $module->row->minutes) ? 'selected' : ''); ?>>00</option>
+                                    <option value="30"  <?php echo (('30' == $module->row->minutes) ? 'selected' : ''); ?>>30</option>
                                 </select>
-                            </div>
-                        </div>
-                    </div>
-                </div>
+                            </td>
+                            <td>
+                                <button class="btn btn-primary add-entry submit-form" data-value=''><i class="fa fa-edit"></i></button>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                
                 <input type="hidden" name="submitor_id" value="<?php echo base64_encode(base64_encode(Auth::user()->context_id)); ?>" />
 
 
@@ -112,7 +109,7 @@
 <script>
 $(function () {
 
-    $("#timesheet-edit-form input[type='submit']").click(function (e) {
+    $("#timesheet-edit-form .submit-form").click(function (e) {
         e.preventDefault();
         if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
             swal("Number of hours for a task cannot exceed more than 24 hrs!");
