@@ -446,7 +446,8 @@ class TimesheetsController extends Controller {
         if ($week != "") {
             $value->whereRaw($week);
         }
-        $values = $value->orderBy('timesheets.date', 'desc');
+        $value->orderBy('timesheets.date', 'desc');
+        $values = $value->orderBy('timesheets.id', 'desc');
 
         $out = Datatables::of($values)->make();
         $data = $out->getData();
