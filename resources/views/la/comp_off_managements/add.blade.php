@@ -66,11 +66,33 @@
 @push('scripts')
 <script>
     $(function () {
-        $('[name="start_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date()).subtract('30', 'days')).maxDate(moment(new Date()));//.daysOfWeekDisabled([1,2,3,4,5]).initialDate('');
+        $('[name="start_date"]').val('');
+        var dates = "{{ Session::get('holiday_list') }}";
+        dates = JSON.parse(dates.replace(/&quot;/g, '\"'));
+
+        var dates_array = lastSatSundays();
+
+        $.each(dates, function (key) {
+            dates_array.push(new Date(key));
+        });
+
+        $('[name="start_date"]').parents('.date').data('DateTimePicker').enabledDates(dates_array).maxDate(moment(new Date()));
+
         $('[name="start_date"]').parents('.date').on('dp.change', function () {
             $('[name="end_date"]').parents('.date').data('DateTimePicker')
                     .date(moment(new Date($('[name="start_date"]').val())));
         });
+
+
+        $('[name="start_date"]').parents('.date').on('dp.show', function () {
+            $('.bootstrap-datetimepicker-widget div.datepicker-days td.day:not(".disabled")').addClass('Highlighted-Selectable');
+            $('.prev, .next').on('click', function () {
+                setTimeout(function () {
+                    $('.bootstrap-datetimepicker-widget div.datepicker-days td.day:not(".disabled")').addClass('Highlighted-Selectable');
+                })
+            });
+        });
+
         $('[name="end_date"]').parents('.date').data('DateTimePicker')
                 .date(moment(new Date($('[name="start_date"]').val())));
     });

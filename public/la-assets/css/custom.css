@@ -143,6 +143,14 @@ div.dropdown-menu tr td{
     border-radius: 50% !important;
 }
 
+.Highlighted-Selectable{
+    background-color : #0138d4a1 !important;
+    color: white !important;
+    border-radius: 60% !important;
+    margin-bottom: 2px;
+    border-color: black;
+}
+
 .withdraw{
     border-color : #e8c8c8;
 }

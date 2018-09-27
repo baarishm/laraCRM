@@ -5,7 +5,7 @@ $('document').ready(function () {
     //date search
     $('#date_search, .date_search').datetimepicker({
         format: 'DD MMM YYYY',
-        minDate: moment('2016-08-29')
+        minDate: moment('2016-08-29'),
     });
 
     //stop keyboard entry
@@ -239,4 +239,29 @@ function filterDatatableData(d) {
     }
     delete d.search.regex;
     return d;
+}
+
+//sat sun from last 30 days
+function lastSatSundays() {
+    var dates_array = [];
+    var d = new Date();
+    var getTot = new Date(d.getFullYear(), d.getMonth() - 1, 0).getDate(); //Get total days in a month
+    if (d.getDate() <= getTot) {
+        for (var i = d.getDate(); i <= getTot; i++) {    //looping through days in month
+            var newDate = new Date(d.getFullYear(), d.getMonth() - 1, i);
+            if (newDate.getDay() == 0 || newDate.getDay() == 6) {   //if Sunday
+                dates_array.push(newDate);
+            }
+        }
+    }
+
+    getTot = d.getDate(); //Get total days in a month
+
+    for (var i = 1; i <= getTot; i++) {    //looping through days in month
+        var newDate = new Date(d.getFullYear(), d.getMonth(), i);
+        if (newDate.getDay() == 0 || newDate.getDay() == 6) {   //if Sunday
+            dates_array.push(newDate);
+        }
+    }
+    return dates_array;
 }
