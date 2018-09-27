@@ -625,7 +625,7 @@ class TimesheetsController extends Controller {
         foreach ($employees_No_timesheet as $defected_employee) {
             if (!in_array($defected_employee['email'], $bade_log)) {
                 $sheet_data[] = [
-                    'Emp_Code' => $defected_employee['emp_code'],
+                    'Emp_Code' => $defected_employee['Emp_Code'],
                     'Date' => date('d M Y', strtotime('-1 days')),
                     'Employee' => $defected_employee['name'],
                     'Project' => '-',
