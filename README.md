@@ -33,3 +33,6 @@ Created by following http://laraadmin.com/docs/1.0/installation
 -->> For Cron jobs : 
 - https://www.sitepoint.com/managing-cronjobs-with-laravel/
 - https://quantizd.com/how-to-use-laravel-task-scheduler-on-windows-10/
+
+
+--> updated vendor folder files LAFormMaker (all fields accessable), routes.php(profile editable by every user), LAHelpers(sidemenu access changed)
