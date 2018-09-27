@@ -48,7 +48,7 @@ class TimesheetEntryTrack extends Command {
                         ->groupBy(['submitor_id', 'date'])->get())->groupBy('submitor_id');
 
         $empArray = [];
-        $bade_log = ['mohit.arora@ganitsoftech.com', 'tarun.chawla@ganitsoft.com', 'neeta.chawla@ganitsoft.com', 'ashok.chand@ganitsoft.com', 'priyanka.kandpal@ganitsoftech.com', 'sachin.mishra@ganitsoftech.com'];
+        $bade_log = config('custom.bade_log');
 
         //foreach user, check if date are full or not means 5 records or not
         foreach ($timesheet as $acha_bacha => $records) {
@@ -111,7 +111,7 @@ class TimesheetEntryTrack extends Command {
                 });
             }
         }
-        Log::info(' - Mail every users weekly timesheet entry record.');
+        Log::info(' - CRON :  Mail every users weekly timesheet entry record.');
     }
 
 }

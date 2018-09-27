@@ -44,7 +44,7 @@ class TimesheetEntryTrackDaily extends Command {
                         ->where('date', '=', date('Y-m-d', strtotime('-1 days')))
                         ->groupBy(['submitor_id', 'date'])->pluck('submitor_id');
 
-        $bade_log = ['mohit.arora@ganitsoftech.com', 'tarun.chawla@ganitsoft.com', 'neeta.chawla@ganitsoft.com', 'ashok.chand@ganitsoft.com', 'priyanka.kandpal@ganitsoftech.com', 'sachin.mishra@ganitsoftech.com'];
+        $bade_log = config('custom.bade_log');
 
         //get records of defaulters and mail that you haven't filled the timesheet for the entire week
 
@@ -71,7 +71,7 @@ class TimesheetEntryTrackDaily extends Command {
                 });
             }
         }
-      Log::info(' - Daily Timesheet Mail sent');
+      Log::info(' - CRON :  Daily Timesheet Mail sent');
     }
 
 }

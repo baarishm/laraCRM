@@ -61,7 +61,7 @@ class CompOffCollapse extends Command {
                 ->where('start_date', '<', date('Y-m-d', strtotime('-30 days')))
                 ->update(['deleted_at' => date('Y-m-d H:i:s')]);
 
-        Log::info(' - Comp offs lapsed successfully!');
+        Log::info(' - CRON : Comp offs lapsed successfully!');
     }
 
 }

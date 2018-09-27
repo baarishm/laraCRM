@@ -54,25 +54,28 @@ class TimesheetEmail extends Command {
                         ->orderBy(DB::raw("STR_TO_DATE(date,'%Y-%m-%d')"), 'desc')
                         ->get()->toArray();
         $existingEmployees = [];
+        $bade_log = config('custom.bade_log');
 
         foreach ($sheet_data as $row) {
             if (!in_array($row['Emp_Code'], $existingEmployees)) {
                 $existingEmployees[] = $row['Emp_Code'];
             }
         }
-        $employees_No_timesheet = Employee::select('name', 'emp_code')->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
+        $employees_No_timesheet = Employee::select('name', 'emp_code', 'email')->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
 
         foreach ($employees_No_timesheet as $ganda_bacha) {
-            $sheet_data[] = [
-                'Emp_Code' => $ganda_bacha['emp_code'],
-                'Date' => date('d M Y', strtotime('-1 days')),
-                'Employee' => $ganda_bacha['name'],
-                'Project' => '-',
-                'Sprint_Name' => '-',
-                'Task' => '-',
-                'Description' => '-',
-                'Effort_Hours' => '-'
-            ];
+            if (!in_array($ganda_bacha['mail'], $bade_log)) {
+                $sheet_data[] = [
+                    'Emp_Code' => $ganda_bacha['emp_code'],
+                    'Date' => date('d M Y', strtotime('-1 days')),
+                    'Employee' => $ganda_bacha['name'],
+                    'Project' => '-',
+                    'Sprint_Name' => '-',
+                    'Task' => '-',
+                    'Description' => '-',
+                    'Effort_Hours' => '-'
+                ];
+            }
         }
 
         $file = \Excel::create('Timesheet_' . date('d-M-Y', strtotime('-1 days')), function($excel) use ($sheet_data) {
@@ -101,7 +104,7 @@ class TimesheetEmail extends Command {
                     ->subject('Timesheet Report for  ' . date('d M Y', strtotime('-1 days')));
         });
 //        unlink(public_path('exports\\' . $attachement['name'] . '.xls'));
-        Log::info(' - Daily Timesheet Report to Ashok Chand sent.');
+        Log::info(' - CRON :  Daily Timesheet Report to Ashok Chand sent.');
         return true;
     }
 

@@ -612,6 +612,7 @@ class TimesheetsController extends Controller {
                         ->orderBy('employees.name', 'asc')
                         ->get()->toArray();
         $existingEmployees = [];
+        $bade_log = config('custom.bade_log');
 
         foreach ($sheet_data as $row) {
             if (!in_array($row['Emp_Code'], $existingEmployees)) {
@@ -622,7 +623,18 @@ class TimesheetsController extends Controller {
         $employees_No_timesheet = Employee::select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('employees.name as Employee')])->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
 
         foreach ($employees_No_timesheet as $defected_employee) {
-            $sheet_data[] = ['Emp_Code' => $defected_employee['Emp_Code'], 'Date' => '', 'Employee' => $defected_employee['Employee'], 'Project' => 'No Record'];
+            if (!in_array($ganda_bacha['mail'], $bade_log)) {
+                $sheet_data[] = [
+                    'Emp_Code' => $ganda_bacha['emp_code'],
+                    'Date' => date('d M Y', strtotime('-1 days')),
+                    'Employee' => $ganda_bacha['name'],
+                    'Project' => '-',
+                    'Sprint_Name' => '-',
+                    'Task' => '-',
+                    'Description' => '-',
+                    'Effort_Hours' => '-'
+                ];
+            }
         }
 
         $file = \Excel::create('Timesheet_' . date('d M Y'), function($excel) use ($sheet_data) {

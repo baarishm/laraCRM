@@ -83,7 +83,7 @@ class LeaveWeekTrack extends Command {
             $m->to($recipients['to'])
                     ->subject('Leave Report for  ' . date('Y-m-d', strtotime('-1 days')));
         });
-        Log::info(' - Mail to HR for leaves approved for the week.');
+        Log::info(' - CRON : Mail to HR for leaves approved for the week.');
     }
 
 }

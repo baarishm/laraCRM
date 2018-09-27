@@ -45,7 +45,7 @@ class LeaveCarryForward extends Command {
             }
         }
         
-        Log::info(' - Leaves Forwarded successfully!');
+        Log::info(' - CRON : Leaves Forwarded successfully!');
     }
 
 }

@@ -95,7 +95,7 @@ class LeaveAdditionCron extends Command {
             }
             Employee::find($employee->id)->update(['total_leaves' => $leave, 'available_leaves' => $leave_avialable]);
         }
-        Log::info(' - Leaves added successfully!');
+        Log::info(' - CRON : Leaves added successfully!');
     }
 
 }
