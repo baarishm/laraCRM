@@ -6,6 +6,7 @@ use Illuminate\Console\Command;
 use App\Models\Employee;
 use DB;
 use Mail;
+use Log;
 
 class LeaveAdditionCron extends Command {
 
@@ -94,7 +95,7 @@ class LeaveAdditionCron extends Command {
             }
             Employee::find($employee->id)->update(['total_leaves' => $leave, 'available_leaves' => $leave_avialable]);
         }
-        $this->info('Leaves added successfully!');
+        Log::info(' - Leaves added successfully!');
     }
 
 }

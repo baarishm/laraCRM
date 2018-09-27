@@ -7,6 +7,7 @@ use App\Models\LeaveMaster;
 use App\Models\Employee;
 use DB;
 use Mail;
+use Log;
 
 class LeaveWeekTrack extends Command {
 
@@ -82,6 +83,7 @@ class LeaveWeekTrack extends Command {
             $m->to($recipients['to'])
                     ->subject('Leave Report for  ' . date('Y-m-d', strtotime('-1 days')));
         });
+        Log::info(' - Mail to HR for leaves approved for the week.');
     }
 
 }

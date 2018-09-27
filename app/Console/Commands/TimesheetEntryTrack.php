@@ -7,6 +7,7 @@ use App\Models\Timesheet;
 use App\Models\Employee;
 use DB;
 use Mail;
+use Log;
 
 class TimesheetEntryTrack extends Command {
 
@@ -110,6 +111,7 @@ class TimesheetEntryTrack extends Command {
                 });
             }
         }
+        Log::info(' - Mail every users weekly timesheet entry record.');
     }
 
 }

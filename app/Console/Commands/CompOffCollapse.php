@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use DB;
 use App\Models\Employee;
+use Log;
 
 class CompOffCollapse extends Command {
 
@@ -44,7 +45,7 @@ class CompOffCollapse extends Command {
                 ->select([DB::raw('SUM((DATEDIFF(end_date,start_date)+1)) as collapsed_days'), 'employee_id'])
                 ->groupBy('employee_id')
                 ->get();
-        
+
         foreach ($get_collapsable_count as $record) {
             if ($record->collapsed_days != '') {
                 $employee = Employee::find($record->employee_id);
@@ -60,7 +61,7 @@ class CompOffCollapse extends Command {
                 ->where('start_date', '<', date('Y-m-d', strtotime('-30 days')))
                 ->update(['deleted_at' => date('Y-m-d H:i:s')]);
 
-        $this->info('Comp offs lapsed successfully!');
+        Log::info(' - Comp offs lapsed successfully!');
     }
 
 }

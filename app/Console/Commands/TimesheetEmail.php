@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use App\Models\Employee;
 use DB;
 use Mail;
+use Log;
 
 class TimesheetEmail extends Command {
 
@@ -23,7 +24,7 @@ class TimesheetEmail extends Command {
      *
      * @var string
      */
-    protected $description = 'Daily Report to Ashok Chand';
+    protected $description = 'Daily Timesheet Report to Ashok Chand';
 
     /**
      * Create a new command instance.
@@ -100,6 +101,7 @@ class TimesheetEmail extends Command {
                     ->subject('Timesheet Report for  ' . date('d M Y', strtotime('-1 days')));
         });
 //        unlink(public_path('exports\\' . $attachement['name'] . '.xls'));
+        Log::info(' - Daily Timesheet Report to Ashok Chand sent.');
         return true;
     }
 

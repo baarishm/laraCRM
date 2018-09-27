@@ -4,6 +4,7 @@ namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
 use App\Models\Employee;
+use Log;
 
 class LeaveCarryForward extends Command {
 
@@ -44,7 +45,7 @@ class LeaveCarryForward extends Command {
             }
         }
         
-        $this->info('Leaves Forwarded successfully!');
+        Log::info(' - Leaves Forwarded successfully!');
     }
 
 }
