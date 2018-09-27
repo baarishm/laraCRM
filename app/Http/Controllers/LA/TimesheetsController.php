@@ -627,7 +627,7 @@ class TimesheetsController extends Controller {
                 $sheet_data[] = [
                     'Emp_Code' => $defected_employee['Emp_Code'],
                     'Date' => date('d M Y', strtotime('-1 days')),
-                    'Employee' => $defected_employee['name'],
+                    'Employee' => $defected_employee['Employee'],
                     'Project' => '-',
                     'Sprint_Name' => '-',
                     'Task' => '-',
