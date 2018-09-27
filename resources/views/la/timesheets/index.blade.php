@@ -109,6 +109,7 @@ $(function () {
                             d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
                             d.teamMember = "{{$teamMember}}";
                             d.week_search = $('div.week-div').attr('data-value');
+                            filterDatatableData(d);
                     }
             },
             language: {

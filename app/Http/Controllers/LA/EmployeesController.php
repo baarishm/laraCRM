@@ -228,7 +228,14 @@ class EmployeesController extends Controller {
             $update_data = $request->all();
             $update_data['date_hire'] = date('Y-m-d', strtotime($request->date_hire));
             $update_data['date_birth'] = date('Y-m-d', strtotime($request->date_birth));
-            $update_data['is_confirmed'] = ($request->is_confirmed) ? 1 : 0;
+            if ((Session::get('role') == 'superAdmin')) {
+                $update_data['is_confirmed'] = ($request->is_confirmed) ? 1 : 0;
+            } else {
+                unset($update_data['is_confirmed']);
+                unset($update_data['emp_code']);
+                unset($update_data['first_approver']);
+                unset($update_data['second_approver']);
+            }
             $update_data['name'] = ucwords($request->name);
             unset($update_data['role']);
             unset($update_data['is_confirmed_hidden']);
@@ -251,9 +258,11 @@ class EmployeesController extends Controller {
             $user->save();
 
             // update user role
-            $user->detachRoles();
-            $role = Role::find($request->role);
-            $user->attachRole($role);
+            if ($request->role != '') {
+                $user->detachRoles();
+                $role = Role::find($request->role);
+                $user->attachRole($role);
+            }
             if (Session::get('role') == 'superAdmin') {
                 return redirect()->route(config('laraadmin.adminRoute') . '.employees.index');
             } else if (Session::get('role') != 'superAdmin' && $id == Auth::user()->context_id) {
@@ -346,7 +355,7 @@ class EmployeesController extends Controller {
         ]);
 
         if ($validator->fails()) {
-            return \Redirect::to(config('laraadmin.adminRoute') . '/employees/' . $id)->withErrors($validator);
+            return \Redirect::to(config('laraadmin.adminRoute') . '/employees/' . $id.'#tab-account-settings')->withErrors($validator);
         }
 
         $employee = Employee::find($id);
@@ -360,7 +369,7 @@ class EmployeesController extends Controller {
         if (env('MAIL_USERNAME') != null && env('MAIL_USERNAME') != "null" && env('MAIL_USERNAME') != "") {
             // Send mail to User his new Password
             Mail::send('emails.send_login_cred_change', ['user' => $user, 'password' => $request->password], function ($m) use ($user) {
-                $m->to($user->email, $user->name)->subject('LaraAdmin - Login Credentials changed');
+                $m->to($user->email, $user->name)->subject('PlusMinus - Login Credentials changed');
             });
         } else {
             Log::info("User change_password: username: " . $user->email . " Password: " . $request->password);

@@ -5,8 +5,8 @@
 </div>
 @if(!isset($no_padding))
 <footer class="main-footer">
-    <div class="pull-right hidden-xs">
-        Powered by <a href="<?php echo config("laraadmin.adminRoute") . "/../users/1"; ?>">Varsha Mittal</a>
+    <div class="pull-right hidden-xs" data-created-by = "Varsha Mittal">
+        Powered by <a href="#">Ganit Softech</a>
     </div>
     <strong>Copyright &copy; 2018
 </footer>

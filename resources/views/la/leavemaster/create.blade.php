@@ -43,11 +43,28 @@ Apply For Leave
                         </div>
                         <div class="form-group col-md-3">
                             <label>Leave Type</label>
-                            <select name="LeaveType" class="form-control" >
+                            <select name="LeaveType" id="LeaveType" class="form-control" >
                                 <?php
                                 if (!empty($leave_types)) {
                                     foreach ($leave_types as $value) {
                                         echo '<option value="' . $value->id . '">' . $value->name . '</option>';
+                                    }
+                                }
+                                ?>
+
+                            </select>
+                        </div>
+                        <div class="form-group col-md-3">
+                            <label>Comp Off Against*</label>
+                            <select name="comp_off_id" id="comp_off" class="form-control" >
+                                <?php
+                                if (!empty($comp_off_list)) {
+                                    foreach ($comp_off_list as $value) {
+                                        $datetime1 = date_create($value->start_date);
+                                        $datetime2 = date_create($value->end_date);
+                                        $interval = date_diff($datetime1, $datetime2);
+                                        $days = $interval->format('%a') + 1;
+                                        echo '<option value="' . $value->id . '" data-days="' . $days . '" data-start = "' . $value->start_date . '">' . date('d M', strtotime($value->start_date)) . ' - ' . date('d M', strtotime($value->end_date)) . '</option>';
                                     }
                                 }
                                 ?>
@@ -72,10 +89,10 @@ Apply For Leave
                         </div>
                         <div class="form-group col-md-3">
                             <label for="Number">Leave Purpose*</label>
-                            <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" placeholder="Reason" maxlength="180"  >   
+                            <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" required placeholder="Reason" maxlength="180"  >   
                         </div>
                         <div class="col-md-3" style="margin-top: 25px;">
-                            <button type="submit" class="btn btn-success" onclick="this.disabled = true; this.value = 'Sending, please wait...'; this.form.submit();">Submit</button>
+                            <button type="submit" class="btn btn-success">Submit</button>
                         </div>
                     </div>
 
@@ -91,20 +108,18 @@ Apply For Leave
 
 
 <script type="text/javascript">
-
-
     $(document).ready(function () {
 
         //get dates from session
         var dates = "{{ Session::get('holiday_list') }}";
         dates = JSON.parse(dates.replace(/&quot;/g, '\"'));
-        
+
         // To calulate difference b/w two dates
         function CalculateDiff(first, last)
         {
             var aDay = 24 * 60 * 60 * 1000,
                     daysDiff = parseInt((last.getTime() - first.getTime()) / aDay, 10) + 1;
-            
+
             if (daysDiff > 0) {
                 for (var i = first.getTime(), lst = last.getTime(); i <= lst; i += aDay) {
                     var d = new Date(i);
@@ -124,7 +139,7 @@ Apply For Leave
         $('#datepicker').datepicker({
             todayHighlight: 'true',
             format: 'd M yyyy',
-            daysOfWeekDisabled: [0,6],
+            daysOfWeekDisabled: [0, 6],
             startDate: '-{{ $before_days }}d',
             endDate: '+{{ $after_days }}d',
             beforeShowDay: function (date) {
@@ -150,8 +165,8 @@ Apply For Leave
             todayHighlight: 'true',
             autoclose: true,
             format: 'd M yyyy',
-            daysOfWeekDisabled: [0,6],
-             startDate: '-{{ $before_days }}d',
+            daysOfWeekDisabled: [0, 6],
+            startDate: '-{{ $before_days }}d',
             endDate: '+{{ $after_days }}d',
             beforeShowDay: function (date) {
                 var date = date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
@@ -167,8 +182,69 @@ Apply For Leave
         }).on('changeDate', function () {
             CalculateDiff(new Date($("#datepicker").datepicker("getDate")), new Date($("#datepickerto").datepicker("getDate")));
         });
-    }
-    );
+
+
+
+
+        $('select').select2();
+
+        //Show/hide comp off list
+        $('#LeaveType').on('change', function () {
+            leaveType(this);
+        });
+
+        leaveType($('#LeaveType'));
+
+        function leaveType(leaveType) {
+            if ($(leaveType).find('option:selected').length > 0) {
+                if ($(leaveType).find('option:selected').html() === 'Comp Off') {
+                    $('#comp_off').attr('required', true).parents('div.col-md-3').show();
+                    datesAgainstCompoff(true, $('#comp_off'));
+                } else {
+                    $('#comp_off').attr('required', false).parents('div.col-md-3').hide();
+                    datesAgainstCompoff(false, '');
+                }
+            } else {
+                datesAgainstCompoff(false, '');
+                $('#comp_off').attr('required', false).parents('div.col-md-3').hide();
+            }
+        }
+
+        //on submit validate fields
+        $('button[type="submit"]').on('click', function (e) {
+            $('div.overlay').removeClass('hide');
+            e.preventDefault();
+            if (($('#LeaveType').find('option:selected').html() === 'Comp Off') && $('#comp_off option:selected').attr('data-days') < $('#NoOfDays').val()) {
+                $('div.overlay').addClass('hide');
+                swal('Smarty, You cannot avail leaves more then days for this comp-off!');
+                return false;
+            } else {
+                if (validateFields($('[required]'))) {
+                    $(this).parents('form').submit();
+                } else {
+                    $('div.overlay').addClass('hide');
+                    swal('Please fill all required fields!');
+                    return false;
+                }
+            }
+        });
+
+        $('#comp_off').on('change', function () {
+            datesAgainstCompoff(this);
+        });
+
+        function datesAgainstCompoff(isCompOff, compOffSelected) {
+            if (isCompOff) {
+                var start_date = new Date($(compOffSelected).find('option:selected').attr('data-start'));
+                var end_date = new Date($(compOffSelected).find('option:selected').attr('data-start'));
+                end_date.setDate(end_date.getDate() + 30);
+            } else {
+                var start_date = '-{{ $before_days }}d';
+                var end_date = '+{{ $after_days }}d';
+                $('#datepicker, #datepickerto').datepicker('setStartDate', start_date).datepicker('setEndDate', end_date);
+            }
+        }
+    });
 
 
 

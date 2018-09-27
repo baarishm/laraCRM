@@ -5,7 +5,7 @@ $('document').ready(function () {
     //date search
     $('#date_search, .date_search').datetimepicker({
         format: 'DD MMM YYYY',
-        minDate: moment('2016-08-29')
+        minDate: moment('2016-08-29'),
     });
 
     //stop keyboard entry
@@ -16,20 +16,6 @@ $('document').ready(function () {
             return false;
         }
     });
-
-    //disable end date
-    if ($('[name="start_date"]').val() == '') {
-        $('[name="end_date"]').attr('disabled', true);
-    }
-    if ($('[name="FromDate"]').val() == '') {
-        $('[name="ToDate"]').attr('disabled', true);
-    }
-    $('[name="FromDate"]').change(function () {
-        $('[name="ToDate"]').attr('disabled', false);
-        if ($('[name="FromDate"]').val() == '') {
-            $('[name="ToDate"]').attr('disabled', true);
-        }
-    })
 
     //date inputs
     if ($('.date').length > 0) {
@@ -48,10 +34,15 @@ $('document').ready(function () {
             $(this).data('DateTimePicker').format('DD MMM YYYY').widgetPositioning({vertical: 'auto'});
 
             //fill in old date or today's date
-            var date = new Date();
             var child_input = $(this).find('input');
+            var date = new Date();
+            if (child_input.attr('name') == 'end_date') {
+                date = '';
+            }
             if (child_input.val() != '') {
                 date = new Date(child_input.val());
+            } else if (child_input.attr('value') != '') {
+                date = new Date(child_input.attr('value'));
             }
             $(this).data('DateTimePicker').date(date).useStrict(true).keepInvalid(true);
 
@@ -73,12 +64,7 @@ $('document').ready(function () {
             if (child_input.attr('name') == 'start_date' || child_input.attr('name') == 'end_date') {
                 $(this).on('dp.change', function (e) {
                     var start_date = $('input[name="start_date"]').val();
-                    if (start_date != '') {
-                        $('[name="end_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date(start_date)));
-                        $('[name="end_date"]').attr('disabled', false);
-                    } else {
-                        $('[name="end_date"]').attr('disabled', true);
-                    }
+                    $('[name="end_date"]').parents('.date').data('DateTimePicker').minDate(moment(new Date(start_date)));
                     if (new Date($('input[name="start_date"]').val()) > new Date($('input[name="end_date"]').val())) {
                         $('input[name="end_date"]').parents('.date').data('DateTimePicker').date(start_date);
                     }
@@ -153,6 +139,20 @@ $('document').ready(function () {
 
     //tooltip
     $('.tooltips').tooltip({'placement': 'bottom'});
+
+    //activate the sidemenu
+    /** add active class and stay opened when selected */
+    var url = window.location;
+
+// for sidebar menu entirely but not cover treeview
+    $('ul.sidebar-menu a').filter(function () {
+        return this.href == url;
+    }).parent().addClass('active');
+
+// for treeview
+    $('ul.treeview-menu a').filter(function () {
+        return this.href == url;
+    }).parentsUntil(".sidebar-menu > .treeview-menu").addClass('active');
 });
 
 
@@ -224,4 +224,44 @@ function binding() {
         }
         $('div.overlay').addClass('hide');
     }, 1200);
+}
+
+function filterDatatableData(d) {
+    for (var i = 0, len = d.columns.length; i < len; i++) {
+        if (!d.columns[i].search.value)
+            delete d.columns[i].search;
+        if (d.columns[i].searchable == '')
+            delete d.columns[i].searchable;
+        if (d.columns[i].orderable == '')
+            delete d.columns[i].orderable;
+        if (d.columns[i].d === d.columns[i].name)
+            delete d.columns[i].name;
+    }
+    delete d.search.regex;
+    return d;
+}
+
+//sat sun from last 30 days
+function lastSatSundays() {
+    var dates_array = [];
+    var d = new Date();
+    var getTot = new Date(d.getFullYear(), d.getMonth() - 1, 0).getDate(); //Get total days in a month
+    if (d.getDate() <= getTot) {
+        for (var i = d.getDate(); i <= getTot; i++) {    //looping through days in month
+            var newDate = new Date(d.getFullYear(), d.getMonth() - 1, i);
+            if (newDate.getDay() == 0 || newDate.getDay() == 6) {   //if Sunday
+                dates_array.push(newDate);
+            }
+        }
+    }
+
+    getTot = d.getDate(); //Get total days in a month
+
+    for (var i = 1; i <= getTot; i++) {    //looping through days in month
+        var newDate = new Date(d.getFullYear(), d.getMonth(), i);
+        if (newDate.getDay() == 0 || newDate.getDay() == 6) {   //if Sunday
+            dates_array.push(newDate);
+        }
+    }
+    return dates_array;
 }

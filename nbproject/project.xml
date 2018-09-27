@@ -7,6 +7,9 @@
         </data>
         <spellchecker-wordlist xmlns="http://www.netbeans.org/ns/spellchecker-wordlist/1">
             <word>endif</word>
+            <word>endphp</word>
+            <word>php</word>
+            <word>pushscript</word>
         </spellchecker-wordlist>
     </configuration>
 </project>

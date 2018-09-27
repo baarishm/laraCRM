@@ -17,26 +17,29 @@ Leave Dashboard
     </div><br />
 
     @endif
-    <div class="row">
+    <div class="row" style="background: #dee2f7;">
 
 
-        <div class="form-group col-md-3">
-            <label for="Name">Total Leaves : {{$empdetail->total_leaves}}</label>
-
-        </div>
-
-        <div class="form-group col-md-3">
-            <label for="Name">Availed leave : {{number_format($empdetail->total_leaves)-($empdetail->available_leaves)}}</label>
-
+        <div class="col-md-2 mt5">
+            <label for="Name" style="color:blue;">Total Leaves : {{$empdetail->total_leaves}}</label>
 
         </div>
-        <div class="form-group col-md-3">
-            <label for="Name">Available Leaves : {{$empdetail->available_leaves}}</label>
+
+        <div class="col-md-2 mt5">
+            <label for="Name" style="color:red;">Availed leave : {{$empdetail->availed_leaves}}</label>
 
 
         </div>
-        <div class="form-group col-md-3" style="margin-bottom: 15px">
-            <a  href="leaves/create" class="btn btn-info">Apply Leave</a>
+        <div class="col-md-2 mt5">
+            <label for="Name" style="color:green;">Available Leaves : {{$empdetail->available_leaves}}</label>
+
+        </div>
+        <div class="col-md-2 mt5">
+            <label for="Name" style="color:green;">Available Comp-Offs : {{$empdetail->comp_off}}</label>
+
+        </div>
+        <div class="col-md-3">
+            <a  href="leaves/create" class="btn btn-info pull-right">Apply Leave</a>
 
 
         </div>
@@ -79,12 +82,12 @@ Leave Dashboard
                     <td>Pending </td>
                     @endif
 
-                    @if(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && !$leaveMasterRow->withdraw  && (date('Y-m-d') <= $leaveMasterRow->FromDate)) 
+                    @if(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && !$leaveMasterRow->withdraw  && (date('Y-m-d') <= $leaveMasterRow->FromDate) && (isset($leaveMasterRow->comp_off_deleted) && ($leaveMasterRow->comp_off_deleted == null || $leaveMasterRow->comp_off_deleted == ''))) 
                     <td>
                         <a href="" class="btn btn-default withdraw" data-removed="{{$leaveMasterRow->id}}">Withdraw</a>
                     </td>
-                    @elseif(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->withdraw && (date('Y-m-d') >= $leaveMasterRow->FromDate)) 
-                    <td>
+                    @elseif(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->withdraw) 
+                    <td style="text-align: center">
                         Withdrawn
                     </td>
                     @elseif((($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL') && date('Y-m-d', strtotime('-'.$before_days.' days')) <= $leaveMasterRow->FromDate))

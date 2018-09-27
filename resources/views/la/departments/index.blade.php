@@ -88,7 +88,13 @@ $(function () {
     $("#example1").DataTable({
     processing: true,
             serverSide: true,
-            ajax: "{{ url(config('laraadmin.adminRoute') . '/department_dt_ajax') }}",
+            ajax:  {
+            url: "{{ url(config('laraadmin.adminRoute') . '/department_dt_ajax') }}",
+                    type : 'get',
+                    data:function(d){
+                    filterDatatableData(d);
+                    }
+            },
             language: {
             lengthMenu: "_MENU_",
                     search: "_INPUT_",
@@ -97,7 +103,8 @@ $(function () {
             @if ($show_actions)
     columnDefs: [ { orderable: false, targets: [ - 1] }],
             @endif
-    });
+    }
+    );
 
     $("#department-add-form").validate({
 

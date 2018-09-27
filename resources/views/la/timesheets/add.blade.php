@@ -29,7 +29,7 @@
                             <th style="width:15%;">Project<span class="required">*</span></th>
                             <th style="width:15%;">Sprint<span class="required">*</span></th>
                             <th style="width:15%;">Task<span class="required">*</span></th>
-                            <th>Description</th>
+                            <th><span class="required hide description">*</span>Description</th>
                             <th>Hours<span class="required">*</span></th>
                             <th>Minutes<span class="required">*</span></th>
                             <th>Action</th>
@@ -55,7 +55,7 @@
                             <td>
                                 <select class="form-control" name="projects_sprint_id" id="projects_sprint_id" required>
                                     @foreach($projects_sprints as $projects_sprint)
-                                        <option data-name="{{$projects_sprint->name}}" value="{{$projects_sprint->id}}">{{$projects_sprint->name}}</option>
+                                    <option data-name="{{$projects_sprint->name}}" value="{{$projects_sprint->id}}">{{$projects_sprint->name}}</option>
                                     @endforeach
                                 </select>
                             </td>
@@ -67,11 +67,11 @@
                                 </select>
                             </td>
                             <td>
-                                <input class="form-control" placeholder="Enter Description" name="comments" id="comments" type="text" value="">
+                                <input class="form-control" placeholder="Enter Description" name="comments" id="comments" type="text" value="" maxlength="250">
                             </td>
                             <td>
                                 <select class="form-control" name="hours" id="hours" required>
-                                    @for($i = 1; $i <= 24 ; $i++)
+                                    @for($i = 0; $i <= 24 ; $i++)
                                     <option value="{{$i}}">{{$i}}</option>
                                     @endfor
                                 </select>
@@ -209,7 +209,7 @@ $(document).ready(function () {
         }).success(function (project_list) {
             $('select#project_id option').remove();
             $(project_list).each(function (key, item) {
-                $('select#project_id').append('<option data-name="'+item.name+'" value="' + item.id + '">' + item.name + '</option>');
+                $('select#project_id').append('<option data-name="' + item.name + '" value="' + item.id + '">' + item.name + '</option>');
             });
         });
         $('#project_id').trigger('change');
@@ -225,11 +225,22 @@ $(document).ready(function () {
         }).success(function (sprint_list) {
             $('select#projects_sprint_id option').remove();
             $(sprint_list).each(function (key, item) {
-                $('select#projects_sprint_id').append('<option data-name="'+item.name+'" value="' + item.id + '">' + item.name + '</option>');
+                $('select#projects_sprint_id').append('<option data-name="' + item.name + '" value="' + item.id + '">' + item.name + '</option>');
             });
         });
+        $('#task_id').trigger('change');
     });
-    
+
+    $('#task_id').on('change', function () {
+        if (($('#project_id').find('option:selected').html() == "Internal") || ($('#project_id').find('option:selected').html() == "Pipeline") || ($('#task_id').find('option:selected').html() == "Research and Development")) {
+            $('[name="comments"]').attr('required', true);
+            $('.description').removeClass('hide');
+        } else {
+            $('[name="comments"]').attr('required', false);
+            $('.description').addClass('hide');
+        }
+    });
+
     $('#project_id').trigger('change');
 
 });
