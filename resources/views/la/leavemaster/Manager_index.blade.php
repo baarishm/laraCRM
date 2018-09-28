@@ -67,7 +67,7 @@ Team Leave Dashboard
                 <tr>
                     <td>{{$leaveMasterRow->emp_code}}</td>
                     <td>{{$leaveMasterRow->Employees_name}}</td>
-                    <td>{{date('d M Y',strtotime($leaveMasterRow->updated_at))}}</td>
+                    <td>{{date('d M Y',strtotime($leaveMasterRow->created_at))}}</td>
                     <td>{{$FromDate}}</td>
                     <td>{{$ToDate}}</td>
                     <td>{{$leaveMasterRow->NoOfDays}}</td>
