@@ -350,6 +350,14 @@ class Resource_AllocationsController extends Controller {
         }
         if ($employee != "") {
             $value->whereRaw($employee);
+        } else {
+            $emp_list = '';
+            if (Session::get('role') != 'employee') {
+                $emp_list = Employee::getEngineersUnder(ucfirst(Session::get('role')));
+            }
+            if ($emp_list != '') {
+                $value->whereRaw(' resource_allocations.employee_id IN (' . $emp_list . ')');
+            }
         }
         $values = $value;
         $out = Datatables::of($values)->make();
