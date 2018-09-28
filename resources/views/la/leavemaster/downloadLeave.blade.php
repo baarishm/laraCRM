@@ -38,10 +38,10 @@
 
 </style>
 @section("contentheader_title")
-<a href="{{ url(config('laraadmin.adminRoute') . '/timesheets') }}">Timesheets</a> :
+<a href="{{ url(config('laraadmin.adminRoute') . '/leaves') }}">Leaves</a> :
 @endsection
-@section("section", "Timesheets")
-@section("section_url", url(config('laraadmin.adminRoute') . '/timesheets'))
+@section("section", "Leaves")
+@section("section_url", url(config('laraadmin.adminRoute') . '/leaves'))
 
 
 @section("main-content")
@@ -84,7 +84,7 @@
                 </div>
                 <div class="row">
                     <div class="form-group col-md-6">
-                        <button class="btn btn-success" name="export" id="export">Export Timesheet</button>
+                        <button class="btn btn-success" name="export" id="export">Export Leave Records</button>
                     </div>
                 </div>
             </div>
@@ -99,7 +99,7 @@ $(function () {
     $(document).on('click', '#export', function () {
         $.ajax({
             method: "POST",
-            url: "{{ url('/exportTimeSheetToAuthority') }}",
+            url: "{{ url('/exportLeaveToAuthority') }}",
             data: {start_date: $('input[name="start_date"]').val(), end_date: $('input[name="end_date"]').val(), _token: "{{ csrf_token()}}"}
         }).success(function (response) {
             var a = document.createElement("a");

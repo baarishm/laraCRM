@@ -292,6 +292,87 @@ class LeaveMasterController extends Controller {
         }
     }
 
+    /**
+     * Export timesheet function
+     */
+    public function downloadLeave() {
+        return view('la.leavemaster.downloadLeave');
+    }
+
+    //Mailers 
+
+    /**
+     * Send mail to Lead and manager in case of leave apply and update
+     * @param boolean $updated Record updated or inserted
+     * @param array $data contains 
+     * start_date
+     * end_date
+     * days
+     * reason
+     * leaveType
+     * comp_off_date
+     */
+    private function sendLeaveMail($updated = false, $data) {
+        $lead_manager = DB::table('employees')
+                ->select([DB::raw('employee_lead.email as lead_email'), DB::raw('employee_manager.email as manager_email'), DB::raw('employees.name as name')])
+                ->whereRaw('employees.id = ' . Auth::user()->context_id)
+                ->leftJoin('employees as employee_lead', 'employee_lead.id', '=', 'employees.first_approver')
+                ->leftJoin('employees as employee_manager', 'employee_manager.id', '=', 'employees.second_approver')
+                ->first();
+
+        $html = "Greetings of the day!<br><br>"
+                . "<b>" . ucwords($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>";
+
+        if ($data['leaveType'] == 'Comp Off') {
+            $html .= " against Comp off date " . date('d M Y', strtotime($data['comp_off_date']));
+        }
+
+        $html .= "."
+                . "<br><br>"
+                . "Regards,<br>"
+                . "Team Ganit PlusMinus";
+
+        $recipients['to'] = [$lead_manager->lead_email, $lead_manager->manager_email];
+        $recipients['cc'] = ['ashok.chand@ganitsoft.com'];
+
+        Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
+            $m->to($recipients['to'])
+                    ->cc($recipients['cc']) //need to add this recipent in mailgun
+                    ->subject('Leave Application of ' . Auth::user()->name . '!');
+        });
+        return true;
+    }
+
+    /**
+     * Send mail to Employee in case of approval or rejection
+     * @param array $data contains 
+     * approved 0/1
+     * action_by
+     * comment
+     * action_date
+     * mail_to
+     * mail_to_name
+     * leave_from
+     * leave_to
+     */
+    private function sendApprovalMail($data) {
+        $html = "Greetings of the day " . $data['mail_to_name'] . "!<br><br>"
+                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b> with a reason stated as <b>" . (($data['comment'] != '') ? $data['comment'] : 'No reason given') . "</b> on " . $data['action_date'] . "."
+                . "<br><br>"
+                . "Regards,<br>"
+                . "Team Ganit PlusMinus";
+
+        $recipients['to'] = [$data['mail_to']];
+
+        Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
+            $m->to($recipients['to'])
+                    ->subject('Approval of your Leave Application');
+        });
+        return true;
+    }
+
+    //Ajax Functions
+
     public function ajaxApproveLeave() {
 
         $update_field = ['Approved' => $_GET['approved'], 'actionReason' => $_GET['actionReason']];
@@ -362,76 +443,6 @@ class LeaveMasterController extends Controller {
 
         Notification::create($notification_data);
         return "true";
-    }
-
-    /**
-     * Send mail to Lead and manager in case of leave apply and update
-     * @param boolean $updated Record updated or inserted
-     * @param array $data contains 
-     * start_date
-     * end_date
-     * days
-     * reason
-     * leaveType
-     * comp_off_date
-     */
-    private function sendLeaveMail($updated = false, $data) {
-        $lead_manager = DB::table('employees')
-                ->select([DB::raw('employee_lead.email as lead_email'), DB::raw('employee_manager.email as manager_email'), DB::raw('employees.name as name')])
-                ->whereRaw('employees.id = ' . Auth::user()->context_id)
-                ->leftJoin('employees as employee_lead', 'employee_lead.id', '=', 'employees.first_approver')
-                ->leftJoin('employees as employee_manager', 'employee_manager.id', '=', 'employees.second_approver')
-                ->first();
-
-        $html = "Greetings of the day!<br><br>"
-                . "<b>" . ucwords($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>";
-
-        if ($data['leaveType'] == 'Comp Off') {
-            $html .= " against Comp off date " . date('d M Y', strtotime($data['comp_off_date']));
-        }
-
-        $html .= "."
-                . "<br><br>"
-                . "Regards,<br>"
-                . "Team Ganit PlusMinus";
-
-        $recipients['to'] = [$lead_manager->lead_email, $lead_manager->manager_email];
-        $recipients['cc'] = ['ashok.chand@ganitsoft.com'];
-
-        Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
-            $m->to($recipients['to'])
-                    ->cc($recipients['cc']) //need to add this recipent in mailgun
-                    ->subject('Leave Application of ' . Auth::user()->name . '!');
-        });
-        return true;
-    }
-
-    /**
-     * Send mail to Employee in case of approval or rejection
-     * @param array $data contains 
-     * approved 0/1
-     * action_by
-     * comment
-     * action_date
-     * mail_to
-     * mail_to_name
-     * leave_from
-     * leave_to
-     */
-    private function sendApprovalMail($data) {
-        $html = "Greetings of the day " . $data['mail_to_name'] . "!<br><br>"
-                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b> with a reason stated as <b>" . (($data['comment'] != '') ? $data['comment'] : 'No reason given') . "</b> on " . $data['action_date'] . "."
-                . "<br><br>"
-                . "Regards,<br>"
-                . "Team Ganit PlusMinus";
-
-        $recipients['to'] = [$data['mail_to']];
-
-        Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
-            $m->to($recipients['to'])
-                    ->subject('Approval of your Leave Application');
-        });
-        return true;
     }
 
     public function ajaxDateSearch(Request $request) {
@@ -578,6 +589,40 @@ class LeaveMasterController extends Controller {
         } else {
             return 'Being Smart, ahaan! Already Withdrawn!';
         }
+    }
+
+    /** Excel Export of leave
+     * @param request $request Inputs from ajax
+     * @return file a file downloaded
+     * @author Varsha Mittal <varsha.mittal@ganitsoftec.com>
+     */
+    public function ajaxExportLeaveToAuthority(Request $request) {
+        //code to export excel
+        $sheet_data =  LeaveMaster::
+                        select([DB::raw('employees.emp_code AS Emp_Code'), DB::raw('employees.name AS Name'), DB::raw('DATE_FORMAT(leavemaster.created_at, "%d %b %Y") as Applied_Date'), DB::raw('DATE_FORMAT(leavemaster.FromDate, "%d %b %Y") as From_Date'), DB::raw('DATE_FORMAT(leavemaster.ToDate, "%d %b %Y") as To_Date'), 'leavemaster.NoOfDays', DB::raw('leave_types.name AS Leave_Type'), DB::raw('leavemaster.LeaveReason AS Purpose'), DB::raw('if(leavemaster.Approved IS NOT NULL, (IF(leavemaster.Approved = 1, "Approved","Rejected")),"Pending") as Approved')])
+                        ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
+                        ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
+                        ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+                        ->whereBetween('FromDate', [date('Y-m-d', strtotime($request->start_date)), date('Y-m-d', strtotime($request->end_date))])
+                        ->whereBetween('ToDate', [date('Y-m-d', strtotime($request->start_date)), date('Y-m-d', strtotime($request->end_date))])
+                        ->orderBy('FromDate', 'desc')
+                        ->orderBy('employees.emp_code', 'asc')
+                        ->get()->toArray();
+        
+        $file = \Excel::create('Leave_Reocords_' . date('d M Y'), function($excel) use ($sheet_data) {
+                    $excel->sheet('Leave Record', function($sheet) use ($sheet_data) {
+                        $sheet->setBorder();
+                        $sheet->fromArray($sheet_data);
+                    });
+                });
+
+        $file = $file->string('xlsx');
+        $response = array(
+            'name' => 'Leave_Reocords_' . date('d M Y'), //no extention needed
+            'file' => "data:application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;base64," . base64_encode($file) //mime type of used format
+        );
+
+        return response()->json($response);
     }
 
 }
