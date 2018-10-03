@@ -49,7 +49,7 @@ function init(removeable_options) {
 
     //datepicker conditions
     $('.date').data("DateTimePicker").minDate(moment().subtract(7, 'days').millisecond(0).second(0).minute(0).hour(0));
-    $('.date').data("DateTimePicker").daysOfWeekDisabled([0]);
+//    $('.date').data("DateTimePicker").daysOfWeekDisabled([0]);
 //    $('.date').data("DateTimePicker").maxDate(moment());
 
 }
