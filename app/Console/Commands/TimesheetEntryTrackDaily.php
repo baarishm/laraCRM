@@ -5,6 +5,7 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Timesheet;
 use App\Models\Employee;
+use App\Models\Holidays_List;
 use DB;
 use Mail;
 use Log;
@@ -40,38 +41,39 @@ class TimesheetEntryTrackDaily extends Command {
      * @return mixed
      */
     public function handle() {
-        $timesheet_users = DB::table('timesheets')
-                        ->where('date', '=', date('Y-m-d', strtotime('-1 days')))
-                        ->groupBy(['submitor_id', 'date'])->pluck('submitor_id');
+        if (Holidays_List::where('day', date('Y-m-d', strtotime('-1 days')))->count() > 0) {
+            $timesheet_users = DB::table('timesheets')
+                            ->where('date', '=', date('Y-m-d', strtotime('-1 days')))
+                            ->groupBy(['submitor_id', 'date'])->pluck('submitor_id');
 
-        $bade_log = config('custom.bade_log');
+            $bade_log = config('custom.bade_log');
 
-        //get records of defaulters and mail that you haven't filled the timesheet for the entire week
+            //get records of defaulters and mail that you haven't filled the timesheet for the entire week
 
-        $detail = Employee::select('name', 'id', 'email')->whereNull('deleted_at');
+            $detail = Employee::select('name', 'id', 'email')->whereNull('deleted_at');
 
-        if (!empty($timesheet_users)) {
-            $detail->whereNotIn('id', $timesheet_users);
-        }
-        $employees_No_timesheet = $detail->get()->toArray();
-
-        foreach ($employees_No_timesheet as $ganda_bacha) {
-            $mail_body = 'Dear ' . $ganda_bacha['name'] . ','
-                    . '<br/><br/>'
-                    . 'You have not filled timesheet for <b>'.date('d M Y', strtotime('-1 days')).'</b>. Kindly fill the same ASAP.'
-                    . "<br><br>"
-                    . "Regards,<br>"
-                    . "Team Ganit PlusMinus";
-            $recipients['to'] = [$ganda_bacha['email']];
-
-            if (!in_array($ganda_bacha['email'], $bade_log)) {
-                Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
-                    $m->to($recipients['to'])
-                            ->subject('Timesheets Not Found');
-                });
+            if (!empty($timesheet_users)) {
+                $detail->whereNotIn('id', $timesheet_users);
             }
-        }
-      Log::info(' - CRON :  Daily Timesheet Mail sent');
-    }
+            $employees_No_timesheet = $detail->get()->toArray();
 
+            foreach ($employees_No_timesheet as $ganda_bacha) {
+                $mail_body = 'Dear ' . $ganda_bacha['name'] . ','
+                        . '<br/><br/>'
+                        . 'You have not filled timesheet for <b>' . date('d M Y', strtotime('-1 days')) . '</b>. Kindly fill the same ASAP.'
+                        . "<br><br>"
+                        . "Regards,<br>"
+                        . "Team Ganit PlusMinus";
+                $recipients['to'] = [$ganda_bacha['email']];
+
+                if (!in_array($ganda_bacha['email'], $bade_log)) {
+                    Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
+                        $m->to($recipients['to'])
+                                ->subject('Timesheets Not Found');
+                    });
+                }
+            }
+            Log::info(' - CRON :  Daily Timesheet Mail sent');
+        }
+    }
 }
