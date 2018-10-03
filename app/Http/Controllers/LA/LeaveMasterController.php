@@ -30,7 +30,7 @@ class LeaveMasterController extends Controller {
 
         if (date('Y-m-d', strtotime($leaveMaster->FromDate)) >= date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days'))) {
 
-            $manager = Employee::getManagerDetails(Auth::user()->context_id);
+            $manager = Employee::getLeadDetails(Auth::user()->context_id); //taking lead as manager here
 
             $data = [
                 'before_days' => LAConfigs::getByKey('before_days_leave'),
@@ -126,7 +126,7 @@ class LeaveMasterController extends Controller {
                 ->whereNull('deleted_at')
                 ->get();
 
-        $manager = Employee::getManagerDetails(Auth::user()->context_id);
+        $manager = Employee::getLeadDetails(Auth::user()->context_id); //taking lead as manager here
 
         $comp_off = Comp_Off_Management::select(['start_date', 'end_date', 'id'])->where('employee_id', Auth::user()->context_id)->where('availed', '0')->where('approved', '1')->whereNull('deleted_at')->get();
 
@@ -598,7 +598,7 @@ class LeaveMasterController extends Controller {
      */
     public function ajaxExportLeaveToAuthority(Request $request) {
         //code to export excel
-        $sheet_data =  LeaveMaster::
+        $sheet_data = LeaveMaster::
                         select([DB::raw('employees.emp_code AS Emp_Code'), DB::raw('employees.name AS Name'), DB::raw('DATE_FORMAT(leavemaster.created_at, "%d %b %Y") as Applied_Date'), DB::raw('DATE_FORMAT(leavemaster.FromDate, "%d %b %Y") as From_Date'), DB::raw('DATE_FORMAT(leavemaster.ToDate, "%d %b %Y") as To_Date'), 'leavemaster.NoOfDays', DB::raw('leave_types.name AS Leave_Type'), DB::raw('leavemaster.LeaveReason AS Purpose'), DB::raw('if(leavemaster.Approved IS NOT NULL, (IF(leavemaster.Approved = 1, "Approved","Rejected")),"Pending") as Leave_Status')])
                         ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                         ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
@@ -608,7 +608,7 @@ class LeaveMasterController extends Controller {
                         ->orderBy('FromDate', 'desc')
                         ->orderBy('employees.emp_code', 'asc')
                         ->get()->toArray();
-        
+
         $file = \Excel::create('Leave_Reocords_' . date('d M Y'), function($excel) use ($sheet_data) {
                     $excel->sheet('Leave Record', function($sheet) use ($sheet_data) {
                         $sheet->setBorder();
