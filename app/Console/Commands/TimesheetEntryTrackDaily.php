@@ -64,11 +64,16 @@ class TimesheetEntryTrackDaily extends Command {
                         . "<br><br>"
                         . "Regards,<br>"
                         . "Team Ganit PlusMinus";
+
+                $manager = Employee::getLeadDetails(Auth::user()->context_id); //taking lead as manager here
+
                 $recipients['to'] = [$ganda_bacha['email']];
+                $recipients['cc'] = [$manager->email];
 
                 if (!in_array($ganda_bacha['email'], $bade_log)) {
                     Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
                         $m->to($recipients['to'])
+                                ->cc($recipients['cc'])
                                 ->subject('Timesheets Not Found');
                     });
                 }
@@ -76,4 +81,5 @@ class TimesheetEntryTrackDaily extends Command {
             Log::info(' - CRON :  Daily Timesheet Mail sent');
         }
     }
+
 }
