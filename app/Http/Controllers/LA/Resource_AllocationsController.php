@@ -155,7 +155,7 @@ class Resource_AllocationsController extends Controller {
 
             $row = Resource_Allocation::where('project_id', $request->project_id)
                     ->where('employee_id', $request->employee_id)
-                    ->whereRaw('((start_date < "' . $insert_data['start_date'] . '" and end_date > "' . $insert_data['start_date'] . '") OR (start_date < "' . $insert_data['end_date'] . '" and end_date > "' . $insert_data['end_date'] . '"))')
+                    ->whereRaw('(((start_date < "' . $insert_data['start_date'] . '" and end_date > "' . $insert_data['start_date'] . '") OR (start_date < "' . $insert_data['end_date'] . '" and end_date > "' . $insert_data['end_date'] . '")) OR (start_date >= "' . $insert_data['start_date'] . '" and end_date <= "' . $insert_data['end_date'] . '"))')
                     ->withTrashed()
                     ->get();
 
@@ -283,7 +283,7 @@ class Resource_AllocationsController extends Controller {
 
             $row = Resource_Allocation::where('project_id', $request->project_id)
                     ->where('employee_id', $request->employee_id)
-                    ->whereRaw('((start_date <= "' . $update_data['start_date'] . '" and end_date >= "' . $update_data['start_date'] . '") OR (start_date <= "' . $update_data['end_date'] . '" and end_date >= "' . $update_data['end_date'] . '"))')
+                    ->whereRaw('(((start_date <= "' . $update_data['start_date'] . '" and end_date >= "' . $update_data['start_date'] . '") OR (start_date <= "' . $update_data['end_date'] . '" and end_date >= "' . $update_data['end_date'] . '")) OR (start_date >= "' . $update_data['start_date'] . '" and end_date <= "' . $update_data['end_date'] . '"))')
                     ->withTrashed()
                     ->pluck('id');
 
