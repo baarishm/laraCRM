@@ -79,7 +79,7 @@
 @push('scripts')
 <script>
     $(function () {
-        $('[name="allocation"]').attr('min', '5').attr('max', '100');
+        $('[name="allocation"]').attr('min', '0').attr('max', '100');
         $('.date').data("DateTimePicker").minDate(moment('2016-08-29'));
         $('select').select2();
     });

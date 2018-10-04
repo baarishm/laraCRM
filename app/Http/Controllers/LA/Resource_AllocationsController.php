@@ -283,12 +283,12 @@ class Resource_AllocationsController extends Controller {
 
             $row = Resource_Allocation::where('project_id', $request->project_id)
                     ->where('employee_id', $request->employee_id)
-                    ->whereRaw('(start_date < "' . $update_data['start_date'] . '" and end_date > "' . $update_data['start_date'] . '") OR (start_date < "' . $update_data['end_date'] . '" and end_date > "' . $update_data['end_date'] . '")')
+                    ->whereRaw('((start_date <= "' . $update_data['start_date'] . '" and end_date >= "' . $update_data['start_date'] . '") OR (start_date <= "' . $update_data['end_date'] . '" and end_date >= "' . $update_data['end_date'] . '"))')
                     ->withTrashed()
                     ->pluck('id');
 
             $Exists = $row->count();
-
+            
             if ($Exists > 0 && !in_array($id, $row->toArray())) {
                 return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.edit', ['id' => $id])->withErrors(['message' => 'User already allocated for same dates.'])->withInput();
             }
