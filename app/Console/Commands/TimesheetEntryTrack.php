@@ -118,7 +118,7 @@ class TimesheetEntryTrack extends Command {
                     . "Team Ganit PlusMinus";
             $recipients['to'] = [$ganda_bacha['email']];
 
-            if (!in_array($records[0]->email, $bade_log)) {
+            if (!in_array($ganda_bacha['email'], $bade_log)) {
                 Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
                     $m->to($recipients['to'])
                             ->subject('Timesheets Not Found');
