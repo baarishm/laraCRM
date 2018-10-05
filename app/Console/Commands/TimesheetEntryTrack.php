@@ -78,7 +78,7 @@ class TimesheetEntryTrack extends Command {
             if (count($records) < count($dates)) {
                 // unset value which is present in array and keep for which timesheet not sent
                 foreach ($records as $record) {
-                    if (in_array($record->date, $dates)) {
+                    if (array_key_exists($record->date, $dates)) {
                         unset($dates[$record->date]);
                     }
                 }
