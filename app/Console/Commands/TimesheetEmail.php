@@ -64,7 +64,7 @@ class TimesheetEmail extends Command {
         $employees_No_timesheet = Employee::select('name', 'emp_code', 'email')->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
 
         foreach ($employees_No_timesheet as $ganda_bacha) {
-            if (!in_array($ganda_bacha['mail'], $bade_log)) {
+            if (!in_array($ganda_bacha['email'], $bade_log)) {
                 $sheet_data[] = [
                     'Emp_Code' => $ganda_bacha['emp_code'],
                     'Date' => date('d M Y', strtotime('-1 days')),
