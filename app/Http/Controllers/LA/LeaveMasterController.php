@@ -230,11 +230,11 @@ class LeaveMasterController extends Controller {
         $end_date = $request->get('ToDate');
 
         $FromDate = date_create($request->get('FromDate'));
-        $format = date_format($FromDate, "Y-m-d");
-        $leaveMaster->FromDate = ($format);
+        $FromDate = date_format($FromDate, "Y-m-d");
+        $leaveMaster->FromDate = ($FromDate);
         $ToDate = date_create($request->get('ToDate'));
-        $format = date_format($ToDate, "Y-m-d");
-        $leaveMaster->ToDate = ($format);
+        $ToDate = date_format($ToDate, "Y-m-d");
+        $leaveMaster->ToDate = ($ToDate);
         $leaveMaster->NoOfDays = $days = $request->get('NoOfDays');
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
@@ -252,7 +252,6 @@ class LeaveMasterController extends Controller {
                 ->pluck('id');
 
         $Exists = $row->count();
-
         if ($Exists > 0 && !in_array($id, $row->toArray())) {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'You have already applied leave for these dates.');
         } else if (($FromDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($FromDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d')))))) {
