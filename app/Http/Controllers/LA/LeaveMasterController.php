@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\LA;
 
+use Collective\Html\FormFacade as Form;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\LeaveMaster;
@@ -588,6 +589,111 @@ class LeaveMasterController extends Controller {
         } else {
             return 'Being Smart, ahaan! Already Withdrawn!';
         }
+    }
+
+    public function ajaxDatatable(Request $request) {
+        $role = Employee::employeeRole();
+        $where = 'employees.deleted_at IS NULL ';
+
+//        if ((($request->start_date != null && $request->start_date != "") && ($request->end_date == '' || $request->end_date == null)) || (($request->end_date != null && $request->end_date != "") && ($request->start_date == null && $request->start_date == ""))) {
+//            $date = ($request->end_date != '' && $request->end_date == null) ? $request->end_date : $request->start_date;
+//            $where .= ' and (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($date)) . '")';
+//        } else if (($request->end_date != null && $request->end_date != "") && ($request->start_date != null && $request->start_date != "")) {
+//            $where .= ' and (leavemaster.FromDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '")';
+//        }
+
+        if ($role == "manager" || $role == "lead") {
+            $engineersUnder = Employee::getEngineersUnder(ucwords($role));
+            if ($engineersUnder != '') {
+                $where .= ' and leavemaster.EmpId IN (' . $engineersUnder . ')';
+            } else {
+                $where .= ' and leavemaster.EmpId = ""';
+            }
+        }
+        $leaveMaster = DB::table('leavemaster')
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.emp_code AS emp_code')])
+                ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
+                ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+                ->whereRaw($where)
+                ->get();
+
+        $html = "";
+        $array = [];
+
+        if (!empty($leaveMaster)) {
+            //      if(true) {
+            foreach ($leaveMaster as $leaveMasterRow) {
+                $record = [];
+                $record[] = date('d M Y', strtotime($leaveMasterRow->FromDate));
+                $record[] = date('d M Y', strtotime($leaveMasterRow->ToDate));
+
+//                $record[] = $leaveMasterRow->FromDate;
+//                $record[] = $leaveMasterRow->ToDate;
+                $record[] = $leaveMasterRow->NoOfDays;
+                $record[] = $leaveMasterRow->LeaveType;
+                $record[] = $leaveMasterRow->LeaveReason;
+
+                if ($leaveMasterRow->Approved == '1') {
+                    $record[] = 'Approved';
+                } else if ($leaveMasterRow->Approved == '0') {
+
+                    $record[] = 'Reject';
+                } else {
+                    $record[] = 'Pending';
+                }
+
+                if ($role == 'lead') {
+
+                    if ($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') {
+
+
+                        $record[] = 'Action Taken';
+                    } else {
+
+
+                        $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);">Approve</button>';
+                        $record[] = '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                    }
+                } else if ($role == 'manager') {
+                    if (($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->ApprovedBy != '' && $leaveMasterRow->RejectedBy != '') {
+                        $record[] = 'Action Taken';
+                    } else if ($leaveMasterRow->Approved == '1' && $leaveMasterRow->RejectedBy == '') {
+                        $record[] = '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                    } else if ($leaveMasterRow->Approved == '0' && $leaveMasterRow->ApprovedBy == '') {
+                        $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);">Approve</button>';
+                    } else {
+                        $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);">Approve</button>';
+                        $record[] = '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                    }
+                } else if ($role == 'engineer') {
+
+                    if (($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && !$leaveMasterRow->withdraw && (date('Y-m-d') <= $leaveMasterRow->FromDate) && (isset($leaveMasterRow->comp_off_deleted) && ($leaveMasterRow->comp_off_deleted == null || $leaveMasterRow->comp_off_deleted == ''))) {
+                        $record[] = '<a href="" class="btn btn-default withdraw" data-removed="{{$leaveMasterRow->id}}">Withdraw</a>';
+                    } else if (($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->withdraw) {
+                        $record[] = ' Withdrawn';
+                    } else if ((($leaveMasterRow->Approved == '' || $leaveMasterRow->Approved == 'NULL') && date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . 'days')) <= $leaveMasterRow->FromDate)) {
+                        $output = '';
+
+                        $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/leaves/' . $leaveMasterRow->id . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
+
+                        $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.leaves.destroy', $leaveMasterRow->id], 'method' => 'delete', 'style' => 'display:inline', 'class' => 'delete']);
+                        $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
+                        $output .= Form::close();
+                        $record[] = (string) $output;
+                    } else {
+                        $record[] = '';
+                    }
+                }
+
+                $array[] = $record;
+            }
+        } else {
+            $record[] = 'No Record Found!';
+        }
+
+//        return json_encode(['html' => $html, 'day' => $request->date]);
+
+        return ['data' => $array];
     }
 
     /** Excel Export of leave
