@@ -5,8 +5,10 @@ namespace App\Console\Commands;
 use Illuminate\Console\Command;
 use App\Models\Timesheet;
 use App\Models\Employee;
+use App\Models\Holidays_List;
 use DB;
 use Mail;
+use Log;
 
 class TimesheetEntryTrack extends Command {
 
@@ -40,29 +42,43 @@ class TimesheetEntryTrack extends Command {
      */
     public function handle() {
         $timesheet = collect(DB::table('employees')
-                        ->select([DB::raw('count(timesheets.id) as day_entry'), DB::raw('DATE_FORMAT(date, "%d %b %Y") as date'), 'submitor_id', 'name', 'email'])
+                        ->select([DB::raw('count(timesheets.id) as day_entry'), 'date', 'submitor_id', 'name', 'email'])
                         ->where('date', '>=', date('Y-m-d', strtotime('last monday')))
                         ->where('date', '<=', date('Y-m-d', strtotime('friday')))
                         ->leftJoin('timesheets', 'timesheets.submitor_id', '=', 'employees.id')
                         ->groupBy(['submitor_id', 'date'])->get())->groupBy('submitor_id');
 
         $empArray = [];
+        $bade_log = config('custom.bade_log');
 
+        $allDays = [
+            date('Y-m-d', strtotime('last monday')) => date('d M Y', strtotime('last monday')),
+            date('Y-m-d', strtotime('last tuesday')) => date('d M Y', strtotime('last tuesday')),
+            date('Y-m-d', strtotime('last wednesday')) => date('d M Y', strtotime('last wednesday')),
+            date('Y-m-d', strtotime('last thursday')) => date('d M Y', strtotime('last thursday')),
+            date('Y-m-d', strtotime('friday')) => date('d M Y', strtotime('friday')),
+        ];
+
+        $get_holiday_in_week = Holidays_List::
+                where('day', '>=', date('Y-m-d', strtotime('last monday')))
+                ->where('day', '<=', date('Y-m-d', strtotime('friday')))
+                ->pluck('day');
+
+        if (count($get_holiday_in_week) != 0) {
+            foreach ($get_holiday_in_week as $holiday) {
+                unset($allDays[$holiday]);
+            }
+        }
+        
         //foreach user, check if date are full or not means 5 records or not
         foreach ($timesheet as $acha_bacha => $records) {
             //for this, make an array of dates in week in every loop
-            $dates = [
-                date('d M Y', strtotime('last monday')) => date('d M Y', strtotime('last monday')),
-                date('d M Y', strtotime('last tuesday')) => date('d M Y', strtotime('last tuesday')),
-                date('d M Y', strtotime('last wednesday')) => date('d M Y', strtotime('last wednesday')),
-                date('d M Y', strtotime('last thursday')) => date('d M Y', strtotime('last thursday')),
-                date('d M Y', strtotime('friday')) => date('d M Y', strtotime('friday')),
-            ];
+            $dates = $allDays;
             //if not then loop through date records, collect dates which are not present and mail
-            if (count($records) < 5) {
+            if (count($records) < count($dates)) {
                 // unset value which is present in array and keep for which timesheet not sent
                 foreach ($records as $record) {
-                    if (in_array($record->date, $dates)) {
+                    if (array_key_exists($record->date, $dates)) {
                         unset($dates[$record->date]);
                     }
                 }
@@ -73,11 +89,12 @@ class TimesheetEntryTrack extends Command {
                         . "Regards,<br>"
                         . "Team Ganit PlusMinus";
                 $recipients['to'] = [$records[0]->email];
-                
-                Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
-                    $m->to($recipients['to'])
-                            ->subject('Timesheets Not Found');
-                });
+                if (!in_array($records[0]->email, $bade_log)) {
+                    Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
+                        $m->to($recipients['to'])
+                                ->subject('Timesheets Not Found');
+                    });
+                }
             }
             //also keep emp_ids in array which have filled atleast one timesheet
             $empArray[] = $acha_bacha;
@@ -101,11 +118,14 @@ class TimesheetEntryTrack extends Command {
                     . "Team Ganit PlusMinus";
             $recipients['to'] = [$ganda_bacha['email']];
 
-            Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
-                $m->to($recipients['to'])
-                        ->subject('Timesheets Not Found');
-            });
+            if (!in_array($ganda_bacha['email'], $bade_log)) {
+                Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
+                    $m->to($recipients['to'])
+                            ->subject('Timesheets Not Found');
+                });
+            }
         }
+        Log::info(' - CRON :  Mail every users weekly timesheet entry record.');
     }
 
 }

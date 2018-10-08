@@ -1,3 +1,6 @@
+<?php
+//echo "<pre>"; print_r(Notification::unreadNotifications()); die;
+?>
 <!-- Navbar Right Menu -->
 <div class="navbar-custom-menu">
     <a href=""><i class="fa fa-refresh pull-left" aria-hidden="true"></i></a>
@@ -39,25 +42,7 @@
         @if(LAConfigs::getByKey('show_notifications'))
         <!-- Notifications Menu -->
         <li class="dropdown notifications-menu">
-            <!-- Menu toggle button -->
-            <a href="#" class="dropdown-toggle" data-toggle="dropdown">
-                <i class="fa fa-bell-o"></i>
-                <span class="label label-warning">10</span>
-            </a>
-            <ul class="dropdown-menu">
-                <li class="header">You have 10 notifications</li>
-                <li>
-                    <!-- Inner Menu: contains the notifications -->
-                    <ul class="menu">
-                        <li><!-- start notification -->
-                            <a href="#">
-                                <i class="fa fa-users text-aqua"></i> 5 new members joined today
-                            </a>
-                        </li><!-- end notification -->
-                    </ul>
-                </li>
-                <li class="footer"><a href="#">View all</a></li>
-            </ul>
+            @include('la.layouts.partials.notification')
         </li>
         @endif
         @if(LAConfigs::getByKey('show_tasks'))
@@ -66,9 +51,9 @@
             <!-- Menu Toggle Button -->
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <i class="fa fa-flag-o"></i>
-                <span class="label label-danger">9</span>
+                <span cla                                                         ss="label label-danger">9</span>
             </a>
-            <ul class="dropdown-menu">
+            <ul class="dropd                                                                         own-menu">
                 <li class="header">You have 9 tasks</li>
                 <li>
                     <!-- Inner menu: contains the tasks -->
@@ -125,9 +110,9 @@
                 <!-- Menu Body -->
                 @role("SUPER_ADMIN")
                 <li class="user-body">
-<!--                    <div class="col-xs-6 text-center mb10">
-                        <a href="{{ url(config('laraadmin.adminRoute') . '/lacodeeditor') }}"><i class="fa fa-code"></i> <span>Editor</span></a>
-                    </div>-->
+                    <!--                    <div class="col-xs-6 text-center mb10">
+                                            <a href="{{ url(config('laraadmin.adminRoute') . '/lacodeeditor') }}"><i class="fa fa-code"></i> <span>Editor</span></a>
+                                        </div>-->
                     <div class="col-xs-6 text-center mb10">
                         <a href="{{ url(config('laraadmin.adminRoute') . '/modules') }}"><i class="fa fa-cubes"></i> <span>Modules</span></a>
                     </div>
@@ -137,9 +122,9 @@
                     <div class="col-xs-6 text-center mb10">
                         <a href="{{ url(config('laraadmin.adminRoute') . '/la_configs') }}"><i class="fa fa-cogs"></i> <span>Configure</span></a>
                     </div>
-<!--                    <div class="col-xs-6 text-center">
-                        <a href="{{ url(config('laraadmin.adminRoute') . '/backups') }}"><i class="fa fa-hdd-o"></i> <span>Backups</span></a>
-                    </div>-->
+                    <!--                    <div class="col-xs-6 text-center">
+                                            <a href="{{ url(config('laraadmin.adminRoute') . '/backups') }}"><i class="fa fa-hdd-o"></i> <span>Backups</span></a>
+                                        </div>-->
                 </li>
                 @endrole
                 <!-- Menu Footer-->
@@ -163,3 +148,22 @@
         @endif
     </ul>
 </div>
+
+@push('scripts')
+<script>
+    $(document).ready(function () {
+        $('.notification-open').on('click', function () {
+            if (parseInt($('#unread-count').html()) != 0) {
+                $.ajax({
+                    url: "{{url('markReadNotification/10')}}",
+                    success: function (notification_html) {
+                        setTimeout(function () {
+                            $('.notifications-menu').html(notification_html);
+                        }, 10000);
+                    }
+                });
+            }
+        });
+    });
+</script>
+@endpush

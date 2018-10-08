@@ -7,6 +7,7 @@ use App\Models\LeaveMaster;
 use App\Models\Employee;
 use DB;
 use Mail;
+use Log;
 
 class LeaveWeekTrack extends Command {
 
@@ -57,8 +58,8 @@ class LeaveWeekTrack extends Command {
                         ->leftJoin('employees as approver', 'leavemaster.ApprovedBy', '=', 'approver.id')
                         ->get()->toArray();
 
-        $file = \Excel::create('Timesheet_' . date('d-M-Y', strtotime('-1 days')), function($excel) use ($sheet_data) {
-                    $excel->sheet('Timesheets', function($sheet) use ($sheet_data) {
+        $file = \Excel::create('Leaves_Details_' . date('d-M-Y', strtotime('-1 days')), function($excel) use ($sheet_data) {
+                    $excel->sheet('Leaves_Details', function($sheet) use ($sheet_data) {
                         $sheet->fromArray($sheet_data);
                     });
                 });
@@ -80,8 +81,9 @@ class LeaveWeekTrack extends Command {
         Mail::send('emails.test', ['html' => $html], function ($m) use($recipients, $attachement) {
             $m->attach($attachement['file'], ['as' => $attachement['name'], 'mime' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
             $m->to($recipients['to'])
-                    ->subject('Timesheet Report for  ' . date('Y-m-d', strtotime('-1 days')));
+                    ->subject('Leave Report for  ' . date('Y-m-d', strtotime('-1 days')));
         });
+        Log::info(' - CRON : Mail to HR for leaves approved for the week.');
     }
 
 }

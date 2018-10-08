@@ -114,9 +114,9 @@ $(function () {
                     type : 'post',
                     data:function(d){
                     d._token = "{{ csrf_token()}}";
+                    filterDatatableData(d);
                     }
             },
-//            ajax: "{{ url(config('laraadmin.adminRoute') . '/employee_dt_ajax') }}",
             language: {
             lengthMenu: "_MENU_",
                     search: "_INPUT_",

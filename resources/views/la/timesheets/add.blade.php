@@ -214,6 +214,11 @@ $(document).ready(function () {
         });
         $('#project_id').trigger('change');
     });
+    
+    $('.date').on('dp.show', function () {
+        $('.date').data('DateTimePicker').date(moment());
+        $(this).trigger('dp.change');
+    });
 
     //to get sprint against project selected
     $('#project_id').on('change', function () {

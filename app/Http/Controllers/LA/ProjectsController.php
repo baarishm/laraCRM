@@ -279,10 +279,15 @@ class ProjectsController extends Controller {
      * @return array list of projects
      */
     public function ajaxProjectList(Request $request) {
-        $projects = Project::where('start_date', '<=', $request->date)
-                ->where('end_date', '>=', $request->date)
+        $projects = Project::whereNull('projects.deleted_at')
+                ->select([DB::raw('projects.id as id'), DB::raw('projects.name as name')])
+                ->whereNull('resource_allocations.deleted_at')
+                ->leftJoin('resource_allocations', 'resource_allocations.project_id', '=', 'projects.id')
+                ->where('resource_allocations.start_date', '<=', date('Y-m-d'))
+                ->where('resource_allocations.end_date', '>=', date('Y-m-d'))
+                ->where('resource_allocations.employee_id', Auth::user()->context_id)
                 ->get();
-        
+
         return $projects;
     }
 

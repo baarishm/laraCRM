@@ -18,6 +18,7 @@ use Collective\Html\FormFacade as Form;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Lead;
+use App\Models\Manager;
 use App\Models\Employee;
 
 class LeadsController extends Controller {
@@ -91,13 +92,21 @@ class LeadsController extends Controller {
             }
 
             $row = Lead::where('employee_id', $request->employee_id)
-                    ->withTrashed()
                     ->get();
 
             $Exists = $row->count();
 
             if ($Exists > 0) {
                 return redirect()->route(config('laraadmin.adminRoute') . '.leads.create')->withErrors(['message' => 'Lead already exists. Please check or contact Admin to revoke it.']);
+            }
+            
+            $row = Manager::where('employee_id', $request->employee_id)
+                    ->get();
+
+            $Exists = $row->count();
+
+            if ($Exists > 0) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.leads.create')->withErrors(['message' => 'Selected person is already a Manager. Please change the role and retry.']);
             }
 
             $insert_id = Module::insert("Leads", $request);
@@ -185,7 +194,6 @@ class LeadsController extends Controller {
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
-                ;
             }
 
             $row = Lead::where('employee_id', $request->employee_id)
@@ -198,6 +206,15 @@ class LeadsController extends Controller {
                 return redirect()->route(config('laraadmin.adminRoute') . '.leads.edit', ['id' => $id])->withErrors(['message' => 'Lead already exists. Please check or contact Admin to revoke it.']);
             }
 
+            $row = Manager::where('employee_id', $request->employee_id)
+                    ->get();
+
+            $Exists = $row->count();
+
+            if ($Exists > 0) {
+                return redirect()->route(config('laraadmin.adminRoute') . '.leads.edit')->withErrors(['message' => 'Selected person is already a Manager. Please change the role and retry.']);
+            }
+            
             $insert_id = Module::updateRow("Leads", $request, $id);
             Employee::updateRole('LEAD', $request->employee_id);
 

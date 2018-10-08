@@ -20,6 +20,7 @@ use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Resource_Allocation;
 use App\Models\Employee;
 use App\Models\Project;
+use Session;
 
 class Resource_AllocationsController extends Controller {
 
@@ -53,7 +54,7 @@ class Resource_AllocationsController extends Controller {
                 ->whereNull('projects.deleted_at')
                 ->get();
 
-        $role = Employee::employeeRole();
+        $role = Session::get('role');
         $where = '';
         if ($role == 'manager') {
             $people_under_manager = Employee::getEngineersUnder('Manager');
@@ -95,9 +96,20 @@ class Resource_AllocationsController extends Controller {
      */
     public function create() {
         $module = Module::get('Resource_Allocations');
-        if (Module::hasAccess("Resource_Allocations", "create")) {
+        if (Module::hasAccess("Resource_Allocations", "create") && (Session::get('role') != 'employee')) {
+            $emp_list = '';
+            if (Session::get('role') != 'employee') {
+                $emp_list = Employee::getEngineersUnder(ucfirst(Session::get('role')));
+            }
+            if ($emp_list != '') {
+                $employees = Employee::whereRaw('id IN (' . $emp_list . ')')->get();
+            } else {
+                $employees = Employee::get();
+            }
             return view('la.resource_allocations.add', [
-                'module' => $module
+                'module' => $module,
+                'employees' => $employees,
+                'projects' => Project::get()
             ]);
         } else {
             return redirect(config('laraadmin.adminRoute') . "/");
@@ -111,7 +123,7 @@ class Resource_AllocationsController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request) {
-        if (Module::hasAccess("Resource_Allocations", "create")) {
+        if (Module::hasAccess("Resource_Allocations", "create") && (Session::get('role') != 'employee')) {
 
             $rules = Module::validateRules("Resource_Allocations", $request);
 
@@ -174,7 +186,6 @@ class Resource_AllocationsController extends Controller {
             if (isset($resource_allocation->id)) {
                 $module = Module::get('Resource_Allocations');
                 $module->row = $resource_allocation;
-
                 return view('la.resource_allocations.show', [
                             'module' => $module,
                             'view_col' => $this->view_col,
@@ -199,21 +210,32 @@ class Resource_AllocationsController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function edit($id) {
-        if (Module::hasAccess("Resource_Allocations", "edit")) {
+        if (Module::hasAccess("Resource_Allocations", "edit") && (Session::get('role') != 'employee')) {
             $resource_allocation = Resource_Allocation::find($id);
             if (isset($resource_allocation->id)) {
                 $module = Module::get('Resource_Allocations');
 
                 $module->row = $resource_allocation;
+                $emp_list = '';
+                if (Session::get('role') != 'employee') {
+                    $emp_list = Employee::getEngineersUnder(ucfirst(Session::get('role')));
+                }
+                if ($emp_list != '') {
+                    $employees = Employee::whereRaw('id IN (' . $emp_list . ')')->get();
+                } else {
+                    $employees = Employee::get();
+                }
 
                 return view('la.resource_allocations.edit', [
                             'module' => $module,
                             'view_col' => $this->view_col,
+                            'employees' => $employees,
+                            'projects' => Project::get(),
                         ])->with('resource_allocation', $resource_allocation);
             } else {
                 return view('errors.404', [
                     'record_id' => $id,
-                    'record_name' => ucwords("resource_allocation"),
+                    'record_name' => ucwords("resource_allocation")
                 ]);
             }
         } else {
@@ -229,7 +251,7 @@ class Resource_AllocationsController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id) {
-        if (Module::hasAccess("Resource_Allocations", "edit")) {
+        if (Module::hasAccess("Resource_Allocations", "edit") && (Session::get('role') != 'employee')) {
 
             $rules = Module::validateRules("Resource_Allocations", $request, true);
 
@@ -261,12 +283,12 @@ class Resource_AllocationsController extends Controller {
 
             $row = Resource_Allocation::where('project_id', $request->project_id)
                     ->where('employee_id', $request->employee_id)
-                    ->whereRaw('(start_date < "' . $update_data['start_date'] . '" and end_date > "' . $update_data['start_date'] . '") OR (start_date < "' . $update_data['end_date'] . '" and end_date > "' . $update_data['end_date'] . '")')
+                    ->whereRaw('((start_date <= "' . $update_data['start_date'] . '" and end_date >= "' . $update_data['start_date'] . '") OR (start_date <= "' . $update_data['end_date'] . '" and end_date >= "' . $update_data['end_date'] . '"))')
                     ->withTrashed()
                     ->pluck('id');
 
             $Exists = $row->count();
-
+            
             if ($Exists > 0 && !in_array($id, $row->toArray())) {
                 return redirect()->route(config('laraadmin.adminRoute') . '.resource_allocations.edit', ['id' => $id])->withErrors(['message' => 'User already allocated for same dates.'])->withInput();
             }
@@ -286,7 +308,7 @@ class Resource_AllocationsController extends Controller {
      * @return \Illuminate\Http\Response
      */
     public function destroy($id) {
-        if (Module::hasAccess("Resource_Allocations", "delete")) {
+        if (Module::hasAccess("Resource_Allocations", "delete") && (Session::get('role') != 'employee')) {
             Resource_Allocation::find($id)->forceDelete();
 
             // Redirecting to index() method
@@ -328,6 +350,14 @@ class Resource_AllocationsController extends Controller {
         }
         if ($employee != "") {
             $value->whereRaw($employee);
+        } else {
+            $emp_list = '';
+            if (Session::get('role') != 'employee') {
+                $emp_list = Employee::getEngineersUnder(ucfirst(Session::get('role')));
+            }
+            if ($emp_list != '') {
+                $value->whereRaw(' resource_allocations.employee_id IN (' . $emp_list . ')');
+            }
         }
         $values = $value;
         $out = Datatables::of($values)->make();
