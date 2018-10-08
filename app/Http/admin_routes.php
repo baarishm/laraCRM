@@ -111,6 +111,7 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::post(config('laraadmin.adminRoute') . '/datesearch', 'LA\LeaveMasterController@ajaxDateSearch');
 	Route::get(config('laraadmin.adminRoute') . '/leave/teamMember', 'LA\LeaveMasterController@teamMemberIndex');
 	Route::post(config('laraadmin.adminRoute') . '/leave/withdraw', 'LA\LeaveMasterController@ajaxWithdraw');
+        Route::get(config('laraadmin.adminRoute') . '/leave/Datatable', 'LA\LeaveMasterController@ajaxDatatable');
         
                 
 	/* ================== Sidebar_Menu_Leaves_ViewData ================== */
@@ -152,4 +153,6 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL']], 
 	Route::get(config('laraadmin.adminRoute') . '/comp_off_management_dt_ajax/{teamMember}', 'LA\Comp_Off_ManagementsController@dtajax');
 	Route::get(config('laraadmin.adminRoute') .'/comp_off_management/teamMemberCompOff', 'LA\Comp_Off_ManagementsController@teamMemberList');
 	Route::get('/approveCompOff', 'LA\Comp_Off_ManagementsController@ajaxApproveCompOff');
+        
+      
 });
