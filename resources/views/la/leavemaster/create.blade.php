@@ -109,7 +109,8 @@ Apply For Leave
 
 <script type="text/javascript">
     $(document).ready(function () {
-
+        var emp_detail = "{{ Session::get('employee_details') }}";
+        emp_detail = JSON.parse(emp_detail.replace(/&quot;/g, '\"'));
         //get dates from session
         var dates = "{{ Session::get('holiday_list') }}";
         dates = JSON.parse(dates.replace(/&quot;/g, '\"'));
@@ -129,6 +130,10 @@ Apply For Leave
                         daysDiff--;
                     }
                 }
+            }
+
+            if (daysDiff == 0) {
+                daysDiff = 1;
             }
 
             $("#NoOfDays").val(daysDiff);
@@ -197,12 +202,18 @@ Apply For Leave
 
         function leaveType(leaveType) {
             if ($(leaveType).find('option:selected').length > 0) {
-                if ($(leaveType).find('option:selected').html() === 'Comp Off') {
+                var leave_type_id = $(leaveType).find('option:selected').val();
+                //in case of comp off
+                if (leave_type_id === '7') {
                     $('#comp_off').attr('required', true).parents('div.col-md-3').show();
                     datesAgainstCompoff(true, $('#comp_off'));
+                } else if (leave_type_id == 8) { //in case of birthday
+                    var birthday = new Date(emp_detail.date_birth).toShortFormat();
+                    $('#datepicker, #datepickerto').datepicker('setStartDate', birthday).datepicker('setEndDate', birthday).datepicker('setDate', birthday);
+                    $('#comp_off').attr('required', false).parents('div.col-md-3').hide();
                 } else {
                     $('#comp_off').attr('required', false).parents('div.col-md-3').hide();
-                    datesAgainstCompoff(false, '');
+                    datesAgainstCompoff(false, ''); //to set start and end dates for selection
                 }
             } else {
                 datesAgainstCompoff(false, '');
@@ -241,8 +252,8 @@ Apply For Leave
             } else {
                 var start_date = '-{{ $before_days }}d';
                 var end_date = '+{{ $after_days }}d';
-                $('#datepicker, #datepickerto').datepicker('setStartDate', start_date).datepicker('setEndDate', end_date);
             }
+            $('#datepicker, #datepickerto').datepicker('setStartDate', start_date).datepicker('setEndDate', end_date).datepicker('setDate', '');
         }
     });
 
