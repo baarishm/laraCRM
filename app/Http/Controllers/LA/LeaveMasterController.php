@@ -72,6 +72,7 @@ class LeaveMasterController extends Controller {
                 ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
                 ->whereRaw($where)
+                ->orderBy('leavemaster.created_at', 'desc')
                 ->get();
 
         return view('la.leavemaster.' . $view, [
@@ -171,10 +172,10 @@ class LeaveMasterController extends Controller {
         $leaveMaster->ToDate = ($ToDate);
         $leaveMaster->NoOfDays = $days = $request->get('NoOfDays');
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
-        $leaveMaster->LeaveType = $request->get('LeaveType');
+        $leaveMaster->LeaveType = $leaveTypeId = $request->get('LeaveType');
         $leaveType = Leave_Type::find($leaveMaster->LeaveType);
         $comp_off_date = '';
-        if ($leaveType->name == 'Comp Off' && $request->get('comp_off_id') != '') {
+        if (($leaveMaster->LeaveType == 4) && $request->get('comp_off_id') != '') {
             $leaveMaster->comp_off_id = $request->get('comp_off_id');
             $comp_off_date = Comp_Off_Management::find($request->get('comp_off_id'))->start_date;
         }
@@ -195,7 +196,7 @@ class LeaveMasterController extends Controller {
 
         if ($leaveMaster->save()) {
             //send mail
-            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveType->name, 'comp_off_date' => $comp_off_date]);
+            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveTypeId, 'comp_off_date' => $comp_off_date]);
 
             //send notification
             $emp_detail = Employee::find(Auth::user()->context_id);
@@ -241,7 +242,7 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveType = $request->get('LeaveType');
         $leaveType = Leave_Type::find($leaveMaster->LeaveType);
         $comp_off_date = '';
-        if ($leaveType->name == 'Comp Off' && $request->get('comp_off_id') != '') {
+        if (($leaveMaster->LeaveType == 4) && $request->get('comp_off_id') != '') {
             $leaveMaster->comp_off_id = $request->get('comp_off_id');
             $comp_off_date = Comp_Off_Management::find($request->get('comp_off_id'))->start_date;
         }
@@ -260,7 +261,7 @@ class LeaveMasterController extends Controller {
         }
         if ($leaveMaster->save()) {
             //send mail
-            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveType->name, 'comp_off_date' => $comp_off_date]);
+            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => ($leaveMaster->LeaveType), 'comp_off_date' => $comp_off_date]);
 
             //send notification
             $emp_detail = Employee::find(Auth::user()->context_id);
@@ -323,7 +324,7 @@ class LeaveMasterController extends Controller {
         $html = "Greetings of the day!<br><br>"
                 . "<b>" . ucwords($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>";
 
-        if ($data['leaveType'] == 'Comp Off') {
+        if ($data['leaveType'] == 4) {
             $html .= " against Comp off date " . date('d M Y', strtotime($data['comp_off_date']));
         }
 
@@ -387,7 +388,7 @@ class LeaveMasterController extends Controller {
         $leaveType = Leave_Type::find($leavemaster->LeaveType);
         $employee = Employee::find($leavemaster->EmpId);
         if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
-            if ($leaveType->name == 'Comp Off') {//compoff
+            if ($leavemaster->LeaveType == 4) {//compoff
                 $comp_off = $employee->comp_off - $_GET['days'];
                 $available_leaves = $employee->available_leaves;
                 $availed_leaves = $employee->availed_leaves;
@@ -398,7 +399,7 @@ class LeaveMasterController extends Controller {
                 $availed_leaves = $employee->availed_leaves + $_GET['days'];
             }
         } else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
-            if ($leaveType->name == 'Comp Off') {//compoff
+            if ($leavemaster->LeaveType == 4) {//compoff
                 $comp_off = $employee->comp_off + $_GET['days'];
                 $available_leaves = $employee->available_leaves;
                 $availed_leaves = $employee->availed_leaves;
@@ -453,7 +454,7 @@ class LeaveMasterController extends Controller {
             $date = ($request->end_date != '' && $request->end_date == null) ? $request->end_date : $request->start_date;
             $where .= ' and (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($date)) . '")';
         } else if (($request->end_date != null && $request->end_date != "") && ($request->start_date != null && $request->start_date != "")) {
-            $where .= ' and (leavemaster.FromDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '")';
+            $where .= ' and ((leavemaster.FromDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.ToDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '"))';
         }
 
         if ($role == "manager" || $role == "lead") {
@@ -532,7 +533,6 @@ class LeaveMasterController extends Controller {
                     }
                 }
 
-
                 $html .= ' </td>
                 </tr>';
             }
@@ -551,12 +551,12 @@ class LeaveMasterController extends Controller {
         if ($leaveRecord->withdraw != 1) {
             LeaveMaster::where('id', $request->id)->update(['withdraw' => 1]);
             if ($leaveRecord->approved == 1) {
-                $employee = Employee::find($leavemaster->EmpId);
+                $employee = Employee::find($leaveRecord->EmpId);
                 $leaveType = Leave_Type::find($leaveRecord->LeaveType);
                 $comp_off = $employee->comp_off;
                 $available_leaves = $employee->available_leaves;
                 $availed_leaves = $employee->availed_leaves;
-                if ($leaveType['name'] == 'Comp Off') {//compoff
+                if ($leaveRecord->LeaveType == 4) {//compoff
                     $comp_off_record = Comp_Off_Management::find($leaveRecord->comp_off_id);
                     if ($comp_off_record->deleted_at == '' || $comp_off_record->deleted_at == null) {
                         $comp_off = $employee->comp_off + $leaveRecord->NoOfDays;
@@ -703,13 +703,20 @@ class LeaveMasterController extends Controller {
      */
     public function ajaxExportLeaveToAuthority(Request $request) {
         //code to export excel
+        $where = '';
+        if ((($request->start_date != null && $request->start_date != "") && ($request->end_date == '' || $request->end_date == null)) || (($request->end_date != null && $request->end_date != "") && ($request->start_date == null && $request->start_date == ""))) {
+            $date = ($request->end_date != '' && $request->end_date == null) ? $request->end_date : $request->start_date;
+            $where .= ' (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($date)) . '")';
+        } else if (($request->end_date != null && $request->end_date != "") && ($request->start_date != null && $request->start_date != "")) {
+             $where .= ' ((leavemaster.FromDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.ToDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '"))';
+        }
+
         $sheet_data = LeaveMaster::
-                        select([DB::raw('employees.emp_code AS Emp_Code'), DB::raw('employees.name AS Name'), DB::raw('DATE_FORMAT(leavemaster.created_at, "%d %b %Y") as Applied_Date'), DB::raw('DATE_FORMAT(leavemaster.FromDate, "%d %b %Y") as From_Date'), DB::raw('DATE_FORMAT(leavemaster.ToDate, "%d %b %Y") as To_Date'), 'leavemaster.NoOfDays', DB::raw('leave_types.name AS Leave_Type'), DB::raw('leavemaster.LeaveReason AS Purpose'), DB::raw('if(leavemaster.Approved IS NOT NULL, (IF(leavemaster.Approved = 1, "Approved","Rejected")),"Pending") as Leave_Status')])
+                        select([DB::raw('employees.emp_code AS Emp_Code'), DB::raw('employees.name AS Name'), DB::raw('DATE_FORMAT(leavemaster.created_at, "%d %b %Y") as Applied_Date'), DB::raw('DATE_FORMAT(leavemaster.FromDate, "%d %b %Y") as From_Date'), DB::raw('DATE_FORMAT(leavemaster.ToDate, "%d %b %Y") as To_Date'), 'leavemaster.NoOfDays', DB::raw('leave_types.name AS Leave_Type'), DB::raw('DATE_FORMAT(comp_off_managements.start_date, "%d %b %Y") as Comp_Off_Against'), DB::raw('leavemaster.LeaveReason AS Purpose'), DB::raw('if(leavemaster.Approved IS NOT NULL, (IF(leavemaster.Approved = 1, "Approved","Rejected")),"Pending") as Leave_Status')])
                         ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                         ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                         ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
-                        ->whereBetween('FromDate', [date('Y-m-d', strtotime($request->start_date)), date('Y-m-d', strtotime($request->end_date))])
-                        ->whereBetween('ToDate', [date('Y-m-d', strtotime($request->start_date)), date('Y-m-d', strtotime($request->end_date))])
+                        ->whereRaw($where)
                         ->orderBy('FromDate', 'desc')
                         ->orderBy('employees.emp_code', 'asc')
                         ->get()->toArray();

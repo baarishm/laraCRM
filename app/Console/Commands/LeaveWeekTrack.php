@@ -56,6 +56,7 @@ class LeaveWeekTrack extends Command {
                         ->where('Approved', '1')
                         ->leftJoin('employees', 'leavemaster.EmpId', '=', 'employees.id')
                         ->leftJoin('employees as approver', 'leavemaster.ApprovedBy', '=', 'approver.id')
+                        ->orderBy('leavemaster.created_at', 'desc')
                         ->get()->toArray();
 
         $file = \Excel::create('Leaves_Details_' . date('d-M-Y', strtotime('-1 days')), function($excel) use ($sheet_data) {
@@ -76,7 +77,7 @@ class LeaveWeekTrack extends Command {
                 . "<br><br>"
                 . "Regards,<br>"
                 . "Team Ganit PlusMinus";
-        $recipients['to'] = ['priyanka.kandpal@ganitsoftech.com', 'ashok.chand@ganitsoft.com'];  
+        $recipients['to'] = ['priyanka.kandpal@ganitsoftech.com', 'ashok.chand@ganitsoft.com'];
 
         Mail::send('emails.test', ['html' => $html], function ($m) use($recipients, $attachement) {
             $m->attach($attachement['file'], ['as' => $attachement['name'], 'mime' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet']);
