@@ -601,7 +601,7 @@ class LeaveMasterController extends Controller {
 //        } else if (($request->end_date != null && $request->end_date != "") && ($request->start_date != null && $request->start_date != "")) {
 //            $where .= ' and (leavemaster.FromDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '")';
 //        }
-
+ 
         if ($role == "manager" || $role == "lead") {
             $engineersUnder = Employee::getEngineersUnder(ucwords($role));
             if ($engineersUnder != '') {
