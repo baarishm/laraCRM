@@ -175,7 +175,7 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveType = $leaveTypeId = $request->get('LeaveType');
         $leaveType = Leave_Type::find($leaveMaster->LeaveType);
         $comp_off_date = '';
-        if (($leaveMaster->LeaveType == 4) && $request->get('comp_off_id') != '') {
+        if (($leaveMaster->LeaveType ==7) && $request->get('comp_off_id') != '') {
             $leaveMaster->comp_off_id = $request->get('comp_off_id');
             $comp_off_date = Comp_Off_Management::find($request->get('comp_off_id'))->start_date;
         }
@@ -242,7 +242,7 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveType = $request->get('LeaveType');
         $leaveType = Leave_Type::find($leaveMaster->LeaveType);
         $comp_off_date = '';
-        if (($leaveMaster->LeaveType == 4) && $request->get('comp_off_id') != '') {
+        if (($leaveMaster->LeaveType ==7) && $request->get('comp_off_id') != '') {
             $leaveMaster->comp_off_id = $request->get('comp_off_id');
             $comp_off_date = Comp_Off_Management::find($request->get('comp_off_id'))->start_date;
         }
@@ -324,7 +324,7 @@ class LeaveMasterController extends Controller {
         $html = "Greetings of the day!<br><br>"
                 . "<b>" . ucwords($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>";
 
-        if ($data['leaveType'] == 4) {
+        if ($data['leaveType'] ==7) {
             $html .= " against Comp off date " . date('d M Y', strtotime($data['comp_off_date']));
         }
 
@@ -388,7 +388,7 @@ class LeaveMasterController extends Controller {
         $leaveType = Leave_Type::find($leavemaster->LeaveType);
         $employee = Employee::find($leavemaster->EmpId);
         if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
-            if ($leavemaster->LeaveType == 4) {//compoff
+            if ($leavemaster->LeaveType ==7) {//compoff
                 $comp_off = $employee->comp_off - $_GET['days'];
                 $available_leaves = $employee->available_leaves;
                 $availed_leaves = $employee->availed_leaves;
@@ -399,7 +399,7 @@ class LeaveMasterController extends Controller {
                 $availed_leaves = $employee->availed_leaves + $_GET['days'];
             }
         } else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
-            if ($leavemaster->LeaveType == 4) {//compoff
+            if ($leavemaster->LeaveType ==7) {//compoff
                 $comp_off = $employee->comp_off + $_GET['days'];
                 $available_leaves = $employee->available_leaves;
                 $availed_leaves = $employee->availed_leaves;
@@ -556,7 +556,7 @@ class LeaveMasterController extends Controller {
                 $comp_off = $employee->comp_off;
                 $available_leaves = $employee->available_leaves;
                 $availed_leaves = $employee->availed_leaves;
-                if ($leaveRecord->LeaveType == 4) {//compoff
+                if ($leaveRecord->LeaveType ==7) {//compoff
                     $comp_off_record = Comp_Off_Management::find($leaveRecord->comp_off_id);
                     if ($comp_off_record->deleted_at == '' || $comp_off_record->deleted_at == null) {
                         $comp_off = $employee->comp_off + $leaveRecord->NoOfDays;
