@@ -559,7 +559,7 @@ class TimesheetsController extends Controller {
         }
         $html .= "</table>";
         $recipients['to'] = 'ashok.chand@ganitsoft.com';
-        $recipients['cc'] = ['rajesh.sharma@ganitsoft.com', 'varsha.mittal@ganitsoftech.com'];
+        $recipients['cc'] = ['varsha.mittal@ganitsoftech.com'];
 //            $recipients['to'] = $lead_email;
 //            $recipients['cc'] = $manager_email;
         if (
