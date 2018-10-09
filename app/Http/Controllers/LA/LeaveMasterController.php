@@ -54,7 +54,7 @@ class LeaveMasterController extends Controller {
     }
 
     public function index(Request $request) {
-        $role = Employee::employeeRole();
+        $role = $request->session()->get('role');
         $where = 'employees.deleted_at IS NULL ';
 
         if ($role == 'superAdmin') {
@@ -87,8 +87,7 @@ class LeaveMasterController extends Controller {
     }
 
     public function teamMemberIndex(Request $request) {
-
-        $role = Employee::employeeRole();
+        $role = $request->session()->get('role');
         if ($role != 'engineer') {
             $where = 'employees.deleted_at IS NULL ';
 
@@ -160,6 +159,13 @@ class LeaveMasterController extends Controller {
             'LeaveReason' => 'required',
         ]);
 
+        //employee Birthday
+        $emp_birthday = $request->session()->get('employee_details')->date_birth;
+        $this_year_birthday = date('Y') . date('-m-d', strtotime($emp_birthday));
+        if ($this_year_birthday < date('Y-m-d')) {
+            $this_year_birthday = (date('Y', strtotime('+1 year')) . date('-m-d', strtotime($emp_birthday)));
+        }
+
         $leaveMaster = new LeaveMaster();
         $leaveMaster->EmpId = $request->get('EmpId');
         $start_date = $request->get('FromDate');
@@ -192,6 +198,8 @@ class LeaveMasterController extends Controller {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'You have already applied leave for these dates.');
         } else if (($FromDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($FromDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d')))))) {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'Smarty! Your dates are out of applicable range.');
+        } else if (($leaveMaster->LeaveType == 8) && (($leaveMaster->NoOfDays > 1) || ($leaveMaster->FromDate != $this_year_birthday))) {
+            return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'Smarty! I guess you have forgotten your birthday.');
         }
 
         if ($leaveMaster->save()) {
@@ -225,6 +233,14 @@ class LeaveMasterController extends Controller {
             'ToDate' => 'required',
             'LeaveReason' => 'required',
         ]);
+
+        //employee Birthday
+        $emp_birthday = $request->session()->get('employee_details')->date_birth;
+        $this_year_birthday = date('Y') . date('-m-d', strtotime($emp_birthday));
+        if ($this_year_birthday < date('Y-m-d')) {
+            $this_year_birthday = (date('Y', strtotime('+1 year')) . date('-m-d', strtotime($emp_birthday)));
+        }
+
         $leaveMaster = LeaveMaster::find($id);
         $leaveMaster->EmpId = $request->get('EmpId');
 
@@ -258,6 +274,8 @@ class LeaveMasterController extends Controller {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'You have already applied leave for these dates.');
         } else if (($FromDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($FromDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate > date('Y-m-d', strtotime('+' . LAConfigs::getByKey('after_days_leave') . ' days', strtotime(date('Y-m-d'))))) || ($ToDate < date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . ' days', strtotime(date('Y-m-d')))))) {
             return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'Smarty! Your dates are out of applicable range.');
+        } else if (($leaveMaster->LeaveType == 8) && (($leaveMaster->NoOfDays > 1) || ($leaveMaster->FromDate != $this_year_birthday))) {
+            return redirect(config('laraadmin.adminRoute') . '/leaves')->with('error', 'Smarty! I guess you have forgotten your birthday.');
         }
         if ($leaveMaster->save()) {
             //send mail
@@ -358,7 +376,7 @@ class LeaveMasterController extends Controller {
      */
     private function sendApprovalMail($data) {
         $html = "Greetings of the day " . $data['mail_to_name'] . "!<br><br>"
-                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b> with a reason stated as <b>" . (($data['comment'] != '') ? $data['comment'] : 'No reason given') . "</b> on " . $data['action_date'] . "."
+                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b>  <b>" . (($data['comment'] != '') ? ' with a message <b>'.$data['comment'].'</b>' : '') . " on " . $data['action_date'] . "."
                 . "<br><br>"
                 . "Regards,<br>"
                 . "Team Ganit PlusMinus";
@@ -449,7 +467,7 @@ class LeaveMasterController extends Controller {
 
     public function ajaxDateSearch(Request $request) {
 
-        $role = Employee::employeeRole();
+        $role = $request->session()->get('role');
         $where = 'employees.deleted_at IS NULL ';
         if ((($request->start_date != null && $request->start_date != "") && ($request->end_date == '' || $request->end_date == null)) || (($request->end_date != null && $request->end_date != "") && ($request->start_date == null && $request->start_date == ""))) {
             $date = ($request->end_date != '' && $request->end_date == null) ? $request->end_date : $request->start_date;
@@ -595,7 +613,7 @@ class LeaveMasterController extends Controller {
     }
 
     public function ajaxDatatable(Request $request) {
-        $role = Employee::employeeRole();
+        $role = $request->session()->get('role');
         $where = 'employees.deleted_at IS NULL ';
 
 //        if ((($request->start_date != null && $request->start_date != "") && ($request->end_date == '' || $request->end_date == null)) || (($request->end_date != null && $request->end_date != "") && ($request->start_date == null && $request->start_date == ""))) {
