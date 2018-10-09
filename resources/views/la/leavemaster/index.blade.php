@@ -74,7 +74,7 @@ Leave Dashboard
                     <td>{{$FromDate}}</td>
                     <td>{{$ToDate}}</td>
                     <td>{{$leaveMasterRow->NoOfDays}}</td>
-         <td>{{(($leaveMasterRow->leave_name != '')? $leaveMasterRow->leave_name : "Not Specified" ) }}</td>
+                    <td>{{(($leaveMasterRow->leave_name != '')? $leaveMasterRow->leave_name : "Not Specified" ) }}</td>
                     @if( $leaveMasterRow->Approved === 1)
                     <td><span class="text-success">Approved</span></td>
                     @elseif( $leaveMasterRow->Approved === 0 )
@@ -119,21 +119,21 @@ Leave Dashboard
 <!--<script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>-->
 <script>
     $(function () {
-$('.withdraw').on('click', function(e){
-e.preventDefault();
-var link = $(this);
-$.ajax({
-method: "POST",
-        url: "{{ url(config('laraadmin.adminRoute') . '/leave/withdraw') }}",
-        data: {id: link.attr('data-removed'), _token : "{{ csrf_token()}}"}
-}).success(function (message) {
-link.parents('td').html('Withdrawn');
-swal(message);
-});
-});
-});
+        $('.withdraw').on('click', function (e) {
+            e.preventDefault();
+            var link = $(this);
+            $.ajax({
+                method: "POST",
+                url: "{{ url(config('laraadmin.adminRoute') . '/leave/withdraw') }}",
+                data: {id: link.attr('data-removed'), _token: "{{ csrf_token()}}"}
+            }).success(function (message) {
+                link.parents('td').html('Withdrawn');
+                swal(message);
+            });
+        });
+    });
 
-    
+
 //$(document).ready(function() {
 //var table = $("#table").DataTable({
 //     destroy: true,

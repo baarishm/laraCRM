@@ -175,7 +175,7 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveType = $leaveTypeId = $request->get('LeaveType');
         $leaveType = Leave_Type::find($leaveMaster->LeaveType);
         $comp_off_date = '';
-        if (($leaveMaster->LeaveType == 4) && $request->get('comp_off_id') != '') {
+        if (($leaveMaster->LeaveType == 7) && $request->get('comp_off_id') != '') {
             $leaveMaster->comp_off_id = $request->get('comp_off_id');
             $comp_off_date = Comp_Off_Management::find($request->get('comp_off_id'))->start_date;
         }
@@ -242,7 +242,7 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveType = $request->get('LeaveType');
         $leaveType = Leave_Type::find($leaveMaster->LeaveType);
         $comp_off_date = '';
-        if (($leaveMaster->LeaveType == 4) && $request->get('comp_off_id') != '') {
+        if (($leaveMaster->LeaveType == 7) && $request->get('comp_off_id') != '') {
             $leaveMaster->comp_off_id = $request->get('comp_off_id');
             $comp_off_date = Comp_Off_Management::find($request->get('comp_off_id'))->start_date;
         }
@@ -324,7 +324,7 @@ class LeaveMasterController extends Controller {
         $html = "Greetings of the day!<br><br>"
                 . "<b>" . ucwords($lead_manager->name) . "</b> has " . (($updated) ? 'updated' : 'applied') . " for leave from <b>" . $data['start_date'] . "</b> to <b>" . $data['end_date'] . "</b> for <b>" . $data['days'] . " days</b> with a reason stated as <b>" . $data['reason'] . "</b>";
 
-        if ($data['leaveType'] == 4) {
+        if ($data['leaveType'] == 7) {
             $html .= " against Comp off date " . date('d M Y', strtotime($data['comp_off_date']));
         }
 
@@ -385,34 +385,35 @@ class LeaveMasterController extends Controller {
 
         LeaveMaster::where('id', $_GET['id'])->update($update_field);
         $leavemaster = LeaveMaster::find($_GET['id']);
-        $leaveType = Leave_Type::find($leavemaster->LeaveType);
-        $employee = Employee::find($leavemaster->EmpId);
-        if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
-            if ($leavemaster->LeaveType == 4) {//compoff
-                $comp_off = $employee->comp_off - $_GET['days'];
-                $available_leaves = $employee->available_leaves;
-                $availed_leaves = $employee->availed_leaves;
-                Comp_Off_Management::find($leavemaster->comp_off_id)->update(['availed' => '1']);
-            } else {//other
-                $comp_off = $employee->comp_off;
-                $available_leaves = $employee->available_leaves - $_GET['days'];
-                $availed_leaves = $employee->availed_leaves + $_GET['days'];
+        if ($leavemaster->LeaveType != 8) {//birthday leave
+            $leaveType = Leave_Type::find($leavemaster->LeaveType);
+            $employee = Employee::find($leavemaster->EmpId);
+            if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
+                if ($leavemaster->LeaveType == 7) {//compoff
+                    $comp_off = $employee->comp_off - $_GET['days'];
+                    $available_leaves = $employee->available_leaves;
+                    $availed_leaves = $employee->availed_leaves;
+                    Comp_Off_Management::find($leavemaster->comp_off_id)->update(['availed' => '1']);
+                } else {//other
+                    $comp_off = $employee->comp_off;
+                    $available_leaves = $employee->available_leaves - $_GET['days'];
+                    $availed_leaves = $employee->availed_leaves + $_GET['days'];
+                }
+            } else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
+                if ($leavemaster->LeaveType == 7) {//compoff
+                    $comp_off = $employee->comp_off + $_GET['days'];
+                    $available_leaves = $employee->available_leaves;
+                    $availed_leaves = $employee->availed_leaves;
+                    Comp_Off_Management::find($leavemaster->comp_off_id)->update(['availed' => '0']);
+                } else {//other
+                    $comp_off = $employee->comp_off;
+                    $available_leaves = $employee->available_leaves + $_GET['days'];
+                    $availed_leaves = $employee->availed_leaves - $_GET['days'];
+                }
             }
-        } else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
-            if ($leavemaster->LeaveType == 4) {//compoff
-                $comp_off = $employee->comp_off + $_GET['days'];
-                $available_leaves = $employee->available_leaves;
-                $availed_leaves = $employee->availed_leaves;
-                Comp_Off_Management::find($leavemaster->comp_off_id)->update(['availed' => '0']);
-            } else {//other
-                $comp_off = $employee->comp_off;
-                $available_leaves = $employee->available_leaves + $_GET['days'];
-                $availed_leaves = $employee->availed_leaves - $_GET['days'];
-            }
+
+            DB::update("update employees set comp_off = $comp_off, available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leavemaster->EmpId]);
         }
-
-        DB::update("update employees set comp_off = $comp_off, available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leavemaster->EmpId]);
-
 
         $employee_update = Employee::find($leavemaster->EmpId);
 
@@ -550,22 +551,24 @@ class LeaveMasterController extends Controller {
         $leaveRecord = LeaveMaster::find($request->id);
         if ($leaveRecord->withdraw != 1) {
             LeaveMaster::where('id', $request->id)->update(['withdraw' => 1]);
-            if ($leaveRecord->approved == 1) {
-                $employee = Employee::find($leaveRecord->EmpId);
-                $leaveType = Leave_Type::find($leaveRecord->LeaveType);
-                $comp_off = $employee->comp_off;
-                $available_leaves = $employee->available_leaves;
-                $availed_leaves = $employee->availed_leaves;
-                if ($leaveRecord->LeaveType == 4) {//compoff
-                    $comp_off_record = Comp_Off_Management::find($leaveRecord->comp_off_id);
-                    if ($comp_off_record->deleted_at == '' || $comp_off_record->deleted_at == null) {
-                        $comp_off = $employee->comp_off + $leaveRecord->NoOfDays;
+            if ($leaveRecord->LeaveType != 8) {//birthday leave
+                if ($leaveRecord->approved == 1) {
+                    $employee = Employee::find($leaveRecord->EmpId);
+                    $leaveType = Leave_Type::find($leaveRecord->LeaveType);
+                    $comp_off = $employee->comp_off;
+                    $available_leaves = $employee->available_leaves;
+                    $availed_leaves = $employee->availed_leaves;
+                    if ($leaveRecord->LeaveType == 7) {//compoff
+                        $comp_off_record = Comp_Off_Management::find($leaveRecord->comp_off_id);
+                        if ($comp_off_record->deleted_at == '' || $comp_off_record->deleted_at == null) {
+                            $comp_off = $employee->comp_off + $leaveRecord->NoOfDays;
+                        }
+                    } else {//other
+                        $available_leaves = $employee->available_leaves + $leaveRecord->NoOfDays;
+                        $availed_leaves = $employee->availed_leaves - $leaveRecord->NoOfDays;
                     }
-                } else {//other
-                    $available_leaves = $employee->available_leaves + $leaveRecord->NoOfDays;
-                    $availed_leaves = $employee->availed_leaves - $leaveRecord->NoOfDays;
+                    DB::update("update employees set comp_off = $comp_off, available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leaveRecord->EmpId]);
                 }
-                DB::update("update employees set comp_off = $comp_off, available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leaveRecord->EmpId]);
             }
 
             //send notification
@@ -708,7 +711,7 @@ class LeaveMasterController extends Controller {
             $date = ($request->end_date != '' && $request->end_date == null) ? $request->end_date : $request->start_date;
             $where .= ' (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($date)) . '")';
         } else if (($request->end_date != null && $request->end_date != "") && ($request->start_date != null && $request->start_date != "")) {
-             $where .= ' ((leavemaster.FromDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.ToDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '"))';
+            $where .= ' ((leavemaster.FromDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.ToDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '"))';
         }
 
         $sheet_data = LeaveMaster::

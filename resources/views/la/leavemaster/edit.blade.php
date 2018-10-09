@@ -20,7 +20,7 @@ Edit Apply  Leave
             <div class="col-md-10 col-md-offset-1">
 
 
-                <form method="post" action="{{action('LA\LeaveMasterController@update', $leaveMaster -> id)}}">
+                <form method="post" action="{{action('LA\LeaveMasterController@update', $leaveMaster - > id)}}">
 
                     <input type="hidden" name="_token" value="{{ csrf_token()}}">
                     <input name="_method" type="hidden" value="PATCH">
@@ -28,7 +28,7 @@ Edit Apply  Leave
 
                         <div class="form-group col-md-3 hide">
                             <label for="name">Employee Id:</label>
-                            <input type="text" class ="form-control" autocomplete="off" readonly="readonly" name="EmpId" value="{{$leaveMaster -> EmpId}}">
+                            <input type="text" class ="form-control" autocomplete="off" readonly="readonly" name="EmpId" value="{{$leaveMaster - > EmpId}}">
                         </div>
                         <div class="form-group col-md-3">
                             <label>Manager Name</label>
@@ -68,22 +68,22 @@ Edit Apply  Leave
                         <div class="form-group col-md-3">
                             <label for="StartDate" class="control-label">Start Date:</label>
                             <input type="text" class="form-control " 
-                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="FromDate" required  readonly='true' value="{{$leaveMaster -> FromDate or old('FromDate')}}" />
+                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="FromDate" required  readonly='true' value="{{$leaveMaster - > FromDate or old('FromDate')}}" />
 
                         </div>
                         <div class="form-group col-md-3">
                             <label for="text" class="control-label">End Date:</label>
 
-                            <input type="text" class="form-control" id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="ToDate" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' value="{{$leaveMaster -> ToDate or old('ToDate')}}" />
+                            <input type="text" class="form-control" id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="ToDate" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' value="{{$leaveMaster - > ToDate or old('ToDate')}}" />
                         </div>
                         <div class="form-group col-md-3">
                             <label for="name">Number Of Days</label>
-                            <input type="text" class="form-control" name="NoOfDays" autocomplete="off" readonly="readonly" id="NoOfDays" value="{{$leaveMaster -> NoOfDays or old('NoOfDays')}}">
+                            <input type="text" class="form-control" name="NoOfDays" autocomplete="off" readonly="readonly" id="NoOfDays" value="{{$leaveMaster - > NoOfDays or old('NoOfDays')}}">
                         </div>
                         <div class="form-group col-md-3">
                             <label for="number">Leave Purpose*</label>
 
-                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required maxlength="180" value="{{$leaveMaster -> LeaveReason or old('LeaveReason')}}"> 
+                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required maxlength="180" value="{{$leaveMaster - > LeaveReason or old('LeaveReason')}}"> 
                         </div>
                         <div class="form-group col-md-3" style="margin-top:25px">
                             <button type="submit" class="btn btn-success">Update</button>
@@ -124,6 +124,9 @@ Edit Apply  Leave
                         daysDiff--;
                     }
                 }
+            }
+            if (daysDiff == 0) {
+                daysDiff = 1;
             }
 
             $("#NoOfDays").val(daysDiff);
@@ -181,17 +184,23 @@ Edit Apply  Leave
         $('#LeaveType').on('change', function () {
             leaveType(this);
         });
-        
+
         leaveType($('#LeaveType'));
-        
+
         function leaveType(leaveType) {
             if ($(leaveType).find('option:selected').length > 0) {
-                if ($(leaveType).find('option:selected').html() === 'Comp Off') {
+                var leave_type_id = $(leaveType).find('option:selected').val();
+                //in case of comp off
+                if (leave_type_id === '7') {
                     $('#comp_off').attr('required', true).parents('div.col-md-3').show();
                     datesAgainstCompoff(true, $('#comp_off'));
+                } else if (leave_type_id == 8) { //in case of birthday
+                    var birthday = new Date(emp_detail.date_birth).toShortFormat();
+                    $('#datepicker, #datepickerto').datepicker('setStartDate', birthday).datepicker('setEndDate', birthday).datepicker('setDate', birthday);
+                    $('#comp_off').attr('required', false).parents('div.col-md-3').hide();
                 } else {
                     $('#comp_off').attr('required', false).parents('div.col-md-3').hide();
-                    datesAgainstCompoff(false, '');
+                    datesAgainstCompoff(false, ''); //to set start and end dates for selection
                 }
             } else {
                 datesAgainstCompoff(false, '');
