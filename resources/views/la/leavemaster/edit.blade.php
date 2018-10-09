@@ -195,7 +195,15 @@ Edit Apply  Leave
                     $('#comp_off').attr('required', true).parents('div.col-md-3').show();
                     datesAgainstCompoff(true, $('#comp_off'));
                 } else if (leave_type_id == 8) { //in case of birthday
-                    var birthday = new Date(emp_detail.date_birth).toShortFormat();
+                    var fullDate = new Date(emp_detail.date_birth);
+                    if(fullDate.getMonth() <= 1){
+                        fullDate.setFullYear(new Date().getFullYear() + 1);
+                    }
+                    else{
+                       fullDate.setFullYear(new Date().getFullYear()); 
+                    }
+                    console.log(fullDate);
+                    var birthday = fullDate.toShortFormat();
                     $('#datepicker, #datepickerto').datepicker('setStartDate', birthday).datepicker('setEndDate', birthday).datepicker('setDate', birthday);
                     $('#comp_off').attr('required', false).parents('div.col-md-3').hide();
                 } else {
