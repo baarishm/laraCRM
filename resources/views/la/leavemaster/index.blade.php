@@ -54,7 +54,7 @@ Leave Dashboard
             <th>To Date</th>
             <th>No Of Days</th>
             <th>Leave Type</th>
-            <th>Comment</th>
+            <!--<th>Comment</th>-->
             <th> Status</th>
             <th style="width: 103px; text-align:center;">Action</th>  
             </thead>
@@ -69,21 +69,21 @@ Leave Dashboard
 
                 @endphp
 
-<!--                <tr>-->
+                <tr>
 
-<!--                    <td>{{$FromDate}}</td>-->
-<!--                    <td>{{$ToDate}}</td>-->
-<!--                    <td>{{$leaveMasterRow->NoOfDays}}</td>-->
-<!--         <td>{{(($leaveMasterRow->leave_name != '')? $leaveMasterRow->leave_name : "Not Specified" ) }}</td>-->
-<!--                    @if( $leaveMasterRow->Approved === 1)
+                    <td>{{$FromDate}}</td>
+                    <td>{{$ToDate}}</td>
+                    <td>{{$leaveMasterRow->NoOfDays}}</td>
+         <td>{{(($leaveMasterRow->leave_name != '')? $leaveMasterRow->leave_name : "Not Specified" ) }}</td>
+                    @if( $leaveMasterRow->Approved === 1)
                     <td><span class="text-success">Approved</span></td>
                     @elseif( $leaveMasterRow->Approved === 0 )
                     <td><span class="text-danger">Rejected</span></td>
                     @else 
                     <td>Pending </td>
-                    @endif-->
+                    @endif
 
-<!--
+
                     @if(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && !$leaveMasterRow->withdraw  && (date('Y-m-d') <= $leaveMasterRow->FromDate) && (($leaveMasterRow->comp_off_deleted == null || $leaveMasterRow->comp_off_deleted == ''))) 
 
                     <td>
@@ -105,18 +105,18 @@ Leave Dashboard
                             <button class="btn btn-danger pull-left delete-btn" type="submit"><i class="fa fa-remove"></i></button>
                             @endif
                         </form>
-                    </td>-->
-<!--                </tr>-->
+                    </td>
+                </tr>
                 @endforeach
             </tbody>
         </table></div>
 </div>
 
 @endsection
-<link rel="stylesheet" type="text/css" href="{{ asset('la-assets/plugins/datatables/datatables.min.css') }}"/>
+<!--<link rel="stylesheet" type="text/css" href="{{ asset('la-assets/plugins/datatables/datatables.min.css') }}"/>-->
 @push('scripts')
 
-<script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
+<!--<script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>-->
 <script>
     $(function () {
 $('.withdraw').on('click', function(e){
@@ -134,38 +134,38 @@ swal(message);
 });
 
     
-$(document).ready(function() {
-var table = $("#table").DataTable({
-     destroy: true,
-           ordering: true,
-            responsive: true,
-processing: true,
-        serverSide: true,
-        searching: false,
-        
-        ajax: {
-             "dataType": "json",
-        url:"{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
-         
-                type : 'get',
-                
-         
-        },
-        
-         "columnDefs": [ {
-                    "data" : "FromDate"
-                }, {
-                    "data" : "ToDate"
-                }, {
-                    "data" : "NoOfDays"
-                }, {
-                    "data" : "leave_name"
-                }, {
-                    "data" : "Approved"
-               
-                } ]
-        })
-});
+//$(document).ready(function() {
+//var table = $("#table").DataTable({
+//     destroy: true,
+//           ordering: true,
+//            responsive: true,
+//processing: true,
+//        serverSide: true,
+//        searching: false,
+//        
+//        ajax: {
+//             "dataType": "json",
+//        url:"{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
+//         
+//                type : 'get',
+//                
+//         
+//        },
+//        
+//         "columnDefs": [ {
+//                    "data" : "FromDate"
+//                }, {
+//                    "data" : "ToDate"
+//                }, {
+//                    "data" : "NoOfDays"
+//                }, {
+//                    "data" : "leave_name"
+//                }, {
+//                    "data" : "Approved"
+//               
+//                } ]
+//        })
+//});
 
 
 </script>
