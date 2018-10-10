@@ -767,7 +767,6 @@ class LeaveMasterController extends Controller {
         $date = date_format(date_create($request->get('date')), "Y-m-d");
         $leave = LeaveMaster::where('FromDate', '<=', $date)
                 ->where('ToDate', '>=', $date)
-                ->where('Approved', '1')
                 ->where('withdraw', '0')
                 ->where('EmpId', Auth::user()->context_id)
                 ->count();
