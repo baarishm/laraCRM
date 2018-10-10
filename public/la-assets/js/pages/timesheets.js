@@ -53,25 +53,24 @@ function init(removeable_options, leave) {
         });
         $('#project_id').trigger('change');
 
+        $.ajax({
+            url: $('#task_id').attr('data-url'),
+            method: 'GET',
+            data: {date: $(this).find('input').val()},
+            success: function (showLeave) {
+                if (showLeave === 'true') {
+                    $('select[name="task_id"]').append(leave);
+                } else {
+                    $('select[name="task_id"] option[data-name="Leave"]').detach();
+                }
+            }
+        });
         //for leave option in task list
         if (new Date($(this).children('input').val()) > new Date()) {
-            $('select[name="task_id"]').append(leave);
             $('select[name="task_id"] option[data-name!="Leave"]').detach();
             $('select[name="task_id"] option[data-name="Leave"]').attr('selected', true);
         } else {
             $('select[name="task_id"]').append(removeable_options);
-            $.ajax({
-                url: $('#task_id').attr('data-url'),
-                method: 'GET',
-                data: {date: $(this).find('input').val()},
-                success: function (showLeave) {
-                    if (showLeave === 'true') {
-                        $('select[name="task_id"]').append(leave);
-                    } else {
-                        $('select[name="task_id"] option[data-name="Leave"]').detach();
-                    }
-                }
-            });
         }
     });
 
@@ -95,7 +94,9 @@ function init(removeable_options, leave) {
         $.ajax({
             url: $('#entry_table').attr('data-url') + '/sprintList',
             method: 'POST',
-            data: {_token: $('[name="_token"]').val(), date: date, project_id: $('#project_id').val()}
+            data: {
+                _token: $('[name="_token"]').val(), date: date, project_id: $('#project_id').val()
+            }
         }).success(function (sprint_list) {
             $('select#projects_sprint_id option').remove();
             $(sprint_list).each(function (key, item) {
@@ -208,7 +209,9 @@ $(document).ready(function () {
                     $.ajax({
                         method: "POST",
                         url: $('#entry_table').attr('data-workHours'),
-                        data: {type: 'day', date: $('.date>input').val(), _token: $('[name="_token"]').val(), task_removed: el.attr('data-value')}
+                        data: {
+                            type: 'day', date: $('.date>input').val(), _token: $('[name="_token"]').val(), task_removed: el.attr('data-value')
+                        }
                     }).success(function (totalHours) {
                         condition = (parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val() / 60));
 
@@ -248,7 +251,9 @@ $(document).ready(function () {
             $.ajax({
                 method: 'POST',
                 url: "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}" + "/" + el.attr('data-value'),
-                data: {_token: $('[name="_token"]').val(), id: el.attr('data-value'), ajax: true, _method: 'DELETE'},
+                data: {
+                    _token: $('[name="_token"]').val(), id: el.attr('data-value'), ajax: true, _method: 'DELETE'
+                },
                 success: function () {
                     $('div.overlay').addClass('hide');
                     parent_row.remove();
@@ -269,7 +274,9 @@ $(document).ready(function () {
             $.ajax({
                 method: "POST",
                 url: $('#entry_table').attr('data-workHours'),
-                data: {type: 'day', date: $('.date>input').val(), task_removed: $('#timesheet_id').val(), _token: $('[name="_token"]').val()}
+                data: {
+                    type: 'day', date: $('.date>input').val(), task_removed: $('#timesheet_id').val(), _token: $('[name="_token"]').val()
+                }
             }).success(function (totalHours) {
                 if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val() / 60)) > 24) {
                     swal("Number of working hours for a day cannot exceed more than 24 hrs!");
