@@ -22,7 +22,7 @@
     <div class="box-body">
         <div class="row">
             <div class="col-md-12">
-                <table id="entry_table">
+                <table id="entry_table" data-url = "{{url(config('laraadmin.adminRoute'))}}" data-workHours = "{{ url('/hoursWorked') }}">
                     <thead class="entry-header">
                         <tr>
                             <th style="width: 16%;">Date<span class="required">*</span></th>
@@ -46,7 +46,7 @@
                                 </div>
                             </td>
                             <td>
-                                <select class="form-control" name="project_id" id="project_id" required>
+                                <select class="form-control" name="project_id" id="project_id" required >
                                     @foreach($projects as $project)
                                     <option data-name="{{$project->name}}" value="{{$project->id}}">{{$project->name}}</option>
                                     @endforeach
@@ -60,7 +60,7 @@
                                 </select>
                             </td>
                             <td>
-                                <select class="form-control" name="task_id" id="task_id" required>
+                                <select class="form-control" name="task_id" id="task_id" required data-url="{{ url('/isLeave') }}">
                                     @foreach($tasks as $task)
                                     <option data-name="{{$task->name}}" value="{{$task->task_id}}">{{$task->name}}</option>
                                     @endforeach
@@ -83,7 +83,7 @@
                                 </select>
                             </td>
                             <td>
-                                <button class="btn btn-primary add-entry submit-form" data-value=''><i class="fa fa-plus"></i></button>
+                                <button class="btn btn-primary add-entry submit-form add-entry-form" data-value=''><i class="fa fa-plus"></i></button>
                             </td>
                         </tr>
                     </tbody>
@@ -98,158 +98,5 @@
 
 @push('scripts')
 <script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
-<script>
-$(document).ready(function () {
-    var removeable_options = $('select[name="task_id"] option[data-name!="Leave"]').detach();
-    init(removeable_options);
-    //form submition
-    $(document).on('click', 'button.submit-form', function () {
-        var send_data = {
-            _token: "{{ csrf_token() }}",
-            project_id: $('select#project_id').val(),
-            projects_sprint_id: $('select#projects_sprint_id').val(),
-            task_id: $('select#task_id').val(),
-            date: $('#date').val(),
-            comments: $('#comments').val(),
-            hours: $('#hours').val(),
-            minutes: $('#minutes').val(),
-            submitor_id: $('#submitor_id').val(),
-        };
-        var saved_data = {
-            _method: "POST",
-            _token: "{{ csrf_token() }}",
-            project_id: $('select#project_id').val(),
-            projects_sprint_id: $('select#projects_sprint_id').val(),
-            task_id: $('select#task_id').val(),
-            project_name: $('select#project_id option:selected').attr('data-name'),
-            projects_sprint_name: $('select#projects_sprint_id option:selected').attr('data-name'),
-            task_name: $('select#task_id option:selected').attr('data-name'),
-            date: $('#date').val(),
-            comments: $('#comments').val(),
-            hours: $('#hours').val(),
-            minutes: $('#minutes').val()
-        };
-        var el = $(this);
-
-        if (el.hasClass('add-entry') || el.hasClass('update-entry-db')) {
-            var url = "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}";
-            var method = "POST";
-            if (el.hasClass('update-entry-db')) {
-                url = "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}" + "/" + el.attr('data-value') + "?_method=PUT";
-                method = "PUT";
-            }
-            saved_data['_method'] = method;
-            if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
-                $('div.overlay').addClass('hide');
-                swal("Number of hours for a task cannot exceed more than 24 hrs!");
-                return false;
-            } else {
-                if (validateFields($('[required]'))) {
-                    $('div.overlay').removeClass('hide');
-                    $.ajax({
-                        method: "POST",
-                        url: "{{ url('/hoursWorked') }}",
-                        data: {type: 'day', date: $('.date>input').val(), _token: "{{ csrf_token()}}", task_removed: el.attr('data-value')}
-                    }).success(function (totalHours) {
-                        condition = (parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val() / 60));
-
-                        if (condition > 24) {
-                            $('div.overlay').addClass('hide');
-                            swal("Number of working hours for a day cannot exceed more than 24 hrs!");
-                            return false;
-                        } else {
-                            $.ajax({
-                                method: "POST",
-                                url: url,
-                                data: send_data,
-                                success: function (id) {
-                                    update_row(saved_data, id, removeable_options);
-                                    $('tr.entry-row').find('.submit-form').addClass('add-entry').removeClass('update-entry-db').attr('data-value', '');
-                                    $('.add-entry').find('i').removeClass('fa-edit').addClass('fa-plus');
-                                    $('div.overlay').addClass('hide');
-                                }
-                            });
-                        }
-                    });
-                } else {
-                    $('div.overlay').addClass('hide');
-                    swal('Please fill all required fields!');
-                }
-            }
-        } else if (el.hasClass('update-entry')) {
-            if ($('tr.entry-row button.submit-form').hasClass('update-entry-db')) {
-                $('div.overlay').addClass('hide');
-                swal('Submit last row first!');
-                return false;
-            }
-            show_update_row(el);
-        } else if (el.hasClass('delete-entry')) {
-            var parent_row = el.parents('tr.recent-entry');
-            $('div.overlay').removeClass('hide');
-            $.ajax({
-                method: 'POST',
-                url: "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}" + "/" + el.attr('data-value'),
-                data: {_token: "{{ csrf_token() }}", id: el.attr('data-value'), ajax: true, _method: 'DELETE'},
-                success: function () {
-                    $('div.overlay').addClass('hide');
-                    parent_row.remove();
-                    swal('Row deleted successfully!');
-                }
-            });
-        }
-    });
-
-    //to get project against date selected
-    $('.date').on('dp.change', function () {
-        var date = dateFormatDB($(this).find('input').val());
-        $.ajax({
-            url: "{{url(config('laraadmin.adminRoute') . '/projectList')}}",
-            method: 'POST',
-            data: {_token: "{{ csrf_token() }}", date: date}
-        }).success(function (project_list) {
-            $('select#project_id option').remove();
-            $(project_list).each(function (key, item) {
-                $('select#project_id').append('<option data-name="' + item.name + '" value="' + item.id + '">' + item.name + '</option>');
-            });
-        });
-        $('#project_id').trigger('change');
-    });
-    
-    $('.date').on('dp.show', function () {
-        $('.date').data('DateTimePicker').date(moment());
-        $(this).trigger('dp.change');
-    });
-
-    //to get sprint against project selected
-    $('#project_id').on('change', function () {
-        var date = dateFormatDB($('#date').val());
-        $.ajax({
-            url: "{{url(config('laraadmin.adminRoute') . '/sprintList')}}",
-            method: 'POST',
-            data: {_token: "{{ csrf_token() }}", date: date, project_id: $('#project_id').val()}
-        }).success(function (sprint_list) {
-            $('select#projects_sprint_id option').remove();
-            $(sprint_list).each(function (key, item) {
-                $('select#projects_sprint_id').append('<option data-name="' + item.name + '" value="' + item.id + '">' + item.name + '</option>');
-            });
-        });
-        $('#task_id').trigger('change');
-    });
-
-    $('#task_id').on('change', function () {
-        if (($('#project_id').find('option:selected').html() == "Internal") || ($('#project_id').find('option:selected').html() == "Pipeline") || ($('#task_id').find('option:selected').html() == "Research and Development")) {
-            $('[name="comments"]').attr('required', true);
-            $('.description').removeClass('hide');
-        } else {
-            $('[name="comments"]').attr('required', false);
-            $('.description').addClass('hide');
-        }
-    });
-
-    $('#project_id').trigger('change');
-
-});
-</script>
-
 <script src="{{ asset('la-assets/js/pages/timesheets.js') }}"></script>
 @endpush

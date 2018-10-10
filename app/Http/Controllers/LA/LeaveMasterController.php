@@ -376,7 +376,7 @@ class LeaveMasterController extends Controller {
      */
     private function sendApprovalMail($data) {
         $html = "Greetings of the day " . $data['mail_to_name'] . "!<br><br>"
-                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b>  <b>" . (($data['comment'] != '') ? ' with a message <b>'.$data['comment'].'</b>' : '') . " on " . $data['action_date'] . "."
+                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b>  <b>" . (($data['comment'] != '') ? ' with a message <b>' . $data['comment'] . '</b>' : '') . " on " . $data['action_date'] . "."
                 . "<br><br>"
                 . "Regards,<br>"
                 . "Team Ganit PlusMinus";
@@ -756,6 +756,26 @@ class LeaveMasterController extends Controller {
         );
 
         return response()->json($response);
+    }
+
+    /** Check if leave is approved leave
+     * @param request $request Inputs from ajax
+     * @return string true/false
+     * @author Varsha Mittal <varsha.mittal@ganitsoftec.com>
+     */
+    public function ajaxIsApprovedLeave(Request $request) {
+        $date = date_format(date_create($request->get('date')), "Y-m-d");
+        $leave = LeaveMaster::where('FromDate', '<=', $date)
+                ->where('ToDate', '>=', $date)
+                ->where('Approved', '1')
+                ->where('withdraw', '0')
+                ->where('EmpId', Auth::user()->context_id)
+                ->count();
+        
+        if ($leave) {
+            return 'true';
+        }
+        return 'false';
     }
 
 }

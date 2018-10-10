@@ -1,4 +1,4 @@
-function init(removeable_options) {
+function init(removeable_options, leave) {
     //Initialize dropdowns
     $('select').select2();
 
@@ -36,21 +36,84 @@ function init(removeable_options) {
     });
 
     // Leave option selection
-    $('select[name="task_id"]').append(removeable_options);
-    $('[name="date"]').parent('.date').on('dp.change', function (e) {
+    $('select[name="task_id"]').append(removeable_options).append(leave);
+    $('.date').on('dp.change', function () {
+
+        //to get project against date selected
+        var date = dateFormatDB($(this).find('input').val());
+        $.ajax({
+            url: $('#entry_table').attr('data-url') + '/projectList',
+            method: 'POST',
+            data: {_token: $('[name="_token"]').val(), date: date}
+        }).success(function (project_list) {
+            $('select#project_id option').remove();
+            $(project_list).each(function (key, item) {
+                $('select#project_id').append('<option data-name="' + item.name + '" value="' + item.id + '">' + item.name + '</option>');
+            });
+        });
+        $('#project_id').trigger('change');
+
+        //for leave option in task list
         if (new Date($(this).children('input').val()) > new Date()) {
+            $('select[name="task_id"]').append(leave);
             $('select[name="task_id"] option[data-name!="Leave"]').detach();
             $('select[name="task_id"] option[data-name="Leave"]').attr('selected', true);
         } else {
             $('select[name="task_id"]').append(removeable_options);
+            $.ajax({
+                url: $('#task_id').attr('data-url'),
+                method: 'GET',
+                data: {date: $(this).find('input').val()},
+                success: function (showLeave) {
+                    if (showLeave === 'true') {
+                        $('select[name="task_id"]').append(leave);
+                    } else {
+                        $('select[name="task_id"] option[data-name="Leave"]').detach();
+                    }
+                }
+            });
         }
     });
 
+    $('.date').on('dp.show', function () {
+        if ($(this).find('input').val() == '') {
+            $('.date').data('DateTimePicker').date(moment());
+        }
+    });
 
     //datepicker conditions
-    $('.date').data("DateTimePicker").minDate(moment().subtract(7, 'days').millisecond(0).second(0).minute(0).hour(0));
+    $('.date').data("DateTimePicker").minDate(moment().subtract(10, 'days').millisecond(0).second(0).minute(0).hour(0));
 //    $('.date').data("DateTimePicker").daysOfWeekDisabled([0]);
 //    $('.date').data("DateTimePicker").maxDate(moment());
+
+    //maxlength of comment
+    $('[name="comments"]').prop('maxlength', '250');
+
+    //to get sprint against project selected
+    $('#project_id').on('change', function () {
+        var date = dateFormatDB($('#date').val());
+        $.ajax({
+            url: $('#entry_table').attr('data-url') + '/sprintList',
+            method: 'POST',
+            data: {_token: $('[name="_token"]').val(), date: date, project_id: $('#project_id').val()}
+        }).success(function (sprint_list) {
+            $('select#projects_sprint_id option').remove();
+            $(sprint_list).each(function (key, item) {
+                $('select#projects_sprint_id').append('<option data-name="' + item.name + '" value="' + item.id + '">' + item.name + '</option>');
+            });
+        });
+        $('#task_id').trigger('change');
+    });
+
+    $('#task_id').on('change', function () {
+        if (($('#project_id').find('option:selected').html() == "Internal") || ($('#project_id').find('option:selected').html() == "Pipeline") || ($('#task_id').find('option:selected').html() == "Research and Development")) {
+            $('[name="comments"]').attr('required', true);
+            $('.description').removeClass('hide');
+        } else {
+            $('[name="comments"]').attr('required', false);
+            $('.description').addClass('hide');
+        }
+    });
 
 }
 
@@ -92,3 +155,139 @@ function show_update_row(el) {
     $('.update-entry-db').find('i').addClass('fa-edit').removeClass('fa-plus');
     parent.remove();
 }
+
+$(document).ready(function () {
+    var removeable_options = $('select[name="task_id"] option[data-name!="Leave"]').detach();
+    var leave = $('select[name="task_id"] option[data-name="Leave"]').detach();
+    init(removeable_options, leave);
+
+    //add form submition
+    $(document).on('click', 'button.submit-form.add-entry-form', function () {
+        var send_data = {
+            _token: $('[name="_token"]').val(),
+            project_id: $('select#project_id').val(),
+            projects_sprint_id: $('select#projects_sprint_id').val(),
+            task_id: $('select#task_id').val(),
+            date: $('#date').val(),
+            comments: $('#comments').val(),
+            hours: $('#hours').val(),
+            minutes: $('#minutes').val(),
+            submitor_id: $('#submitor_id').val(),
+        };
+        var saved_data = {
+            _method: "POST",
+            _token: $('[name="_token"]').val(),
+            project_id: $('select#project_id').val(),
+            projects_sprint_id: $('select#projects_sprint_id').val(),
+            task_id: $('select#task_id').val(),
+            project_name: $('select#project_id option:selected').attr('data-name'),
+            projects_sprint_name: $('select#projects_sprint_id option:selected').attr('data-name'),
+            task_name: $('select#task_id option:selected').attr('data-name'),
+            date: $('#date').val(),
+            comments: $('#comments').val(),
+            hours: $('#hours').val(),
+            minutes: $('#minutes').val()
+        };
+        var el = $(this);
+
+        if (el.hasClass('add-entry') || el.hasClass('update-entry-db')) {
+            var url = $('#entry_table').attr('data-url') + '/timesheets';
+            var method = "POST";
+            if (el.hasClass('update-entry-db')) {
+                url = $('#entry_table').attr('data-url') + '/timesheets' + "/" + el.attr('data-value') + "?_method=PUT";
+                method = "PUT";
+            }
+            saved_data['_method'] = method;
+            if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
+                $('div.overlay').addClass('hide');
+                swal("Number of hours for a task cannot exceed more than 24 hrs!");
+                return false;
+            } else {
+                if (validateFields($('[required]'))) {
+                    $('div.overlay').removeClass('hide');
+                    $.ajax({
+                        method: "POST",
+                        url: $('#entry_table').attr('data-workHours'),
+                        data: {type: 'day', date: $('.date>input').val(), _token: $('[name="_token"]').val(), task_removed: el.attr('data-value')}
+                    }).success(function (totalHours) {
+                        condition = (parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val() / 60));
+
+                        if (condition > 24) {
+                            $('div.overlay').addClass('hide');
+                            swal("Number of working hours for a day cannot exceed more than 24 hrs!");
+                            return false;
+                        } else {
+                            $.ajax({
+                                method: "POST",
+                                url: url,
+                                data: send_data,
+                                success: function (id) {
+                                    update_row(saved_data, id, removeable_options);
+                                    $('tr.entry-row').find('.submit-form').addClass('add-entry').removeClass('update-entry-db').attr('data-value', '');
+                                    $('.add-entry').find('i').removeClass('fa-edit').addClass('fa-plus');
+                                    $('div.overlay').addClass('hide');
+                                }
+                            });
+                        }
+                    });
+                } else {
+                    $('div.overlay').addClass('hide');
+                    swal('Please fill all required fields!');
+                }
+            }
+        } else if (el.hasClass('update-entry')) {
+            if ($('tr.entry-row button.submit-form').hasClass('update-entry-db')) {
+                $('div.overlay').addClass('hide');
+                swal('Submit last row first!');
+                return false;
+            }
+            show_update_row(el);
+        } else if (el.hasClass('delete-entry')) {
+            var parent_row = el.parents('tr.recent-entry');
+            $('div.overlay').removeClass('hide');
+            $.ajax({
+                method: 'POST',
+                url: "{{ url(config('laraadmin.adminRoute') . '/timesheets') }}" + "/" + el.attr('data-value'),
+                data: {_token: $('[name="_token"]').val(), id: el.attr('data-value'), ajax: true, _method: 'DELETE'},
+                success: function () {
+                    $('div.overlay').addClass('hide');
+                    parent_row.remove();
+                    swal('Row deleted successfully!');
+                }
+            });
+        }
+    });
+
+    //edit form
+    $("#timesheet-edit-form .submit-form").click(function (e) {
+        e.preventDefault();
+        if (($('[name="hours"]').val() == '24') && ($('[name="minutes"]').val() == '30')) {
+            swal("Number of hours for a task cannot exceed more than 24 hrs!");
+            $('div.overlay').addClass('hide');
+            return false;
+        } else {
+            $.ajax({
+                method: "POST",
+                url: $('#entry_table').attr('data-workHours'),
+                data: {type: 'day', date: $('.date>input').val(), task_removed: $('#timesheet_id').val(), _token: $('[name="_token"]').val()}
+            }).success(function (totalHours) {
+                if ((parseFloat(totalHours) + parseFloat($('[name="hours"]').val()) + parseFloat($('[name="minutes"]').val() / 60)) > 24) {
+                    swal("Number of working hours for a day cannot exceed more than 24 hrs!");
+                    $('div.overlay').addClass('hide');
+                    return false;
+                } else {
+                    if (validateFields($('[required]'))) {
+                        $('#timesheet-edit-form').submit();
+                    } else {
+                        $('div.overlay').addClass('hide');
+                        swal('Please fill all required fields!');
+                    }
+                }
+            });
+        }
+    });
+
+    if ($("#timesheet-edit-form").length == 0) {
+        $('.date').trigger('dp.change');
+    }
+});

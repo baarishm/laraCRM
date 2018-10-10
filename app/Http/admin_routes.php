@@ -113,6 +113,7 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL', 'p
     Route::get(config('laraadmin.adminRoute') . "/downloadLeave", 'LA\LeaveMasterController@downloadLeave');
     Route::post("/exportLeaveToAuthority", 'LA\LeaveMasterController@ajaxExportLeaveToAuthority');
     Route::get(config('laraadmin.adminRoute') . '/leave/Datatable', 'LA\LeaveMasterController@ajaxDatatable');
+    Route::get('/isLeave', 'LA\LeaveMasterController@ajaxIsApprovedLeave');
 
     /* ================== Sidebar_Menu_Leaves_ViewData ================== */
     Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
