@@ -42,7 +42,7 @@ class LeaveWeekTrack extends Command {
     public function handle() {
         //code to export excel
         $sheet_data = LeaveMaster::
-                        select([DB::raw('employees.name as Employee'), DB::raw('leavemaster.NoOfDays as Total_Days'), DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), DB::raw('approver.name as ApprovedBy')])
+                        select([DB::raw('employees.name as Employee'), DB::raw('leavemaster.NoOfDays as Total_Days'), DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), DB::raw('approver.name as ApprovedBy'), DB::raw('if(leavemaster.withdraw = 1, "Withdrawn","") as Withdrawn')])
                         ->where(function($q) {
                             $q->where(function($internal) {
                                 $internal->where('leavemaster.created_at', '>=', date('Y-m-d', strtotime('last monday')))
