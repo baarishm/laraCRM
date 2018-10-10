@@ -20,7 +20,7 @@ Edit Apply  Leave
             <div class="col-md-10 col-md-offset-1">
 
 
-                <form method="post" action="{{action('LA\LeaveMasterController@update', $leaveMaster - > id)}}">
+                <form method="post" action="{{action('LA\LeaveMasterController@update', $leaveMaster -> id)}}">
 
                     <input type="hidden" name="_token" value="{{ csrf_token()}}">
                     <input name="_method" type="hidden" value="PATCH">
@@ -28,7 +28,7 @@ Edit Apply  Leave
 
                         <div class="form-group col-md-3 hide">
                             <label for="name">Employee Id:</label>
-                            <input type="text" class ="form-control" autocomplete="off" readonly="readonly" name="EmpId" value="{{$leaveMaster - > EmpId}}">
+                            <input type="text" class ="form-control" autocomplete="off" readonly="readonly" name="EmpId" value="{{$leaveMaster -> EmpId}}">
                         </div>
                         <div class="form-group col-md-3">
                             <label>Manager Name</label>
@@ -50,7 +50,7 @@ Edit Apply  Leave
                         </div>
                         <div class="form-group col-md-3">
                             <label>Comp Off Against*</label>
-                            <select name="comp_off_id" id="comp_off" class="form-control" >
+                            <select name="comp_off_id" id="comp_off" class="form-control" style="display: <?php echo (($leaveMaster->LeaveType != 7) ? 'none' : 'block'); ?>">
                                 <?php
                                 if (!empty($comp_off_list)) {
                                     foreach ($comp_off_list as $value) {
@@ -68,22 +68,22 @@ Edit Apply  Leave
                         <div class="form-group col-md-3">
                             <label for="StartDate" class="control-label">Start Date:</label>
                             <input type="text" class="form-control " 
-                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="FromDate" required  readonly='true' value="{{$leaveMaster - > FromDate or old('FromDate')}}" />
+                                   id="datepicker" ng-model="startDate" name="FromDate" autocomplete="off"  placeholder="FromDate" required  readonly='true' value="{{$leaveMaster -> FromDate or old('FromDate')}}" />
 
                         </div>
                         <div class="form-group col-md-3">
                             <label for="text" class="control-label">End Date:</label>
 
-                            <input type="text" class="form-control" id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="ToDate" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' value="{{$leaveMaster - > ToDate or old('ToDate')}}" />
+                            <input type="text" class="form-control" id="datepickerto" ng-model="datepickerto" name="ToDate"  readonly='true'   placeholder="ToDate" required autocomplete="off" ng-change='checkErr(datepicker, datepickerto)' value="{{$leaveMaster -> ToDate or old('ToDate')}}" />
                         </div>
                         <div class="form-group col-md-3">
                             <label for="name">Number Of Days</label>
-                            <input type="text" class="form-control" name="NoOfDays" autocomplete="off" readonly="readonly" id="NoOfDays" value="{{$leaveMaster - > NoOfDays or old('NoOfDays')}}">
+                            <input type="text" class="form-control" name="NoOfDays" autocomplete="off" readonly="readonly" id="NoOfDays" value="{{$leaveMaster -> NoOfDays or old('NoOfDays')}}">
                         </div>
                         <div class="form-group col-md-3">
                             <label for="number">Leave Purpose*</label>
 
-                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required maxlength="180" value="{{$leaveMaster - > LeaveReason or old('LeaveReason')}}"> 
+                            <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required maxlength="180" value="{{$leaveMaster -> LeaveReason or old('LeaveReason')}}"> 
                         </div>
                         <div class="form-group col-md-3" style="margin-top:25px">
                             <button type="submit" class="btn btn-success">Update</button>
@@ -101,12 +101,9 @@ Edit Apply  Leave
 @push('scripts')
 
 <script type="text/javascript">
-
-
-
-
     $(document).ready(function () {
-
+        var emp_detail = "{{ Session::get('employee_details') }}";
+        emp_detail = JSON.parse(emp_detail.replace(/&quot;/g, '\"'));
         //get dates from session
         var dates = "{{ Session::get('holiday_list') }}";
         dates = JSON.parse(dates.replace(/&quot;/g, '\"'));
@@ -116,7 +113,9 @@ Edit Apply  Leave
             var aDay = 24 * 60 * 60 * 1000,
                     daysDiff = parseInt((last.getTime() - first.getTime()) / aDay, 10) + 1;
             if (daysDiff > 0) {
-                for (var i = first.getTime(), lst = last.getTime(); i <= lst; i += aDay) {
+                for (var i = first.getTime(), lst = last.getTime();
+                        i <= lst;
+                        i += aDay) {
                     var d = new Date(i);
                     var date = d.getFullYear() + "-" + ("0" + (d.getMonth() + 1)).slice(-2) + "-" + ("0" + d.getDate()).slice(-2);
                     if (d.getDay() == 6 || d.getDay() == 0 // weekend
@@ -137,7 +136,8 @@ Edit Apply  Leave
         $('#datepicker').datepicker({
             todayHighlight: 'true',
             format: 'd M yyyy',
-            daysOfWeekDisabled: [0, 6],
+            daysOfWeekDisabled: [0,
+                6],
             startDate: '-{{ $before_days }}d',
             endDate: '+{{ $after_days }}d',
             beforeShowDay: function (date) {
@@ -145,7 +145,9 @@ Edit Apply  Leave
                 var Highlight = dates[date];
                 var re = [];
                 if (Highlight) {
-                    re = {enabled: false, classes: "Highlighted tooltips", tooltip: dates[date]['occasion']};
+                    re = {
+                        enabled: false, classes: "Highlighted tooltips", tooltip: dates[date]['occasion']
+                    };
                 } else {
                     re = {enabled: true};
                 }
@@ -162,14 +164,17 @@ Edit Apply  Leave
             todayHighlight: 'true',
             autoclose: true,
             format: 'd M yyyy',
-            daysOfWeekDisabled: [0, 6],
+            daysOfWeekDisabled: [0,
+                6],
             startDate: '-{{ $before_days }}d',
             endDate: '+{{ $after_days }}d',
             beforeShowDay: function (date) {
                 var date = date.getFullYear() + "-" + ("0" + (date.getMonth() + 1)).slice(-2) + "-" + ("0" + date.getDate()).slice(-2);
                 var Highlight = dates[date];
                 if (Highlight) {
-                    re = {enabled: false, classes: "Highlighted", tooltip: 'Holiday'};
+                    re = {
+                        enabled: false, classes: "Highlighted", tooltip: 'Holiday'
+                    };
                 } else {
                     re = {enabled: true};
                 }
@@ -196,13 +201,11 @@ Edit Apply  Leave
                     datesAgainstCompoff(true, $('#comp_off'));
                 } else if (leave_type_id == 8) { //in case of birthday
                     var fullDate = new Date(emp_detail.date_birth);
-                    if(fullDate.getMonth() <= 1){
+                    if (fullDate.getMonth() <= 1) {
                         fullDate.setFullYear(new Date().getFullYear() + 1);
+                    } else {
+                        fullDate.setFullYear(new Date().getFullYear());
                     }
-                    else{
-                       fullDate.setFullYear(new Date().getFullYear()); 
-                    }
-                    console.log(fullDate);
                     var birthday = fullDate.toShortFormat();
                     $('#datepicker, #datepickerto').datepicker('setStartDate', birthday).datepicker('setEndDate', birthday).datepicker('setDate', birthday);
                     $('#comp_off').attr('required', false).parents('div.col-md-3').hide();

@@ -376,7 +376,7 @@ class LeaveMasterController extends Controller {
      */
     private function sendApprovalMail($data) {
         $html = "Greetings of the day " . $data['mail_to_name'] . "!<br><br>"
-                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b>  <b>" . (($data['comment'] != '') ? ' with a message <b>'.$data['comment'].'</b>' : '') . " on " . $data['action_date'] . "."
+                . "Your leaves are <b>" . (($data['approved']) ? 'Accepted' : 'Rejected') . "</b> by " . $data['action_by'] . " for leave from <b>" . $data['leave_from'] . "</b> to <b>" . $data['leave_to'] . "</b>  <b>" . (($data['comment'] != '') ? ' with a message <b>' . $data['comment'] . '</b>' : '') . " on " . $data['action_date'] . "."
                 . "<br><br>"
                 . "Regards,<br>"
                 . "Team Ganit PlusMinus";
@@ -570,7 +570,7 @@ class LeaveMasterController extends Controller {
         if ($leaveRecord->withdraw != 1) {
             LeaveMaster::where('id', $request->id)->update(['withdraw' => 1]);
             if ($leaveRecord->LeaveType != 8) {//birthday leave
-                if ($leaveRecord->approved == 1) {
+                if ($leaveRecord->Approved == 1) {
                     $employee = Employee::find($leaveRecord->EmpId);
                     $leaveType = Leave_Type::find($leaveRecord->LeaveType);
                     $comp_off = $employee->comp_off;
@@ -733,7 +733,7 @@ class LeaveMasterController extends Controller {
         }
 
         $sheet_data = LeaveMaster::
-                        select([DB::raw('employees.emp_code AS Emp_Code'), DB::raw('employees.name AS Name'), DB::raw('DATE_FORMAT(leavemaster.created_at, "%d %b %Y") as Applied_Date'), DB::raw('DATE_FORMAT(leavemaster.FromDate, "%d %b %Y") as From_Date'), DB::raw('DATE_FORMAT(leavemaster.ToDate, "%d %b %Y") as To_Date'), 'leavemaster.NoOfDays', DB::raw('leave_types.name AS Leave_Type'), DB::raw('DATE_FORMAT(comp_off_managements.start_date, "%d %b %Y") as Comp_Off_Against'), DB::raw('leavemaster.LeaveReason AS Purpose'), DB::raw('if(leavemaster.Approved IS NOT NULL, (IF(leavemaster.Approved = 1, "Approved","Rejected")),"Pending") as Leave_Status')])
+                        select([DB::raw('employees.emp_code AS Emp_Code'), DB::raw('employees.name AS Name'), DB::raw('DATE_FORMAT(leavemaster.created_at, "%d %b %Y") as Applied_Date'), DB::raw('DATE_FORMAT(leavemaster.FromDate, "%d %b %Y") as From_Date'), DB::raw('DATE_FORMAT(leavemaster.ToDate, "%d %b %Y") as To_Date'), 'leavemaster.NoOfDays', DB::raw('leave_types.name AS Leave_Type'), DB::raw('DATE_FORMAT(comp_off_managements.start_date, "%d %b %Y") as Comp_Off_Against'), DB::raw('leavemaster.LeaveReason AS Purpose'), DB::raw('if(leavemaster.Approved IS NOT NULL, (IF(leavemaster.Approved = 1, "Approved","Rejected")),"Pending") as Leave_Status'), DB::raw('if(leavemaster.withdraw = 1, "Withdrawn","") as Withdrawn')])
                         ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                         ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                         ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
@@ -756,6 +756,25 @@ class LeaveMasterController extends Controller {
         );
 
         return response()->json($response);
+    }
+
+    /** Check if leave is approved leave
+     * @param request $request Inputs from ajax
+     * @return string true/false
+     * @author Varsha Mittal <varsha.mittal@ganitsoftec.com>
+     */
+    public function ajaxIsApprovedLeave(Request $request) {
+        $date = date_format(date_create($request->get('date')), "Y-m-d");
+        $leave = LeaveMaster::where('FromDate', '<=', $date)
+                ->where('ToDate', '>=', $date)
+                ->where('withdraw', '0')
+                ->where('EmpId', Auth::user()->context_id)
+                ->count();
+        
+        if ($leave) {
+            return 'true';
+        }
+        return 'false';
     }
 
 }

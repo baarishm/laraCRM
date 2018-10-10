@@ -122,13 +122,29 @@ Leave Dashboard
         $('.withdraw').on('click', function (e) {
             e.preventDefault();
             var link = $(this);
-            $.ajax({
-                method: "POST",
-                url: "{{ url(config('laraadmin.adminRoute') . '/leave/withdraw') }}",
-                data: {id: link.attr('data-removed'), _token: "{{ csrf_token()}}"}
-            }).success(function (message) {
-                link.parents('td').html('Withdrawn');
-                swal(message);
+            swal({
+                title: "Are you sure?",
+                text: "You will not be able to recover this action!",
+                type: "warning",
+                showCancelButton: true,
+                confirmButtonClass: "btn-danger",
+                confirmButtonText: "Yes, Withdraw!",
+                cancelButtonText: "Cancel",
+                closeOnConfirm: false,
+                closeOnCancel: false
+            }).then(function (isConfirm) {
+                if (isConfirm.value) {
+                    $.ajax({
+                        method: "POST",
+                        url: "{{ url(config('laraadmin.adminRoute') . '/leave/withdraw') }}",
+                        data: {id: link.attr('data-removed'), _token: "{{ csrf_token()}}"}
+                    }).success(function (message) {
+                        link.parents('td').html('Withdrawn');
+                        swal(message);
+                    });
+                } else {
+                    return false;
+                }
             });
         });
     });

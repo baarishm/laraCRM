@@ -46,16 +46,17 @@ class Projects_SprintsController extends Controller {
      */
     public function store(Request $request) {
         $insert_data = $request->all();
-        $row = Projects_Sprint::sprintExists($insert_data['project_id'], $insert_data['start_date'], $insert_data['end_date']);
-        $Exist = $row->count();
-        if ($Exist) {
-            return "Sprint Already exists with these dates!";
-        } else {
+        //commented as a project can have multiple sprints in same week
+//        $row = Projects_Sprint::sprintExists($insert_data['project_id'], $insert_data['start_date'], $insert_data['end_date']);
+//        $Exist = $row->count();
+//        if ($Exist) {
+//            return "Sprint Already exists with these dates!";
+//        } else {
             unset($insert_data['_token']);
             if ($id = Projects_Sprint::create($insert_data)->id)
                 return $id;
             return 'Creation failed! Please retry.';
-        }
+//        }
     }
 
     /**
@@ -87,15 +88,16 @@ class Projects_SprintsController extends Controller {
      */
     public function update(Request $request, $id) {
         $update_data = $request->all();
-        $row = Projects_Sprint::sprintExists($update_data['project_id'], $update_data['start_date'], $update_data['end_date']);
-        $Exist = $row->count();
-        if ($Exist && !in_array($id, $row->toArray())) {
-            return "Sprint Already exists with these dates!";
-        } else {
+        //commented as a project can have multiple sprints in same week
+//        $row = Projects_Sprint::sprintExists($update_data['project_id'], $update_data['start_date'], $update_data['end_date']);
+//        $Exist = $row->count();
+//        if ($Exist && !in_array($id, $row->toArray())) {
+//            return "Sprint Already exists with these dates!";
+//        } else {
             if ($update_row = Projects_Sprint::find($id)->update($request->all()))
                 return $id;
             return 'Updation failed! Please retry.';
-        }
+//        }
     }
 
     /**
