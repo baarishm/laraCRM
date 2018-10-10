@@ -657,8 +657,6 @@ $.widget.bridge('uibutton', $.ui.button);
 <!-- dashboard -->
 <script src="{{ asset('la-assets/js/pages/dashboard.js') }}"></script>
 
-<script src="https://code.jquery.com/jquery-1.10.2.js"></script>  
-
 <script>
 //(function($) {
 //	$('body').pgNotification({
