@@ -570,7 +570,7 @@ class LeaveMasterController extends Controller {
         if ($leaveRecord->withdraw != 1) {
             LeaveMaster::where('id', $request->id)->update(['withdraw' => 1]);
             if ($leaveRecord->LeaveType != 8) {//birthday leave
-                if ($leaveRecord->approved == 1) {
+                if ($leaveRecord->Approved == 1) {
                     $employee = Employee::find($leaveRecord->EmpId);
                     $leaveType = Leave_Type::find($leaveRecord->LeaveType);
                     $comp_off = $employee->comp_off;
