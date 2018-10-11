@@ -46,6 +46,7 @@ class TimesheetEmail extends Command {
                         select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
                         ->where('date', '>=', date('Y-m-d', strtotime('-1 days')))
                         ->where('date', '<=', date('Y-m-d', strtotime('-1 days')))
+                        ->whereNull('timesheets.deleted_at')
                         ->leftJoin('timesheets', 'timesheets.submitor_id', '=', 'employees.id')
                         ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
                         ->leftJoin('tasks', 'timesheets.task_id', '=', 'tasks.id')

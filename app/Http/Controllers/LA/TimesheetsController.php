@@ -143,20 +143,20 @@ class TimesheetsController extends Controller {
         $module = Module::get('Timesheets');
         if (Module::hasAccess("Timesheets", "create")) {
             $forward = Timesheet::leads_managers_tasks_notSubmitted();
-            $projects = Project::whereNull('deleted_at')->where('start_date', '<=', date('Y-m-d'))->where('end_date', '>=', date('Y-m-d'))->get();
+            $projects = Project::whereNull('projects.deleted_at')
+                    ->select([DB::raw('projects.id as id'), DB::raw('projects.name as name')])
+                    ->whereNull('resource_allocations.deleted_at')
+                    ->leftJoin('resource_allocations', 'resource_allocations.project_id', '=', 'projects.id')
+                    ->where('resource_allocations.start_date', '<=', date('Y-m-d'))
+                    ->where('resource_allocations.end_date', '>=', date('Y-m-d'))
+                    ->where('resource_allocations.employee_id', Auth::user()->context_id)
+                    ->get();
             return view('la.timesheets.add', [
                 'module' => $module,
                 'leads' => $forward['leads'],
                 'managers' => $forward['managers'],
                 'tasks' => $forward['tasks'],
-                'projects' => Project::whereNull('projects.deleted_at')
-                        ->select([DB::raw('projects.id as id'), DB::raw('projects.name as name')])
-                        ->whereNull('resource_allocations.deleted_at')
-                        ->leftJoin('resource_allocations', 'resource_allocations.project_id', '=', 'projects.id')
-                        ->where('resource_allocations.start_date', '<=', date('Y-m-d'))
-                        ->where('resource_allocations.end_date', '>=', date('Y-m-d'))
-                        ->where('resource_allocations.employee_id', Auth::user()->context_id)
-                        ->get(),
+                'projects' => $projects,
                 'projects_sprints' => Projects_Sprint::where('project_id', $projects[0]->project_id)->where('end_date', '>=', date('Y-m-d'))->where('start_date', '<=', date('Y-m-d'))->get(),
                 'records' => $forward['notSubmitted'],
                 'task_removed' => '',
@@ -293,16 +293,24 @@ class TimesheetsController extends Controller {
             if (isset($timesheet->id)) {
                 if ($timesheet->date >= date('Y-m-d', strtotime('-1 week'))) {
                     $module = Module::get('Timesheets');
-
                     $module->row = $timesheet;
                     $forward = Timesheet::leads_managers_tasks_notSubmitted();
+                    $projects = Project::whereNull('projects.deleted_at')
+                            ->select([DB::raw('projects.id as id'), DB::raw('projects.name as name')])
+                            ->whereNull('resource_allocations.deleted_at')
+                            ->leftJoin('resource_allocations', 'resource_allocations.project_id', '=', 'projects.id')
+                            ->where('resource_allocations.start_date', '<=', $timesheet->date)
+                            ->where('resource_allocations.end_date', '>=', $timesheet->date)
+                            ->where('resource_allocations.employee_id', Auth::user()->context_id)
+                            ->get();
+
                     return view('la.timesheets.edit', [
                                 'module' => $module,
                                 'view_col' => $this->view_col,
                                 'leads' => $forward['leads'],
                                 'managers' => $forward['managers'],
                                 'tasks' => $forward['tasks'],
-                                'projects' => Project::whereNull('deleted_at')->where('start_date', '<=', $timesheet->date)->where('end_date', '>=', $timesheet->date)->get(),
+                                'projects' => $projects,
                                 'projects_sprints' => Projects_Sprint::where('project_id', $timesheet->project_id)->where('end_date', '>=', $timesheet->date)->where('start_date', '<=', $timesheet->date)->get(),
                             ])->with('timesheet', $timesheet);
                 } else {
@@ -604,6 +612,7 @@ class TimesheetsController extends Controller {
                         select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
                         ->where('date', '>=', date('Y-m-d', strtotime($request->start_date)))
                         ->where('date', '<=', date('Y-m-d', strtotime($request->end_date)))
+                        ->whereNull('timesheets.deleted_at')
                         ->leftJoin('timesheets', 'timesheets.submitor_id', '=', 'employees.id')
                         ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
                         ->leftJoin('tasks', 'timesheets.task_id', '=', 'tasks.id')
