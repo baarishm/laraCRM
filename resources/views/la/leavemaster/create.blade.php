@@ -91,6 +91,11 @@ Apply For Leave
                             <label for="Number">Leave Purpose*</label>
                             <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" required placeholder="Reason" maxlength="180"  >   
                         </div>
+<!--                         <div class="form-group col-md-3">
+                        
+                             <input type="checkbox" name="halfday" value="halfday" checked="checked"  style="margin: 34px 0 0;">Half Day<br>  
+                        </div>
+                        -->
                         <div class="col-md-3" style="margin-top: 25px;">
                             <button type="submit" class="btn btn-success">Submit</button>
                         </div>
@@ -260,6 +265,8 @@ Apply For Leave
             }
             $('#datepicker, #datepickerto').datepicker('setStartDate', start_date).datepicker('setEndDate', end_date).datepicker('setDate', '');
         }
+        
+        
     });
 
 

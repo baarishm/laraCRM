@@ -40,7 +40,7 @@ class DashboardController extends Controller {
     public function index() {
         $data = [];
         $role = \Session::get('role');
-
+     
         if ($role == 'engineer') {
             $empdetail = Employee::where('id', Auth::user()->context_id)
                     ->first();
@@ -53,6 +53,7 @@ class DashboardController extends Controller {
                     ->select([DB::raw('projects.name AS project_name,resource_allocations.*')])
                     ->leftJoin('projects', 'projects.id', '=', 'resource_allocations.project_id')
                     ->where('employee_id', '=', Auth::user()->context_id)
+                    ->select('name')
                     ->distinct()
                     ->get();
             count($Workingprojectname);
@@ -124,6 +125,7 @@ class DashboardController extends Controller {
                     ->get();
             count($leaveMaster);
             $employee = DB::table('employees')
+                    ->whereNull('deleted_at')
                     ->get();
             count($employee);
 
@@ -137,6 +139,7 @@ class DashboardController extends Controller {
             $projectname = DB::table('projects')
                     ->select('name')
                     ->distinct()
+                    ->whereNull('deleted_at')
                     ->get();
             count($projectname);
 

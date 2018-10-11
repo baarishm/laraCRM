@@ -656,7 +656,6 @@ $.widget.bridge('uibutton', $.ui.button);
 <script src="{{ asset('la-assets/plugins/fastclick/fastclick.js') }}"></script>
 <!-- dashboard -->
 <script src="{{ asset('la-assets/js/pages/dashboard.js') }}"></script>
-
 <script>
 //(function($) {
 //	$('body').pgNotification({
