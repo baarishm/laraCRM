@@ -146,7 +146,7 @@ use AuthenticatesAndRegistersUsers,
                 $holiday_list = collect(Holidays_List::select(['day', 'occasion'])->get())->keyBy('day');
                 $request->session()->put('holiday_list', json_encode($holiday_list));
                 $request->session()->put('role', Employee::employeeRole());
-                $request->session()->put('employee_details', Employee::find(\auth()->user()->context_id));
+                $request->session()->put('employee_details', Employee::select(['id', 'name', 'gender', 'mobile', 'mobile2', 'email', 'dept', 'city', 'address', 'about', 'date_birth', 'date_hire', 'deleted_at', 'first_approver', 'second_approver', 'total_leaves', 'availed_leaves', 'comp_off', 'is_confirmed', 'emp_code', DB::raw('CAST(available_leaves AS CHAR) as available_leaves')])->where('id', \auth()->user()->context_id));
                 return redirect($this->redirectTo);
             }
         } else {
