@@ -65,7 +65,7 @@ class TimesheetEntryTrackDaily extends Command {
                         . "Regards,<br>"
                         . "Team Ganit PlusMinus";
 
-                $manager = Employee::getLeadDetails(Auth::user()->context_id); //taking lead as manager here
+                $manager = Employee::getLeadDetails($ganda_bacha['id']); //taking lead as manager here
 
                 $recipients['to'] = [$ganda_bacha['email']];
                 $recipients['cc'] = [$manager->email];
