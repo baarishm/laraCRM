@@ -41,7 +41,7 @@ class TimesheetEntryTrackDaily extends Command {
      * @return mixed
      */
     public function handle() {
-        if (Holidays_List::where('day', date('Y-m-d', strtotime('-1 days')))->count() > 0) {
+        if (Holidays_List::where('day', date('Y-m-d', strtotime('-1 days')))->count() == 0) {
             $timesheet_users = DB::table('timesheets')
                             ->where('date', '=', date('Y-m-d', strtotime('-1 days')))
                             ->groupBy(['submitor_id', 'date'])->pluck('submitor_id');
