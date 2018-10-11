@@ -45,6 +45,7 @@ class TimesheetEntryTrack extends Command {
                         ->select([DB::raw('count(timesheets.id) as day_entry'), 'date', 'submitor_id', 'name', 'email'])
                         ->where('date', '>=', date('Y-m-d', strtotime('last monday')))
                         ->where('date', '<=', date('Y-m-d', strtotime('friday')))
+                        ->whereNull('deleted_at')
                         ->leftJoin('timesheets', 'timesheets.submitor_id', '=', 'employees.id')
                         ->groupBy(['submitor_id', 'date'])->get())->groupBy('submitor_id');
 
