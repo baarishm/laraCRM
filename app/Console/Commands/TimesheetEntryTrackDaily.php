@@ -44,6 +44,7 @@ class TimesheetEntryTrackDaily extends Command {
         if (Holidays_List::where('day', date('Y-m-d', strtotime('-1 days')))->count() == 0) {
             $timesheet_users = DB::table('timesheets')
                             ->where('date', '=', date('Y-m-d', strtotime('-1 days')))
+                            ->whereNull('deleted_at')
                             ->groupBy(['submitor_id', 'date'])->pluck('submitor_id');
 
             $bade_log = config('custom.bade_log');
