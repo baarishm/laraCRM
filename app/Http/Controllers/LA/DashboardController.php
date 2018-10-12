@@ -50,9 +50,12 @@ class DashboardController extends Controller {
                     ->count();
 
             $Workingprojectname = DB::table('resource_allocations')
-                    ->select([DB::raw('projects.name AS project_name,resource_allocations.*')])
+                    ->select([DB::raw('DISTINCT(projects.name) AS project_name,resource_allocations.*')])
                     ->leftJoin('projects', 'projects.id', '=', 'resource_allocations.project_id')
+                    ->where('resource_allocations.start_date', '<=', date('Y-m-d'))
+                    ->where('resource_allocations.end_date', '>=', date('Y-m-d'))
                     ->where('employee_id', '=', Auth::user()->context_id)
+                    ->groupBy(['resource_allocations.employee_id','resource_allocations.project_id'])
                     ->distinct()
                     ->get();
             count($Workingprojectname);
@@ -131,6 +134,7 @@ class DashboardController extends Controller {
                     ->select([DB::raw('employees.name AS employees_name,timesheets.*'), DB::raw('employees.emp_code AS emp_code')])
                    ->leftJoin('employees', 'employees.id', '=', 'timesheets.submitor_id')->distinct()
                     ->where('date', '=', date('Y-m-d'))
+                    ->groupBy(['timesheets.submitor_id'])
                     ->get();
             count($ganitemp);
 
