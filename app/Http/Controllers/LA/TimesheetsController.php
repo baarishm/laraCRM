@@ -87,7 +87,7 @@ class TimesheetsController extends Controller {
 
             $role = Employee::employeeRole();
 
-            $this->custom_cols = ['submitor_id', 'project_id', 'projects_sprint_id', 'task_id', 'date', 'Time (in hrs)', 'Status'];
+            $this->custom_cols = ['submitor_id', 'project_id', 'projects_sprint_id', 'task_id', 'date', 'Time (in hrs)', 'Description', 'Status'];
 
             $projects = DB::table('timesheets')
                     ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
