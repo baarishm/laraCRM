@@ -14,6 +14,7 @@ View Apply  Leave
             <th>Number Of Days</th>
             <th>Leave Purpose</th>
             <th>Leave Type</th>
+             <th>Leave Duration</th>
         </tr>
            @php
             $FromDate=date('d M Y',  strtotime($leaveMaster->FromDate));
@@ -27,6 +28,7 @@ View Apply  Leave
             <td>{{$leaveMaster->NoOfDays}}</td>
             <td>{{$leaveMaster->LeaveReason}}</td>
             <td>{{$leaveMaster->leave_name}}</td>
+            <td>{{$leaveMaster->half_day}}</td>
         </tr>
     </table>
    
