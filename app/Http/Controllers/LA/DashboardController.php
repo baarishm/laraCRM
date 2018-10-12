@@ -53,7 +53,6 @@ class DashboardController extends Controller {
                     ->select([DB::raw('projects.name AS project_name,resource_allocations.*')])
                     ->leftJoin('projects', 'projects.id', '=', 'resource_allocations.project_id')
                     ->where('employee_id', '=', Auth::user()->context_id)
-                    ->select('name')
                     ->distinct()
                     ->get();
             count($Workingprojectname);
