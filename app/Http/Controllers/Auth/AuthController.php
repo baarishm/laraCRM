@@ -13,6 +13,7 @@ use Illuminate\Foundation\Auth\ThrottlesLogins;
 use Illuminate\Foundation\Auth\AuthenticatesAndRegistersUsers;
 use Illuminate\Http\Request;
 use Auth;
+use DB;
 
 class AuthController extends Controller {
     /*
@@ -144,9 +145,12 @@ use AuthenticatesAndRegistersUsers,
                 return redirect('/logout');
             } else {
                 $holiday_list = collect(Holidays_List::select(['day', 'occasion'])->get())->keyBy('day');
+                $emp_details = Employee::find(\auth()->user()->context_id);
+                $emp_details->address = urlencode($emp_details->address);
+                $emp_details->available_leaves = "'" . ($emp_details->available_leaves) . "'";
                 $request->session()->put('holiday_list', json_encode($holiday_list));
                 $request->session()->put('role', Employee::employeeRole());
-                $request->session()->put('employee_details', Employee::find(\auth()->user()->context_id));
+                $request->session()->put('employee_details', $emp_details);
                 return redirect($this->redirectTo);
             }
         } else {
