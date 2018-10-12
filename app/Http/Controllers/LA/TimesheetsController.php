@@ -52,7 +52,7 @@ class TimesheetsController extends Controller {
         session(['task_removed' => '']);
         $module = Module::get('Timesheets');
 
-        $this->custom_cols = ['Id', 'project_id', 'projects_sprint_id', 'task_id', 'date', 'Time (in hrs)', 'Status'];
+        $this->custom_cols = ['Id', 'project_id', 'projects_sprint_id', 'task_id', 'date', 'Time (in hrs)', 'Description', 'Status'];
 
         $projects = DB::table('timesheets')
                 ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
@@ -412,7 +412,7 @@ class TimesheetsController extends Controller {
             $week = ' timesheets.date >= "' . date('Y-m-d', strtotime("Monday", strtotime('this week ' . $request->week_search . ' week'))) . '" and timesheets.date <= "' . date('Y-m-d', strtotime("Saturday", strtotime('this week ' . $request->week_search . ' week'))) . '"';
         }
 
-        $this->custom_cols = [($request->teamMember) ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'projects_sprint_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), DB::raw("(case when (mail_sent = 1) THEN 'Mail Sent' ELSE 'Submitted' end) as mail_sent")];
+        $this->custom_cols = [($request->teamMember) ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'projects_sprint_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), 'timesheets.comments', DB::raw("(case when (mail_sent = 1) THEN 'Mail Sent' ELSE 'Submitted' end) as mail_sent")];
 
         $where = 'submitor_id = ' . Auth::user()->context_id;
         if ($request->teamMember) {
@@ -459,7 +459,7 @@ class TimesheetsController extends Controller {
 
         $out = Datatables::of($values)->make();
         $data = $out->getData();
-        $col_arr = [($request->teamMember) ? 'submitor_id' : 'id', 'project_id', 'projects_sprint_id', 'task_id', 'date', 'hours', 'mail_sent'];
+        $col_arr = [($request->teamMember) ? 'submitor_id' : 'id', 'project_id', 'projects_sprint_id', 'task_id', 'date', 'hours', 'comments', 'mail_sent'];
         $fields_popup = ModuleFields::getModuleFields('Timesheets');
         foreach ($fields_popup as $column => $val) {
             if (!in_array($column, $col_arr)) {
@@ -475,6 +475,9 @@ class TimesheetsController extends Controller {
                 }
                 if ($col == $this->view_col) {
                     $data->data[$i][$j] = '<a href="' . url(config('laraadmin.adminRoute') . '/timesheets/' . $data->data[$i][0]) . '">' . $data->data[$i][$j] . '</a>';
+                }
+                if ($col == 'comments') {
+                    $data->data[$i][$j] = '<span class="tooltips" title="'.$data->data[$i][$j].'">' . ((strlen($data->data[$i][$j])>20) ? substr($data->data[$i][$j], 0, 20).'...' : $data->data[$i][$j]) . '</span>';
                 }
             }
 
