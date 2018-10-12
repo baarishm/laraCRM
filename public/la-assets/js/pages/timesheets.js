@@ -116,6 +116,10 @@ function init(removeable_options, leave) {
         }
     });
 
+    if ($('select#task_id option[selected]').length > 0) {
+        console.log('here');
+        $('select#task_id').val($('select#task_id option[selected]').val());
+    }
 }
 
 function update_row(saved_data, id, removeable_options) {
@@ -134,8 +138,8 @@ function update_row(saved_data, id, removeable_options) {
             '<td class="hours">' + saved_data.hours + '</td>' +
             '<td class="minutes">' + saved_data.minutes + '</td>' +
             '<td>' +
-            '<button class="btn btn-success update-entry submit-form" data-value=' + id + '><i class="fa fa-edit"></i></button>' +
-            '<button class="btn btn-danger delete-entry submit-form" data-value=' + id + '><i class="fa fa-times"></i></button>' +
+            '<button class="btn btn-success update-entry submit-form add-entry-form" data-value=' + id + '><i class="fa fa-edit"></i></button>' +
+            '<button class="btn btn-danger delete-entry submit-form add-entry-form" data-value=' + id + '><i class="fa fa-times"></i></button>' +
             '</td>' +
             '</tr>'
             );
