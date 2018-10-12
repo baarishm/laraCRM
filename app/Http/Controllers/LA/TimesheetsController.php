@@ -87,7 +87,7 @@ class TimesheetsController extends Controller {
 
             $role = Employee::employeeRole();
 
-            $this->custom_cols = ['submitor_id', 'project_id', 'projects_sprint_id', 'task_id', 'date', 'Time (in hrs)', 'Status'];
+            $this->custom_cols = ['submitor_id', 'project_id', 'projects_sprint_id', 'task_id', 'date', 'Time (in hrs)', 'Description', 'Status'];
 
             $projects = DB::table('timesheets')
                     ->select([DB::raw('distinct(timesheets.project_id)'), DB::raw('projects.name AS project_name')])
@@ -157,7 +157,7 @@ class TimesheetsController extends Controller {
                 'managers' => $forward['managers'],
                 'tasks' => $forward['tasks'],
                 'projects' => $projects,
-                'projects_sprints' => Projects_Sprint::where('project_id', $projects[0]->project_id)->where('end_date', '>=', date('Y-m-d'))->where('start_date', '<=', date('Y-m-d'))->get(),
+                'projects_sprints' => Projects_Sprint::where('project_id', ((!empty($projects)) ? $projects[0]->project_id : 0))->where('end_date', '>=', date('Y-m-d'))->where('start_date', '<=', date('Y-m-d'))->get(),
                 'records' => $forward['notSubmitted'],
                 'task_removed' => '',
             ]);

@@ -85,6 +85,10 @@ Edit Apply  Leave
 
                             <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required maxlength="180" value="{{$leaveMaster -> LeaveReason or old('LeaveReason')}}"> 
                         </div>
+                        <div class="form-group col-md-3" style=" <?php echo ($leaveMaster->half_day == '1') ? '' : 'display: none'; ?>" id="halfday">
+                            <input class="duration" type="checkbox" name="half_day" value="1" id="half_day"  style= "margin: 34px 0 0;" checked="<?php echo ($value=="1") ? 'true':'false' ?> "/>Half Day<br>  
+                        </div>
+
                         <div class="form-group col-md-3" style="margin-top:25px">
                             <button type="submit" class="btn btn-success">Update</button>
                         </div>
@@ -107,7 +111,20 @@ Edit Apply  Leave
         //get dates from session
         var dates = "{{ Session::get('holiday_list') }}";
         dates = JSON.parse(dates.replace(/&quot;/g, '\"'));
+        $("#half_day").change(function () {
+            var daysDiff = $("#NoOfDays").val();
+            if (daysDiff == 1 && $("#half_day").prop("checked") == true) {
+                daysDiff = .5;
+                $("#NoOfDays").val(daysDiff);
+                return daysDiff;
+            } else {
+                $("#NoOfDays").val(1);
+                return daysDiff;
+            }
+        });
         // To calulate difference b/w two dates
+
+
         function CalculateDiff(first, last)
         {
             var aDay = 24 * 60 * 60 * 1000,
@@ -124,10 +141,18 @@ Edit Apply  Leave
                     }
                 }
             }
+            if (daysDiff == 1) {
+                $("#halfday").show();
+
+
+            } else {
+
+                $('#half_day').prop('checked', false);
+                $("#halfday").hide();
+            }
             if (daysDiff == 0) {
                 daysDiff = 1;
             }
-
             $("#NoOfDays").val(daysDiff);
             return daysDiff;
         }
@@ -157,6 +182,8 @@ Edit Apply  Leave
         }).on('changeDate', function (e) {
             $("#datepickerto").val('');
             $("#NoOfDays").val('');
+            $('#half_day').prop('checked', false);
+
             $("#datepickerto").datepicker('setStartDate', e.date).datepicker("setDate", e.date);
             CalculateDiff(new Date($("#datepicker").datepicker("getDate")), new Date($("#datepickerto").datepicker("getDate")));
         });
