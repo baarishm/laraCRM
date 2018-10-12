@@ -91,11 +91,10 @@ Apply For Leave
                             <label for="Number">Leave Purpose*</label>
                             <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" required placeholder="Reason" maxlength="180"  >   
                         </div>
-<!--                         <div class="form-group col-md-3">
-                        
-                             <input type="checkbox" name="halfday" value="halfday" checked="checked"  style="margin: 34px 0 0;">Half Day<br>  
+                        <div class="form-group col-md-3" style="display: none" id="halfday">
+                            <input class="duration" type="checkbox" name="half_day" value="1" id="half_day"  style="margin: 34px 0 0;" />Half Day<br>  
                         </div>
-                        -->
+                        
                         <div class="col-md-3" style="margin-top: 25px;">
                             <button type="submit" class="btn btn-success">Submit</button>
                         </div>
@@ -119,6 +118,18 @@ Apply For Leave
         //get dates from session
         var dates = "{{ Session::get('holiday_list') }}";
         dates = JSON.parse(dates.replace(/&quot;/g, '\"'));
+        
+          $("#half_day").change(function(){     
+             var daysDiff=$("#NoOfDays").val();
+            if(daysDiff == 1 && $("#half_day"). prop("checked") == true){             
+                daysDiff = .5;
+               $("#NoOfDays").val(daysDiff);
+             return daysDiff;
+            }else{
+                 $("#NoOfDays").val(1);
+                return daysDiff;
+            }            
+        });
 
         // To calulate difference b/w two dates
         function CalculateDiff(first, last)
@@ -137,11 +148,18 @@ Apply For Leave
                 }
             }
 
-            if (daysDiff == 0) {
-                daysDiff = 1;
+            if (daysDiff == 1) {
+                 $("#halfday").show();
+                
+                               
+            }else{                
+                 $('#half_day').prop('checked', false);
+                 $("#halfday").hide();
             }
-
-            $("#NoOfDays").val(daysDiff);
+            if(daysDiff==0){
+               daysDiff = 1; 
+            }
+              $("#NoOfDays").val(daysDiff);
             return daysDiff;
         }
 
@@ -167,8 +185,9 @@ Apply For Leave
         }).on('changeDate', function (e) {
             $("#datepickerto").val('');
             $("#NoOfDays").val('');
+            $('#half_day').prop('checked', false);
             $("#datepickerto").datepicker('setStartDate', e.date).datepicker("setDate", e.date);
-            CalculateDiff(new Date($("#datepicker").datepicker("getDate")), new Date($("#datepickerto").datepicker("getDate")));
+            CalculateDiff(new Date($("#datepicker").datepicker("getDate")), new Date($("#datepickerto").datepicker("getDate")));         
         });
 
         $("#datepickerto").datepicker({

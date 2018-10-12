@@ -20,7 +20,7 @@ class LeaveMasterController extends Controller {
 
     public function edit($id) {
         $leaveMaster = DB::table('leavemaster')
-                ->select(['id', 'EmpId', DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), 'NoOfDays', 'LeaveReason', 'LeaveType', 'approved', 'comp_off_id'])
+                ->select(['id', 'EmpId', DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), 'NoOfDays', 'LeaveReason', 'LeaveType', 'approved', 'comp_off_id','half_day'])
                 ->where('id', $id)
                 ->first();
 
@@ -75,7 +75,7 @@ class LeaveMasterController extends Controller {
                 ->whereRaw($where)
                 ->orderBy('leavemaster.created_at', 'desc')
                 ->get();
-
+       //   echo "<pre>"; print_r($leaveMaster);die;
         return view('la.leavemaster.' . $view, [
             'before_days' => LAConfigs::getByKey('before_days_leave'),
             'after_days' => LAConfigs::getByKey('after_days_leave'),
@@ -181,7 +181,9 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $leaveTypeId = $request->get('LeaveType');
         $leaveType = Leave_Type::find($leaveMaster->LeaveType);
+         $leaveMaster->half_day = $halfday = $request->get('half_day');
         $comp_off_date = '';
+     
         if (($leaveMaster->LeaveType == 7) && $request->get('comp_off_id') != '') {
             $leaveMaster->comp_off_id = $request->get('comp_off_id');
             $comp_off_date = Comp_Off_Management::find($request->get('comp_off_id'))->start_date;
@@ -205,7 +207,7 @@ class LeaveMasterController extends Controller {
 
         if ($leaveMaster->save()) {
             //send mail
-            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveTypeId, 'comp_off_date' => $comp_off_date]);
+            $this->sendLeaveMail(false, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => $leaveTypeId,'half_day'=>$halfday, 'comp_off_date' => $comp_off_date]);
 
             //send notification
             $emp_detail = Employee::find(Auth::user()->context_id);
@@ -258,6 +260,7 @@ class LeaveMasterController extends Controller {
         $leaveMaster->LeaveReason = $reason = $request->get('LeaveReason');
         $leaveMaster->LeaveType = $request->get('LeaveType');
         $leaveType = Leave_Type::find($leaveMaster->LeaveType);
+         $leaveMaster->half_day = $halfday = $request->get('half_day');
         $comp_off_date = '';
         if (($leaveMaster->LeaveType == 7) && $request->get('comp_off_id') != '') {
             $leaveMaster->comp_off_id = $request->get('comp_off_id');
@@ -280,7 +283,7 @@ class LeaveMasterController extends Controller {
         }
         if ($leaveMaster->save()) {
             //send mail
-            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => ($leaveMaster->LeaveType), 'comp_off_date' => $comp_off_date]);
+            $this->sendLeaveMail(true, ['start_date' => $start_date, 'end_date' => $end_date, 'days' => $days, 'reason' => $reason, 'leaveType' => ($leaveMaster->LeaveType),'half_day' => ( $leaveMaster->half_day), 'comp_off_date' => $comp_off_date]);
 
             //send notification
             $emp_detail = Employee::find(Auth::user()->context_id);
@@ -502,6 +505,7 @@ class LeaveMasterController extends Controller {
                         <th>Leave Type</th>
                         <th>Purpose</th>
                         <th>Leave Status</th>
+                         <th>Leave duration</th>
                         <th style="width:155px; text-align:center;">Action</th>
                 </tr>
                 ';
@@ -516,7 +520,8 @@ class LeaveMasterController extends Controller {
                     <td>' . date('d M Y', strtotime($leaveMasterRow->ToDate)) . '</td>
                     <td>' . $leaveMasterRow->NoOfDays . '</td>
                     <td>' . (($leaveMasterRow->leave_name != '') ? $leaveMasterRow->leave_name : "Not Specified" ) . '</td> 
-
+                    <td>' . $leaveMasterRow->half_day . '</td>
+                        
                  <td>';
                 $html .= '<span  id="btn2" data-toggle="popover" title="' . $leaveMasterRow->LeaveReason . '" data-content="Default popover">Leave Reason ..</span>';
 
@@ -642,9 +647,26 @@ class LeaveMasterController extends Controller {
                 $record = [];
                 $record[] = date('d M Y', strtotime($leaveMasterRow->FromDate));
                 $record[] = date('d M Y', strtotime($leaveMasterRow->ToDate));
-                $record[] = $leaveMasterRow->NoOfDays;
+            //    $record[] = $leaveMasterRow->NoOfDays;
+                 if ($leaveMasterRow->NoOfDays == '0.5') {
+                    $record[] = '0.5';
+                } else {
+
+                    $record[] = $leaveMasterRow->NoOfDays;
+                }
+                
+                
                 $record[] = $leaveMasterRow->leave_name;
-                //       $record[] = $leaveMasterRow->LeaveReason;
+                
+                if ($leaveMasterRow->half_day == '1') {
+                    $record[] = 'Half Day';
+                } else {
+
+                    $record[] = 'Full Day';
+                }
+                
+                
+             //   $record[] = $leaveMasterRow->half_day;
 
                 if ($leaveMasterRow->Approved == '1') {
                     $record[] = 'Approved';

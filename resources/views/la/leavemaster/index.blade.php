@@ -60,6 +60,7 @@ $role = \Session::get('role');
                 <th>To Date</th>
                 <th>No Of Days</th>
                 <th>Leave Type</th>
+                 <th>Leave duration</th>
                 <th> Status</th>
                 <th style="width: 103px; text-align:center;">Action</th>  
                 </thead>
@@ -127,6 +128,7 @@ $role = \Session::get('role');
                 <th>To Date</th>
                 <th>No Of Days</th>
                 <th>Leave Type</th>
+                 <th>Leave duration</th>
                 <th> Status</th>
                 <th style="width: 103px; text-align:center;">Action</th>  
                 </thead>
@@ -144,8 +146,8 @@ $role = \Session::get('role');
                 <th>To Date</th>
                 <th>No Of Days</th>
                 <th>Leave Type</th>
-                <th>Discraption</th>
-                <th> Status</th>
+                 <th>Leave duration</th>
+                  <th> Status</th>
                 <th style="width: 103px; text-align:center;">Action</th>  
                 </thead>
                 </tr>

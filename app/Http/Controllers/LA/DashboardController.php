@@ -40,7 +40,7 @@ class DashboardController extends Controller {
     public function index() {
         $data = [];
         $role = \Session::get('role');
-     
+
         if ($role == 'engineer') {
             $empdetail = Employee::where('id', Auth::user()->context_id)
                     ->first();
@@ -59,7 +59,6 @@ class DashboardController extends Controller {
             count($Workingprojectname);
 
             $holidayname = DB::table('holidays_lists')
-                    
                     ->whereRaw('((MONTH(day)) = (MONTH(CURRENT_DATE())))')
                     ->get();
             count($holidayname);
@@ -118,7 +117,7 @@ class DashboardController extends Controller {
         } else {
             $leaveMaster = DB::table('leavemaster')
                     ->select([DB::raw('employees.name AS employees_name,leavemaster.*'), DB::raw('employees.emp_code AS emp_code')])
-                    ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+                    ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')->distinct()
                     ->where('FromDate', '<=', date('Y-m-d'))
                     ->where('ToDate', '>=', date('Y-m-d'))
                     ->where('Approved', '=', 1)
@@ -131,7 +130,7 @@ class DashboardController extends Controller {
 
             $ganitemp = DB::table('timesheets')
                     ->select([DB::raw('employees.name AS employees_name,timesheets.*'), DB::raw('employees.emp_code AS emp_code')])
-                    ->leftJoin('employees', 'employees.id', '=', 'timesheets.submitor_id')
+                   ->leftJoin('employees', 'employees.id', '=', 'timesheets.submitor_id')->distinct()
                     ->where('date', '=', date('Y-m-d'))
                     ->get();
             count($ganitemp);
