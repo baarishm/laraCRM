@@ -33,7 +33,7 @@
             <div class="small-box <?php echo (($timesheet) ? 'bg-olive' : 'bg-red'); ?> ">
                 <div class="inner">
                    @if($timesheet!= 0)
-                    <h3> Submit</h3>
+                    <h3> Submitted</h3>
                     @else
                     <h3> Pending</h3>
                     @endif
