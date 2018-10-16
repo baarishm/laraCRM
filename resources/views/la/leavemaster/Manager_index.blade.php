@@ -211,6 +211,7 @@ Team Leave Dashboard
     var table = $('#searchdate').dataTable({
         "Processing": true,
         "ServerSide": true,
+         searching: false,
         ajax: {
             "dataType": "json",
             url: "{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",

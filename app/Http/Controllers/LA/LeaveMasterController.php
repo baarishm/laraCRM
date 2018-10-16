@@ -621,8 +621,8 @@ class LeaveMasterController extends Controller {
     public function ajaxDatatable(Request $request) {
         $role = $request->session()->get('role');
         $where = 'employees.deleted_at IS NULL ';
-        $where = 'EmpId = ' . Auth::user()->context_id;
 
+        $where = 'EmpId = ' . Auth::user()->context_id;
         if ($request->teamMember) {
             $where = '';
             $role = Employee::employeeRole();

@@ -191,39 +191,5 @@ $(document).ready(function () {
     });
 });
 
-//$(document).ready(function() {
-//var table = $("#table").DataTable({
-//     destroy: true,
-//           ordering: true,
-//            responsive: true,
-//processing: true,
-//        serverSide: true,
-//        searching: false,
-//        
-//        ajax: {
-//             "dataType": "json",
-//        url:"{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
-//         
-//                type : 'get',
-//                
-//         
-//        },
-//        
-//         "columnDefs": [ {
-//                    "data" : "FromDate"
-//                }, {
-//                    "data" : "ToDate"
-//                }, {
-//                    "data" : "NoOfDays"
-//                }, {
-//                    "data" : "leave_name"
-//                }, {
-//                    "data" : "Approved"
-//               
-//                } ]
-//        })
-//});
-
-
 </script>
 @endpush
