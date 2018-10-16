@@ -117,24 +117,7 @@ $role = \Session::get('role');
                     </tbody>-->
             </table>
         </div>
-        <?php
-    } else if ($role == 'manager' || $role == 'lead') {
-        ?>
-        <div class="card" style="background: #FFF">
-            <table class="table table-striped table-bordered" id="example">
-                <tr>
-                <thead>
-                <th>From Date</th>
-                <th>To Date</th>
-                <th>No Of Days</th>
-                <th>Leave Type</th>
-                 <th>Leave duration</th>
-                <th> Status</th>
-                <th style="width: 103px; text-align:center;">Action</th>  
-                </thead>
-                </tr>
-            </table>
-        </div>
+       
         <?php
     } else {
         ?>
@@ -201,46 +184,13 @@ $(document).ready(function () {
         ajax: {
             "dataType": "json",
             url: "{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
-
             type: 'get',
-
         },
+        drawCallback: function (data) {
+            console.log(data);
+        }
     });
 });
-
-//$(document).ready(function() {
-//var table = $("#table").DataTable({
-//     destroy: true,
-//           ordering: true,
-//            responsive: true,
-//processing: true,
-//        serverSide: true,
-//        searching: false,
-//        
-//        ajax: {
-//             "dataType": "json",
-//        url:"{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
-//         
-//                type : 'get',
-//                
-//         
-//        },
-//        
-//         "columnDefs": [ {
-//                    "data" : "FromDate"
-//                }, {
-//                    "data" : "ToDate"
-//                }, {
-//                    "data" : "NoOfDays"
-//                }, {
-//                    "data" : "leave_name"
-//                }, {
-//                    "data" : "Approved"
-//               
-//                } ]
-//        })
-//});
-
 
 </script>
 @endpush
