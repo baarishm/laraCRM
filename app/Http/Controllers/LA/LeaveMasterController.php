@@ -622,6 +622,14 @@ class LeaveMasterController extends Controller {
         $role = $request->session()->get('role');
         $where = 'employees.deleted_at IS NULL ';
 
+        $start_date = '';
+        if ($request->start_date != '') {
+            $start_date = 'leavemaster.FromDate =' . date('Y-m-d', strtotime($request->start_date));
+        }
+        $end_date = '';
+        if ($request->end_date != '') {
+            $end_date = 'leavemaster.ToDate =' . date('Y-m-d', strtotime($request->end_date));
+        }
         $where = 'EmpId = ' . Auth::user()->context_id;
         if ($request->teamMember) {
             $where = '';
@@ -648,10 +656,17 @@ class LeaveMasterController extends Controller {
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                 ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId');
+               
         if ($where != '') {
             $leaveMaster_query->whereRaw($where);
         }
-
+         if ($start_date != "") {
+            $leaveMaster_query->whereRaw($start_date);
+        }
+        if ($end_date != "") {
+            $leaveMaster_query->whereRaw($end_date);
+        }
+        
         $leaveMaster = $leaveMaster_query->get();
 
         if (!$request->teamMember) {
@@ -772,7 +787,7 @@ class LeaveMasterController extends Controller {
                     $array[] = $record;
                 }
             } else {
-                $array[] = 'No Record Found!';
+                $array[] = ['','','','','No Record Found!','','','',''];
             }
 
 
