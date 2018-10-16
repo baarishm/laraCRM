@@ -184,10 +184,11 @@ $(document).ready(function () {
         ajax: {
             "dataType": "json",
             url: "{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
-
             type: 'get',
-
         },
+        drawCallback: function (data) {
+            console.log(data);
+        }
     });
 });
 

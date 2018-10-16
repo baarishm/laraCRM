@@ -204,10 +204,11 @@ function myfunction(button)
 }
 
 $(document).ready(function () {
+    $('#start_date, #end_date').val('');
 
     var table = $('#searchdate').DataTable({
-        processing: true,
-        serverSide: true,
+        Processing: true,
+        ServerSide: true,
         searching: false,
         ajax: {
             dataType: "json",
@@ -217,13 +218,12 @@ $(document).ready(function () {
                 d.start_date = $('#start_date').val();
                 d.end_date = $('#end_date').val();
                 d.teamMember = "{{$teamMember}}";
-                d.week_search = $('div.week-div').attr('data-value');
 //                        filterDatatableData(d);
 //                        $('.tooltips').tooltips();
             }
         },
-        drawCallback: function () {
-            console.log('here');
+        drawCallback: function (data) {
+            console.log(data);
         }
     });
 

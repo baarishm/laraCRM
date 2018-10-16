@@ -620,16 +620,15 @@ class LeaveMasterController extends Controller {
 
     public function ajaxDatatable(Request $request) {
         $role = $request->session()->get('role');
-        $where = 'employees.deleted_at IS NULL ';
+        
+        $whereDate = '';
+        if ((($request->start_date != null && $request->start_date != "") && ($request->end_date == '' || $request->end_date == null)) || (($request->end_date != null && $request->end_date != "") && ($request->start_date == null && $request->start_date == ""))) {
+            $date = ($request->end_date != '' && $request->end_date == null) ? $request->end_date : $request->start_date;
+            $whereDate = ' (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($date)) . '")';
+        } else if (($request->end_date != null && $request->end_date != "") && ($request->start_date != null && $request->start_date != "")) {
+            $whereDate = ' ((leavemaster.FromDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.ToDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '"))';
+        }
 
-        $start_date = '';
-        if ($request->start_date != '') {
-            $start_date = 'leavemaster.FromDate =' . date('Y-m-d', strtotime($request->start_date));
-        }
-        $end_date = '';
-        if ($request->end_date != '') {
-            $end_date = 'leavemaster.ToDate =' . date('Y-m-d', strtotime($request->end_date));
-        }
         $where = 'EmpId = ' . Auth::user()->context_id;
         if ($request->teamMember) {
             $where = '';
@@ -648,29 +647,26 @@ class LeaveMasterController extends Controller {
         }
         else {
             $this->show_action = true;
-            $where = 'EmpId = ' . Auth::user()->context_id;
         }
 
         $leaveMaster_query = DB::table('leavemaster')
                 ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.emp_code AS emp_code'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                 ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
-                ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId');
-               
+                ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
+                ->whereNull('employees.deleted_at')
+                ->orderBy('FromDate','desc');
+        
         if ($where != '') {
             $leaveMaster_query->whereRaw($where);
         }
-         if ($start_date != "") {
-            $leaveMaster_query->whereRaw($start_date);
-        }
-        if ($end_date != "") {
-            $leaveMaster_query->whereRaw($end_date);
+         if ($whereDate != "") {
+            $leaveMaster_query->whereRaw($whereDate);
         }
         
         $leaveMaster = $leaveMaster_query->get();
 
         if (!$request->teamMember) {
-            $html = "";
             $array = [];
 
             if (!empty($leaveMaster)) {
@@ -679,27 +675,9 @@ class LeaveMasterController extends Controller {
                     $record = [];
                     $record[] = date('d M Y', strtotime($leaveMasterRow->FromDate));
                     $record[] = date('d M Y', strtotime($leaveMasterRow->ToDate));
-                    //    $record[] = $leaveMasterRow->NoOfDays;
-                    if ($leaveMasterRow->NoOfDays == '0.5') {
-                        $record[] = '0.5';
-                    } else {
-
-                        $record[] = $leaveMasterRow->NoOfDays;
-                    }
-
-
+                    $record[] = $leaveMasterRow->NoOfDays;
                     $record[] = $leaveMasterRow->leave_name;
-
-                    if ($leaveMasterRow->half_day == '1') {
-                        $record[] = 'Half Day';
-                    } else {
-
-                        $record[] = 'Full Day';
-                    }
-
-
-                    //   $record[] = $leaveMasterRow->half_day;
-
+                    $record[] = ($leaveMasterRow->half_day == '1') ? 'Half Day' : 'Full Day';
                     if ($leaveMasterRow->Approved == '1') {
                         $record[] = '<span class="text-success">Approved</span>';
                     } else if ($leaveMasterRow->Approved == '0') {
@@ -716,7 +694,6 @@ class LeaveMasterController extends Controller {
 
                         $output = '';
                         $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/leaves/' . $leaveMasterRow->id . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
-
                         $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.leaves.destroy', $leaveMasterRow->id], 'method' => 'delete', 'style' => 'display:inline', 'class' => 'delete']);
                         $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
                         $output .= Form::close();
@@ -724,18 +701,13 @@ class LeaveMasterController extends Controller {
                     } else {
                         $record[] = '';
                     }
-
-
                     $array[] = $record;
                 }
             } else {
-                $array[] = 'No Record Found!';
+                $array[] = ['','','','No Record Found!','','',''];
             }
-
-
             return ['data' => $array];
         } else if ($request->teamMember) {
-            $html = "";
             $array = [];
 
             if (!empty($leaveMaster)) {
@@ -749,12 +721,7 @@ class LeaveMasterController extends Controller {
                     $record[] = date('d M Y', strtotime($leaveMasterRow->ToDate));
                     $record[] = $leaveMasterRow->NoOfDays;
                     $record[] = (($leaveMasterRow->leave_name != '') ? $leaveMasterRow->leave_name : "Not Specified" );
-
-
                     $record[] = "<span class='tooltips' title='" . $leaveMasterRow->LeaveReason . "'>" . $leaveMasterRow->LeaveReason . "</span>";
-
-
-
                     if ($leaveMasterRow->Approved == '1') {
                         $record[] = '<span class="text-success">Approved</span>';
                     } else if ($leaveMasterRow->Approved == '0') {
@@ -762,7 +729,6 @@ class LeaveMasterController extends Controller {
                     } else {
                         $record[] = 'Pending';
                     }
-
 
                     if ($role == 'lead') {
                         if ($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') {
