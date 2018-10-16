@@ -55,7 +55,7 @@ Team Leave Dashboard
             </thead>
             </tr>
 
-            <tbody>
+<!--            <tbody>
 
                 @foreach($leaveMaster as $leaveMasterRow)
                 @php
@@ -75,8 +75,8 @@ Team Leave Dashboard
 
                     <td><span class="tooltips" title="{{$leaveMasterRow->LeaveReason}}" >{{((strlen($leaveMasterRow->LeaveReason)>20) ? substr($leaveMasterRow->LeaveReason, 0, 20).'...' : $leaveMasterRow->LeaveReason)}}</span>
 
-                    </td>
-                    <td class="status">
+                    </td>-->
+<!--                    <td class="status">
                         @if($Approved=='1')
                         <span class="text-success">Approved</span>
                         @elseif($Approved=='0')
@@ -84,14 +84,14 @@ Team Leave Dashboard
                         @else
                         Pending
                         @endif
-                    </td>
-                    <td class="text-center"> 
+                    </td>-->
+<!--                    <td class="text-center"> 
                         @if($role == 'lead')
                         @if($Approved=='1' || $Approved=='0')
                         Action Taken
-                        @elseif($leaveMasterRow->comp_off_id == '' || (($leaveMasterRow->comp_off_deleted == '' || $leaveMasterRow->comp_off_deleted == null)))
+                        @elseif($leaveMasterRow->comp_off_id == '' || (($leaveMasterRow->comp_off_deleted == '' || $leaveMasterRow->comp_off_deleted == null)))-->
 
-                        <div class="">
+<!--                        <div class="">
                             <button type="button" class="btn btn-success" name="Approved" id="Approved" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" >Approve</button>
                             <button type="button" class="btn btn" name="Rejected" id="Rejected" data-id = <?php echo $leaveMasterRow->id; ?> data-days = <?php echo $leaveMasterRow->NoOfDays; ?> onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> 
                         </div>
@@ -136,7 +136,7 @@ Team Leave Dashboard
 
                 </tr>
                 @endforeach
-            </tbody>
+            </tbody>-->
         </table>
         @else
         <div>No Record found!</div>
@@ -148,6 +148,7 @@ Team Leave Dashboard
 
 @endsection
 @push('scripts')
+<script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
 <script type="text/javascript">
     function dateSorting() {
         $("#searchdate").html('');
@@ -205,7 +206,30 @@ Team Leave Dashboard
         $('.date').on('dp.change', function (e) {
             dateSorting();
         });
-    })
+//    })
+//    $(document).ready(function () {
+    var table = $('#searchdate').dataTable({
+        "Processing": true,
+        "ServerSide": true,
+        ajax: {
+            "dataType": "json",
+            url: "{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
+
+            type: 'get',
+             data:function(d){
+                    d.project_search = $('#project_search').val();
+                            d.date_search = $('#date_search').val();
+                            d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
+                            d.teamMember = "{{$teamMember}}";
+                            d.week_search = $('div.week-div').attr('data-value');
+//                        filterDatatableData(d);
+//                        $('.tooltips').tooltips();
+                    }
+
+        },
+    });
+});
+
 
 </script>
 

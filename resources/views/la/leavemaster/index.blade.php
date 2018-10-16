@@ -117,24 +117,7 @@ $role = \Session::get('role');
                     </tbody>-->
             </table>
         </div>
-        <?php
-    } else if ($role == 'manager' || $role == 'lead') {
-        ?>
-        <div class="card" style="background: #FFF">
-            <table class="table table-striped table-bordered" id="example">
-                <tr>
-                <thead>
-                <th>From Date</th>
-                <th>To Date</th>
-                <th>No Of Days</th>
-                <th>Leave Type</th>
-                 <th>Leave duration</th>
-                <th> Status</th>
-                <th style="width: 103px; text-align:center;">Action</th>  
-                </thead>
-                </tr>
-            </table>
-        </div>
+       
         <?php
     } else {
         ?>
