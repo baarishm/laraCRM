@@ -208,7 +208,7 @@ $(document).ready(function () {
 
     var table = $('#searchdate').DataTable({
         Processing: true,
-        ServerSide: true,
+        serverSide: true,
         searching: false,
         ajax: {
             dataType: "json",
@@ -223,7 +223,7 @@ $(document).ready(function () {
             }
         },
         drawCallback: function (data) {
-            console.log(data);
+            
         }
     });
 
