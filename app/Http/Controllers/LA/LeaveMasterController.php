@@ -567,9 +567,9 @@ class LeaveMasterController extends Controller {
         }
         $total = $leaveMaster_query->count();
         if ($request->teamMember) {
-        $leaveMaster_query
-                ->offset($request->start)
-                ->limit($request->length);
+            $leaveMaster_query
+                    ->offset($request->start)
+                    ->limit($request->length);
         }
         $leaveMaster = $leaveMaster_query->get();
 
@@ -628,31 +628,35 @@ class LeaveMasterController extends Controller {
                     $record[] = $leaveMasterRow->NoOfDays;
                     $record[] = (($leaveMasterRow->leave_name != '') ? $leaveMasterRow->leave_name : "Not Specified" );
                     $record[] = "<span class='tooltips' title='" . $leaveMasterRow->LeaveReason . "'>" . $leaveMasterRow->LeaveReason . "</span>";
+                    $withdrawn = '';
+                    if ($leaveMasterRow->withdraw) {
+                        $withdrawn = ' - Withdrawn';
+                    }
                     if ($leaveMasterRow->Approved == '1') {
-                        $record[] = '<span class="text-success status">Approved</span>';
+                        $record[] = '<span class="text-success status">Approved</span>' . $withdrawn;
                     } else if ($leaveMasterRow->Approved == '0') {
-                        $record[] = '<span class="text-danger status">Rejected</span>';
+                        $record[] = '<span class="text-danger status">Rejected</span>' . $withdrawn;
                     } else {
-                        $record[] = '<span class="status">Pending</span>';
+                        $record[] = '<span class="status">Pending</span>' . $withdrawn;
                     }
 
                     if ($role == 'lead') {
                         if ($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') {
                             $record[] = 'Action Taken';
                         } else {
-                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .'>Approve</button> '
-                                    . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .' style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . '>Approve</button> '
+                                    . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . ' style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
                         }
                     } else if ($role == 'manager') {
                         if (($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->ApprovedBy != '' && $leaveMasterRow->RejectedBy != '') {
                             $record[] = 'Action Taken';
                         } else if ($leaveMasterRow->Approved == '1' && $leaveMasterRow->RejectedBy == '') {
-                            $record[] = '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .' style="background-color: #f55753;border-color: #f43f3b;color: white;" >Reject</button> ';
+                            $record[] = '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . ' style="background-color: #f55753;border-color: #f43f3b;color: white;" >Reject</button> ';
                         } else if ($leaveMasterRow->Approved == '0' && $leaveMasterRow->ApprovedBy == '') {
-                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .'>Approve</button>';
+                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . '>Approve</button>';
                         } else {
-                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .'>Approve</button>'
-                                    . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .' style="background-color: #f55753;border-color: #f43f3b;color: white;margin-left: 5px;" >Reject</button> ';
+                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . '>Approve</button>'
+                                    . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . ' style="background-color: #f55753;border-color: #f43f3b;color: white;margin-left: 5px;" >Reject</button> ';
                         }
                     }
 
