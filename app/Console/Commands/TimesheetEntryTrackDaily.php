@@ -77,7 +77,6 @@ class TimesheetEntryTrackDaily extends Command {
 //            $manager = Employee::getLeadDetails($ganda_bacha['id']); //taking lead as manager here
 
                 $recipients['to'] = $receipents;
-                $recipients['cc'] = ['ashok.chand@ganitsoft.com', 'mohit.arora@ganitsoftech.com'];
             } else {
                 $mail_body = 'Dear All,'
                         . '<br><br>'
@@ -88,6 +87,8 @@ class TimesheetEntryTrackDaily extends Command {
             $mail_body .= "<br><br>"
                     . "Regards,<br>"
                     . "Team Ganit PlusMinus";
+            
+            $recipients['cc'] = ['ashok.chand@ganitsoft.com', 'mohit.arora@ganitsoftech.com'];
 
             Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
                 $m->to($recipients['to'])
