@@ -22,7 +22,8 @@
 
 <!-- Sweet Alert -->
 <!--<script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>-->
-<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.11/dist/sweetalert2.all.min.js"></script>
+<!--<script src="https://cdn.jsdelivr.net/npm/sweetalert2@7.26.11/dist/sweetalert2.all.min.js"></script>-->
+<script src="{{ asset('la-assets/js/sweetAlert.js') }}"></script>
 
 <!-- Optionally, you can add Slimscroll and FastClick plugins.
       Both of these plugins are recommended to enhance the

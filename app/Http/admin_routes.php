@@ -107,12 +107,12 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL', 'p
     Route::resource(config('laraadmin.adminRoute') . '/leaves', 'LA\LeaveMasterController');
     Route::post(config('laraadmin.adminRoute') . '/leaves/store', 'LA\LeaveMasterController@store');
     Route::get('/approveLeave', 'LA\LeaveMasterController@ajaxApproveLeave');
-    Route::post(config('laraadmin.adminRoute') . '/datesearch', 'LA\LeaveMasterController@ajaxDateSearch');
     Route::get(config('laraadmin.adminRoute') . '/leave/teamMember', 'LA\LeaveMasterController@teamMemberIndex');
     Route::post(config('laraadmin.adminRoute') . '/leave/withdraw', 'LA\LeaveMasterController@ajaxWithdraw');
     Route::get(config('laraadmin.adminRoute') . "/downloadLeave", 'LA\LeaveMasterController@downloadLeave');
     Route::post("/exportLeaveToAuthority", 'LA\LeaveMasterController@ajaxExportLeaveToAuthority');
     Route::get(config('laraadmin.adminRoute') . '/leave/Datatable', 'LA\LeaveMasterController@ajaxDatatable');
+    
     Route::get('/isLeave', 'LA\LeaveMasterController@ajaxIsApprovedLeave');
 
     /* ================== Sidebar_Menu_Leaves_ViewData ================== */

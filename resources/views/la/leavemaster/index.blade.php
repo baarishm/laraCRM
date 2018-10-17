@@ -47,115 +47,21 @@ $role = \Session::get('role');
 
         </div>
     </div>
-    <?php
-    if ($role == 'engineer') {
-        ?>
-        <div class="card" style="background: #FFF">
-            <table class="table table-striped table-bordered" id="example">
-
-
-                <tr>
-                <thead>
-                <th>From Date</th>
-                <th>To Date</th>
-                <th>No Of Days</th>
-                <th>Leave Type</th>
-                 <th>Leave duration</th>
-                <th> Status</th>
-                <th style="width: 103px; text-align:center;">Action</th>  
-                </thead>
-                </tr>
-
-        <!--            <tbody>
-
-                        @foreach($leaveMaster as $leaveMasterRow)
-                        @php
-                        $FromDate=date('d M Y',  strtotime($leaveMasterRow->FromDate));
-                        $ToDate=date('d M Y',  strtotime($leaveMasterRow->ToDate));
-
-                        @endphp
-
-                        <tr>
-
-                            <td>{{$FromDate}}</td>
-                            <td>{{$ToDate}}</td>
-                            <td>{{$leaveMasterRow->NoOfDays}}</td>
-                            <td>{{(($leaveMasterRow->leave_name != '')? $leaveMasterRow->leave_name : "Not Specified" ) }}</td>
-                            @if( $leaveMasterRow->Approved === 1)
-                            <td><span class="text-success">Approved</span></td>
-                            @elseif( $leaveMasterRow->Approved === 0 )
-                            <td><span class="text-danger">Rejected</span></td>
-                            @else 
-                            <td>Pending </td>
-                            @endif
-
-
-                            @if(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && !$leaveMasterRow->withdraw  && (date('Y-m-d') <= $leaveMasterRow->FromDate) && (($leaveMasterRow->comp_off_deleted == null || $leaveMasterRow->comp_off_deleted == ''))) 
-
-                            <td>
-                                <a href="" class="btn btn-default withdraw" data-removed="{{$leaveMasterRow->id}}">Withdraw</a>
-                            </td>
-                            @elseif(($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->withdraw) 
-                            <td style="text-align: center">
-                                Withdrawn
-                            </td>
-                            @elseif((($leaveMasterRow->Approved =='' || $leaveMasterRow->Approved=='NULL') && date('Y-m-d', strtotime('-'.$before_days.' days')) <= $leaveMasterRow->FromDate))
-                            <td class="text-center">
-
-                                <form action="{{action('LA\LeaveMasterController@destroy', $leaveMasterRow->id)}}" method="post" class="delete">
-                                    <input type="hidden" name="_token" value="{{ csrf_token()}}">
-
-
-                                    <a href="{{action('LA\LeaveMasterController@edit',$leaveMasterRow->id)}}" class="btn btn-warning "><i class="fa fa-edit"></i></a>
-                                    <input name="_method" type="hidden" value="DELETE" >
-                                    <button class="btn btn-danger pull-left delete-btn" type="submit"><i class="fa fa-remove"></i></button>
-                                    @endif
-                                </form>
-                            </td>
-                        </tr>
-                        @endforeach
-                    </tbody>-->
-            </table>
-        </div>
-        <?php
-    } else if ($role == 'manager' || $role == 'lead') {
-        ?>
-        <div class="card" style="background: #FFF">
-            <table class="table table-striped table-bordered" id="example">
-                <tr>
-                <thead>
-                <th>From Date</th>
-                <th>To Date</th>
-                <th>No Of Days</th>
-                <th>Leave Type</th>
-                 <th>Leave duration</th>
-                <th> Status</th>
-                <th style="width: 103px; text-align:center;">Action</th>  
-                </thead>
-                </tr>
-            </table>
-        </div>
-        <?php
-    } else {
-        ?>
-        <div class="card" style="background: #FFF">
-            <table class="table table-striped table-bordered" id="example">
-                <tr>
-                <thead>
-                <th>From Date</th>
-                <th>To Date</th>
-                <th>No Of Days</th>
-                <th>Leave Type</th>
-                 <th>Leave duration</th>
-                  <th> Status</th>
-                <th style="width: 103px; text-align:center;">Action</th>  
-                </thead>
-                </tr>
-            </table>
-        </div>
-        <?php
-    }
-    ?>
+    <div class="card" style="background: #FFF">
+        <table class="table table-striped table-bordered" id="example">
+            <tr>
+            <thead>
+            <th>From Date</th>
+            <th>To Date</th>
+            <th>No Of Days</th>
+            <th>Leave Type</th>
+            <th>Leave duration</th>
+            <th> Status</th>
+            <th style="width: 103px; text-align:center;">Action</th>  
+            </thead>
+            </tr>
+        </table>
+    </div>
 </div>
 
 @endsection
@@ -183,7 +89,9 @@ $(function () {
                 $.ajax({
                     method: "POST",
                     url: "{{ url(config('laraadmin.adminRoute') . '/leave/withdraw') }}",
-                    data: {id: link.attr('data-removed'), _token: "{{ csrf_token()}}"}
+                    data: {
+                        id: link.attr('data-removed'), _token: "{{ csrf_token()}}"
+                    }
                 }).success(function (message) {
                     link.parents('td').html('Withdrawn');
                     swal(message);
@@ -198,49 +106,18 @@ $(document).ready(function () {
     var table = $('#example').dataTable({
         "Processing": true,
         "ServerSide": true,
+        searching: false,
+        "ordering": false,
         ajax: {
             "dataType": "json",
             url: "{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
-
             type: 'get',
-
         },
+        drawCallback: function (data) {
+            $('.tooltips').tooltip();
+        }
     });
 });
-
-//$(document).ready(function() {
-//var table = $("#table").DataTable({
-//     destroy: true,
-//           ordering: true,
-//            responsive: true,
-//processing: true,
-//        serverSide: true,
-//        searching: false,
-//        
-//        ajax: {
-//             "dataType": "json",
-//        url:"{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
-//         
-//                type : 'get',
-//                
-//         
-//        },
-//        
-//         "columnDefs": [ {
-//                    "data" : "FromDate"
-//                }, {
-//                    "data" : "ToDate"
-//                }, {
-//                    "data" : "NoOfDays"
-//                }, {
-//                    "data" : "leave_name"
-//                }, {
-//                    "data" : "Approved"
-//               
-//                } ]
-//        })
-//});
-
 
 </script>
 @endpush

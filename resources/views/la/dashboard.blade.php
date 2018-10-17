@@ -20,7 +20,7 @@
             <div class="small-box bg-aqua">
                 <div class="inner">
                     <h3>{{$empdetail->available_leaves}}</h3>
-                    <p>Avaiable Leaves</p>
+                    <p>available Leaves</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-calendar" style="margin-top: 10px"></i>
@@ -99,7 +99,7 @@
             <div class="small-box bg-aqua">
                 <div class="inner">
                     <h3>{{$empdetail->available_leaves}}</h3>
-                    <p>Avaiable Leaves</p>
+                    <p>Available Leaves</p>
                 </div>
                 <div class="icon">
                     <i class="ion ion-calendar" style="margin-top: 10px"></i>
@@ -116,7 +116,7 @@
                     @else
                     <h3> Pending</h3>
                     @endif
-                   <p>TimeSheet Status</p>
+                   <p>Today's Timesheet</p>
                     <!--               
                     <p>Attendance</p>-->
                 </div>
