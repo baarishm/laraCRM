@@ -37,7 +37,7 @@ function init(removeable_options, leave) {
 
     // Leave option selection
     $('select[name="task_id"]').append(removeable_options).append(leave);
-    $('.date').on('dp.change', function () {
+    $('.date').on('dp.change', function (event, update_row, parent) {
 
         //to get project against date selected
         var date = dateFormatDB($(this).find('input').val());
@@ -50,8 +50,11 @@ function init(removeable_options, leave) {
             $(project_list).each(function (key, item) {
                 $('select#project_id').append('<option data-name="' + item.name + '" value="' + item.id + '">' + item.name + '</option>');
             });
+            if (update_row === 'update-row') {
+                $('tr.entry-row select#project_id').val(parent.find('td.project_name').attr('data-value'));
+            }
+            $('#project_id').trigger('change', [update_row, parent]);
         });
-        $('#project_id').trigger('change');
 
         $.ajax({
             url: $('#task_id').attr('data-url'),
@@ -62,6 +65,9 @@ function init(removeable_options, leave) {
                     $('select[name="task_id"]').append(leave);
                 } else {
                     $('select[name="task_id"] option[data-name="Leave"]').detach();
+                }
+                if (update_row == 'update-row') {
+                    $('tr.entry-row select#task_id').val(parent.find('td.task_name').attr('data-value')).trigger('change');
                 }
             }
         });
@@ -89,7 +95,7 @@ function init(removeable_options, leave) {
     $('[name="comments"]').prop('maxlength', '250');
 
     //to get sprint against project selected
-    $('#project_id').on('change', function () {
+    $('#project_id').on('change', function (event, update_row, parent) {
         var date = dateFormatDB($('#date').val());
         $.ajax({
             url: $('#entry_table').attr('data-url') + '/sprintList',
@@ -102,6 +108,9 @@ function init(removeable_options, leave) {
             $(sprint_list).each(function (key, item) {
                 $('select#projects_sprint_id').append('<option data-name="' + item.name + '" value="' + item.id + '">' + item.name + '</option>');
             });
+            if (update_row === 'update-row') {
+                $('tr.entry-row select#projects_sprint_id').val(parent.find('td.projects_sprint_name').attr('data-value')).trigger('change');
+            }
         });
         $('#task_id').trigger('change');
     });
@@ -117,7 +126,6 @@ function init(removeable_options, leave) {
     });
 
     if ($('select#task_id option[selected]').length > 0) {
-        console.log('here');
         $('select#task_id').val($('select#task_id option[selected]').val());
     }
 }
@@ -150,9 +158,8 @@ function update_row(saved_data, id, removeable_options) {
 function show_update_row(el) {
     var parent = el.parents('tr.recent-entry');
     $('tr.entry-row input#date').val(parent.find('td.date').html());
-    $('tr.entry-row select#project_id').val(parent.find('td.project_name').attr('data-value')).trigger('change');
-    $('tr.entry-row select#projects_sprint_id').val(parent.find('td.projects_sprint_name').attr('data-value')).trigger('change');
-    $('tr.entry-row select#task_id').val(parent.find('td.task_name').attr('data-value')).trigger('change');
+    $('tr.entry-row input#date').parents('.date').trigger('dp.change', ['update-row',
+        parent]);
     $('tr.entry-row input#comments').val(parent.find('td.comments span').attr('data-original-title'));
     $('tr.entry-row select#hours').val(parent.find('td.hours').html()).trigger('change');
     $('tr.entry-row select#minutes').val(parent.find('td.minutes').html()).trigger('change');

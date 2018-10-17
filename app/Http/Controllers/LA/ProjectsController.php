@@ -283,8 +283,8 @@ class ProjectsController extends Controller {
                 ->select([DB::raw('projects.id as id'), DB::raw('projects.name as name')])
                 ->whereNull('resource_allocations.deleted_at')
                 ->leftJoin('resource_allocations', 'resource_allocations.project_id', '=', 'projects.id')
-                ->where('resource_allocations.start_date', '<=', date('Y-m-d'))
-                ->where('resource_allocations.end_date', '>=', date('Y-m-d'))
+                ->where('resource_allocations.start_date', '<=', (($request->date) ? $request->date : date('Y-m-d')))
+                ->where('resource_allocations.end_date', '>=', (($request->date) ? $request->date : date('Y-m-d')))
                 ->where('resource_allocations.employee_id', Auth::user()->context_id)
                 ->get();
 
