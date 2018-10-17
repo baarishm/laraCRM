@@ -566,9 +566,11 @@ class LeaveMasterController extends Controller {
             $leaveMaster_query->whereRaw($whereDate);
         }
         $total = $leaveMaster_query->count();
+        if ($request->teamMember) {
         $leaveMaster_query
                 ->offset($request->start)
                 ->limit($request->length);
+        }
         $leaveMaster = $leaveMaster_query->get();
 
         if (!$request->teamMember) {
