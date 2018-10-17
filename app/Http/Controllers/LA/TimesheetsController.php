@@ -343,7 +343,6 @@ class TimesheetsController extends Controller {
 
             if ($validator->fails()) {
                 return redirect()->back()->withErrors($validator)->withInput();
-                ;
             }
 
             $lead_manager_id = DB::table('projects')->select(['lead_id', 'manager_id'])->where('id', $request->project_id)->first();
