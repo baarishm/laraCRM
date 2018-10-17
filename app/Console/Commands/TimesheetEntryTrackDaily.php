@@ -43,7 +43,7 @@ class TimesheetEntryTrackDaily extends Command {
     public function handle() {
         //if Monday or tuesday then subtract 4 days else 2 days
         $sub_day = (date('N') == 1 || date('N') == 2) ? '4' : '2';
-        
+
         if (Holidays_List::where('day', date('Y-m-d', strtotime('-' . $sub_day . ' days')))->count() == 0) {
             $timesheet_users = DB::table('timesheets')
                             ->where('date', '=', date('Y-m-d', strtotime('-' . $sub_day . ' days')))
@@ -59,7 +59,7 @@ class TimesheetEntryTrackDaily extends Command {
             if (!empty($timesheet_users)) {
                 $detail->whereNotIn('id', $timesheet_users);
             }
-            
+
             $employees_No_timesheet = $detail->get()->toArray();
 
             $receipents = [];
@@ -68,18 +68,27 @@ class TimesheetEntryTrackDaily extends Command {
                     $receipents[] = $ganda_bacha['email'];
                 }
             }
-            $mail_body = 'Dear All,'
-                    . '<br/><br/>'
-                    . 'You have not filled timesheet for <b>' . date('d M Y', strtotime('-' . $sub_day . ' days')) . '</b>. Kindly fill the same ASAP.'
-                    . "<br><br>"
-                    . "Regards,<br>"
-                    . "Team Ganit PlusMinus";
+
+            if (count($receipents) > 0) {
+                $mail_body = 'Dear All,'
+                        . '<br/><br/>'
+                        . 'You have not filled timesheet for <b>' . date('d M Y', strtotime('-' . $sub_day . ' days')) . '</b>. Kindly fill the same ASAP.';
 
 //            $manager = Employee::getLeadDetails($ganda_bacha['id']); //taking lead as manager here
 
-            $recipients['to'] = $receipents;
-            $recipients['cc'] = ['ashok.chand@ganitsoft.com', 'mohit.arora@ganitsoftech.com'];
-            
+                $recipients['to'] = $receipents;
+                $recipients['cc'] = ['ashok.chand@ganitsoft.com', 'mohit.arora@ganitsoftech.com'];
+            } else {
+                $mail_body = 'Dear All,'
+                        . '<br><br>'
+                        . 'No defaulters found for <b>' . date('d M Y', strtotime('-' . $sub_day . ' days')) . '</b>';
+                $recipients['to'] = ['ashok.chand@ganitsoft.com', 'mohit.arora@ganitsoftech.com'];
+            }
+
+            $mail_body .= "<br><br>"
+                    . "Regards,<br>"
+                    . "Team Ganit PlusMinus";
+
             Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
                 $m->to($recipients['to'])
                         ->cc($recipients['cc'])
