@@ -521,7 +521,8 @@ class LeaveMasterController extends Controller {
 
     public function ajaxDatatable(Request $request) {
         $role = $request->session()->get('role');
-        
+        $total = 0;
+        $array = [];
         $whereDate = '';
         if ((($request->start_date != null && $request->start_date != "") && ($request->end_date == '' || $request->end_date == null)) || (($request->end_date != null && $request->end_date != "") && ($request->start_date == null && $request->start_date == ""))) {
             $date = ($request->end_date != '' && $request->end_date == null) ? $request->end_date : $request->start_date;
@@ -556,15 +557,18 @@ class LeaveMasterController extends Controller {
                 ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
                 ->whereNull('employees.deleted_at')
-                ->orderBy('FromDate','desc');
-        
+                ->orderBy('FromDate', 'desc');
+
         if ($where != '') {
             $leaveMaster_query->whereRaw($where);
         }
-         if ($whereDate != "") {
+        if ($whereDate != "") {
             $leaveMaster_query->whereRaw($whereDate);
         }
-        
+        $total = $leaveMaster_query->count();
+        $leaveMaster_query
+                ->offset($request->start)
+                ->limit($request->length);
         $leaveMaster = $leaveMaster_query->get();
 
         if (!$request->teamMember) {
@@ -605,9 +609,8 @@ class LeaveMasterController extends Controller {
                     $array[] = $record;
                 }
             } else {
-                $array[] = ['','','','No Record Found!','','',''];
+                $array[] = ['', '', '', 'No Record Found!', '', '', ''];
             }
-            return ['data' => $array];
         } else if ($request->teamMember) {
             $array = [];
 
@@ -624,42 +627,40 @@ class LeaveMasterController extends Controller {
                     $record[] = (($leaveMasterRow->leave_name != '') ? $leaveMasterRow->leave_name : "Not Specified" );
                     $record[] = "<span class='tooltips' title='" . $leaveMasterRow->LeaveReason . "'>" . $leaveMasterRow->LeaveReason . "</span>";
                     if ($leaveMasterRow->Approved == '1') {
-                        $record[] = '<span class="text-success">Approved</span>';
+                        $record[] = '<span class="text-success status">Approved</span>';
                     } else if ($leaveMasterRow->Approved == '0') {
-                        $record[] = '<span class="text-danger">Rejected</span>';
+                        $record[] = '<span class="text-danger status">Rejected</span>';
                     } else {
-                        $record[] = 'Pending';
+                        $record[] = '<span class="status">Pending</span>';
                     }
 
                     if ($role == 'lead') {
                         if ($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') {
                             $record[] = 'Action Taken';
                         } else {
-                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);">Approve</button> '
-                                    . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .'>Approve</button> '
+                                    . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .' style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
                         }
                     } else if ($role == 'manager') {
                         if (($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->ApprovedBy != '' && $leaveMasterRow->RejectedBy != '') {
                             $record[] = 'Action Taken';
                         } else if ($leaveMasterRow->Approved == '1' && $leaveMasterRow->RejectedBy == '') {
-                            $record[] = '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                            $record[] = '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .' style="background-color: #f55753;border-color: #f43f3b;color: white;" >Reject</button> ';
                         } else if ($leaveMasterRow->Approved == '0' && $leaveMasterRow->ApprovedBy == '') {
-                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);">Approve</button>';
+                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .'>Approve</button>';
                         } else {
-                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);">Approve</button>'
-                                    . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                            $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .'>Approve</button>'
+                                    . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = '.$leaveMasterRow->NoOfDays .' style="background-color: #f55753;border-color: #f43f3b;color: white;margin-left: 5px;" >Reject</button> ';
                         }
                     }
 
                     $array[] = $record;
                 }
             } else {
-                $array[] = ['','','','','No Record Found!','','','',''];
+                $array[] = ['', '', '', '', 'No Record Found!', '', '', '', '', ''];
             }
-
-
-            return ['data' => $array];
         }
+        return ['data' => $array, 'total' => $total];
     }
 
     /** Excel Export of leave

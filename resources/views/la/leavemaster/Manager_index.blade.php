@@ -156,7 +156,9 @@ function dateSorting() {
     $.ajax({
         url: "{{ url(config('laraadmin.adminRoute') . '/datesearch') }}",
         type: 'POST',
-        data: {'start_date': $('#start_date.date_search').val(), 'end_date': $('#end_date.date_search').val(), _token: "{{ csrf_token() }}"},
+        data: {
+            'start_date': $('#start_date.date_search').val(), 'end_date': $('#end_date.date_search').val(), _token: "{{ csrf_token() }}"
+        },
         success: function (data) {
             data = $.parseJSON(data);
             $("#searchdate").html(data.html);
@@ -185,19 +187,23 @@ function myfunction(button)
         if (inputValue.dismiss === 'cancel') {
             return false;
         } else {
+            $('div.overlay').removeClass('hide');
             $.ajax({
                 url: "{{ url('/approveLeave') }}",
                 type: 'GET',
-                data: {'approved': approved, 'id': $(button).attr('data-id'), 'days': $(button).attr('data-days'), 'actionReason': inputValue.value},
+                data: {
+                    'approved': approved, 'id': $(button).attr('data-id'), 'days': $(button).attr('data-days'), 'actionReason': inputValue.value
+                },
                 success: function (data) {
-                    console.log(data);
+                    var vid = $(button).attr('data-id');
+                    $(button).parents('td').siblings('td').children(".status").parents('td')
+.html((approved) ? '<span class="text-success status">Approved</span>' : '<span class="text-danger status">Rejected</span>');
+                    $(button).parents('td').html('Action Taken');
+                    $('[data-id=' + vid + ']').remove();
                     swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
+                    $('div.overlay').addClass('hide');
                 }
             });
-            var vid = $(button).attr('data-id');
-            $(button).parents('td').siblings(".status").html((approved) ? '<span class="text-success">Approved</span>' : '<span class="text-danger">Rejected</span>');
-            $(button).parents('td').html('Action Taken');
-            $('[data-id=' + vid + ']').remove();
         }
     });
 
@@ -210,6 +216,7 @@ $(document).ready(function () {
         Processing: true,
         serverSide: true,
         searching: false,
+        ordering: false,
         ajax: {
             dataType: "json",
             url: "{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
@@ -218,12 +225,19 @@ $(document).ready(function () {
                 d.start_date = $('#start_date').val();
                 d.end_date = $('#end_date').val();
                 d.teamMember = "{{$teamMember}}";
-//                        filterDatatableData(d);
-//                        $('.tooltips').tooltips();
+                filterDatatableData(d);
+            },
+            dataFilter: function (data) {
+                var json = jQuery.parseJSON(data);
+                json.recordsTotal = json.total;
+                json.recordsFiltered = json.total;
+                json.data = json.data;
+
+                return JSON.stringify(json); // return JSON string
             }
         },
         drawCallback: function (data) {
-            
+            $('.tooltips').tooltip();
         }
     });
 
