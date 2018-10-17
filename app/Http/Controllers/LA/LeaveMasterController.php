@@ -630,7 +630,7 @@ class LeaveMasterController extends Controller {
                     $record[] = "<span class='tooltips' title='" . $leaveMasterRow->LeaveReason . "'>" . $leaveMasterRow->LeaveReason . "</span>";
                     $withdrawn = '';
                     if ($leaveMasterRow->withdraw) {
-                        $withdrawn = ' - Withdrawn';
+                        $withdrawn = ' - W/D';
                     }
                     if ($leaveMasterRow->Approved == '1') {
                         $record[] = '<span class="text-success status">Approved</span>' . $withdrawn;
