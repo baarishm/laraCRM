@@ -138,11 +138,12 @@ $(document).ready(function () {
         ajax: {
             dataType: "json",
             url: "{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
-            type: 'get',
+            type: 'POST',
             data: function (d) {
                 d.start_date = $('#start_date').val();
                 d.end_date = $('#end_date').val();
                 d.teamMember = "{{$teamMember}}";
+                d._token = "{{ csrf_token()}}";
                 filterDatatableData(d);
             },
             dataFilter: function (data) {
