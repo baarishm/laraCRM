@@ -124,11 +124,12 @@ $(function () {
             searching: false,
             ajax: {
             url:"{{ url(config('laraadmin.adminRoute') . '/resource_allocation_dt_ajax') }}",
-                    type : 'get',
+                    type : 'post',
                     data:function(d){
                     d.project_search = $('#project_search').val();
                             d.date_search = $('#date_search').val();
                             d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
+                            d._token = "{{ csrf_token()}}";
                             filterDatatableData(d);
                     }
             },
@@ -141,7 +142,7 @@ $(function () {
             @if ($show_actions)
     columnDefs: [ { orderable: false, targets: [ - 1] }, {"searchable": false, "targets": [3, 4]}],
             @endif
-            }
+    }
     );
     $("#project_search, #date_search, #employee_search").on('change dp.change', function () {
         table.draw();

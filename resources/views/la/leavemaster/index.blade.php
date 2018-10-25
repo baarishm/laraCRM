@@ -109,9 +109,13 @@ $(document).ready(function () {
         searching: false,
         "ordering": false,
         ajax: {
-            "dataType": "json",
+            dataType: "json",
             url: "{{url(config('laraadmin.adminRoute').'/leave/Datatable')}}",
-            type: 'get',
+            type: 'post',
+            data: function (d) {
+                d._token = "{{ csrf_token()}}";
+                filterDatatableData(d);
+            },
         },
         drawCallback: function (data) {
             $('.tooltips').tooltip();
