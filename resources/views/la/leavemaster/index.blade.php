@@ -114,7 +114,6 @@ $(document).ready(function () {
             type: 'post',
             data: function (d) {
                 d._token = "{{ csrf_token()}}";
-                filterDatatableData(d);
             },
         },
         drawCallback: function (data) {
