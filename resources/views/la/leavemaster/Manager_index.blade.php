@@ -33,6 +33,7 @@ Team Leave Dashboard
                     </span>
                 </div>
             </div>
+            @if($teamMember)
              <div class="col-md-2 pull-right">
                 <select id="employee_search" name="employee_search">
                     <option value="" selected="selected" >Select Employee</option>
@@ -45,6 +46,7 @@ Team Leave Dashboard
                     ?>
                 </select>
             </div>
+             @endif
             
         </div>
         <input type="text" readonly="true" id="holder" class="pull-right" style="border:none;">
@@ -185,14 +187,14 @@ $(document).ready(function () {
         });
 
     $('.date').on('dp.change', function (e) {
-        debugger
-        table.draw();
+      table.draw();
     });
 //     $('#employee_search').on('change', function (e) {
 //         
 //      table.draw();
    
 });
+$('#employee_search').select2();
 
 
 </script>
