@@ -15,6 +15,7 @@ use DB;
 use Mail;
 use Datatables;
 use Dwij\Laraadmin\Models\LAConfigs;
+use Session;
 
 class LeaveMasterController extends Controller {
 
@@ -96,6 +97,7 @@ class LeaveMasterController extends Controller {
                 //other users
                 $view = 'index';
                 $where .= ' and leavemaster.EmpId = ' . Auth::user()->context_id;
+               
             } else {
                 if ($role == "manager" || $role == "lead") {
                     $engineersUnder = Employee::getEngineersUnder(ucwords($role));
@@ -114,9 +116,16 @@ class LeaveMasterController extends Controller {
                     ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
                     ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                     ->whereRaw($where)
-                    ->get();
-
-            return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role, 'teamMember' => 1]);
+                     ->get();
+        $teamname = DB::table('employees')
+                         ->where(function($query) {
+                        $query->where('first_approver', '=', Auth::user()->context_id)
+                        ->orwhere('second_approver', '=', Auth::user()->context_id);
+                    })
+                   ->get();
+             
+//  echo "<pre>"; print_r($teamname);die;
+            return view('la.leavemaster.' . $view, ['leaveMaster' => $leaveMaster, 'role' => $role, 'teamMember' => 1, 'teamname' => $teamname, ]);
         } else {
             return redirect()->back();
         }
@@ -524,11 +533,15 @@ class LeaveMasterController extends Controller {
         $total = 0;
         $array = [];
         $whereDate = '';
+         $teamname = '';
         if ((($request->start_date != null && $request->start_date != "") && ($request->end_date == '' || $request->end_date == null)) || (($request->end_date != null && $request->end_date != "") && ($request->start_date == null && $request->start_date == ""))) {
             $date = ($request->end_date != '' && $request->end_date == null) ? $request->end_date : $request->start_date;
             $whereDate = ' (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($date)) . '")';
         } else if (($request->end_date != null && $request->end_date != "") && ($request->start_date != null && $request->start_date != "")) {
             $whereDate = ' ((leavemaster.FromDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.ToDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '"))';
+        }
+        else if($request->employee_search != '') {
+            $teamname = ' leavemaster.EmpId = "' . $request->employee_search . '"';
         }
 
         $where = 'EmpId = ' . Auth::user()->context_id;
@@ -550,9 +563,8 @@ class LeaveMasterController extends Controller {
         else {
             $this->show_action = true;
         }
-
-        $leaveMaster_query = DB::table('leavemaster')
-                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.emp_code AS emp_code'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted')])
+       $leaveMaster_query = DB::table('leavemaster')
+                ->select([DB::raw('leave_types.name AS leave_name,leavemaster.*'), DB::raw('employees.name AS Employees_name'), DB::raw('employees.emp_code AS emp_code'), DB::raw('employees.total_leaves AS total_leaves'), DB::raw('employees.available_leaves AS available_leaves'), DB::raw('comp_off_managements.deleted_at AS comp_off_deleted'),DB::raw('leavemaster.id AS id', 'employees_id', 'employee_id')])
                 ->leftJoin('leave_types', 'leavemaster.LeaveType', '=', 'leave_types.id')
                 ->leftJoin('comp_off_managements', 'comp_off_managements.id', '=', 'leavemaster.comp_off_id')
                 ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
@@ -564,6 +576,9 @@ class LeaveMasterController extends Controller {
         }
         if ($whereDate != "") {
             $leaveMaster_query->whereRaw($whereDate);
+        }
+        if ($teamname != "") {
+            $leaveMaster_query->whereRaw($teamname);
         }
         $total = $leaveMaster_query->count();
         if ($request->teamMember) {
