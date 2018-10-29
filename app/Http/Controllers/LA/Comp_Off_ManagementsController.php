@@ -298,9 +298,9 @@ class Comp_Off_ManagementsController extends Controller {
                 if ($fields_popup[$col] != null && starts_with($fields_popup[$col]->popup_vals, "@")) {
                     $data->data[$i][$j] = ModuleFields::getFieldValue($fields_popup[$col], $data->data[$i][$j]);
                 }
-                if ($col == $this->view_col) {
-                    $data->data[$i][$j] = '<a href="' . url(config('laraadmin.adminRoute') . '/comp_off_managements/' . $data->data[$i][0]) . '">' . $data->data[$i][$j] . '</a>';
-                }
+//                if ($col == $this->view_col) {
+//                    $data->data[$i][$j] = '<a href="' . url(config('laraadmin.adminRoute') . '/comp_off_managements/' . $data->data[$i][0]) . '">' . $data->data[$i][$j] . '</a>';
+//                }
                 // else if($col == "author") {
                 //    $data->data[$i][$j];
                 // }
