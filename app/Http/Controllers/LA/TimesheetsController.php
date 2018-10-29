@@ -106,7 +106,7 @@ class TimesheetsController extends Controller {
                 if ($people_under_lead != '')
                     $where = 'submitor_id IN (' . $people_under_lead . ')';
             }
-
+           
             $employees = DB::table('timesheets')
                     ->select([DB::raw('distinct(timesheets.submitor_id)'), DB::raw('employees.name AS employee_name')])
                     ->leftJoin('employees', 'timesheets.submitor_id', '=', 'employees.id')
@@ -406,9 +406,9 @@ class TimesheetsController extends Controller {
         if ($request->employee_search != '') {
             $date = ' timesheets.submitor_id = "' . $request->employee_search . '"';
         }
-        $week = ' timesheets.date >= "' . date('Y-m-d', strtotime('last Monday')) . '" and timesheets.date <= "' . date('Y-m-d', strtotime('last Saturday')) . '"';
+        $week = ' timesheets.date >= "' . date('Y-m-d', strtotime('last Monday')) . '" and timesheets.date <= "' . date('Y-m-d', strtotime('last Sunday')) . '"';
         if ($request->week_search != '') {
-            $week = ' timesheets.date >= "' . date('Y-m-d', strtotime("Monday", strtotime('this week ' . $request->week_search . ' week'))) . '" and timesheets.date <= "' . date('Y-m-d', strtotime("Saturday", strtotime('this week ' . $request->week_search . ' week'))) . '"';
+            $week = ' timesheets.date >= "' . date('Y-m-d', strtotime("Monday", strtotime('this week ' . $request->week_search . ' week'))) . '" and timesheets.date <= "' . date('Y-m-d', strtotime("Sunday", strtotime('this week ' . $request->week_search . ' week'))) . '"';
         }
 
         $this->custom_cols = [($request->teamMember) ? 'timesheets.submitor_id' : 'timesheets.id', 'project_id', 'projects_sprint_id', 'task_id', 'date', DB::raw("((hours*60) + minutes)/60 as hours"), 'timesheets.comments', DB::raw("(case when (mail_sent = 1) THEN 'Mail Sent' ELSE 'Submitted' end) as mail_sent")];
