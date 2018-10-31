@@ -2,7 +2,7 @@
 
 @section('htmlheader_title') Dashboard @endsection
 @section('contentheader_title') Dashboard @endsection
-@section('contentheader_description') Organisation Overview @endsection
+@section('contentheader_description') Organization Overview @endsection
 
 @section('main-content')
 <?php
@@ -70,7 +70,7 @@
             <div class="small-box bg-green">
                 <div class="inner">
                     <h3>{{count($holidayname)}}</h3>
-               <p class="child"><a href="#" style="font-size: 15px; color:white">Holiday</a> </p>
+               <p class="child"><a href="#" style="font-size: 15px; color:white">Upcoming Holiday(s)</a> </p>
                     @foreach($holidayname as $holidaynamelist)
                     @php
                   
@@ -136,7 +136,7 @@
                      <p class="child"><a href="#" style="font-size: 15px; color:white">Team Member</a> </p>
                     @foreach($teammumber as $teamlist)
                     <!--                      <button>Toggle</button>  -->
-                    <div class="Subchild" style="display: none;" >{{$teamlist->employees_name}}</div> 
+                    <div class="Subchild" style="display: none;" >{{$teamlist->name}}</div> 
                     @endforeach
                 </div>
                 <div class="icon">
