@@ -18,6 +18,8 @@ use Collective\Html\FormFacade as Form;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Project;
+use App\Models\Employee;
+use Session;
 
 class ProjectsController extends Controller {
 
@@ -44,8 +46,9 @@ class ProjectsController extends Controller {
      */
     public function index() {
         $module = Module::get('Projects');
-
-        if (Module::hasAccess($module->id)) {
+             
+         if (Module::hasAccess($module->id))
+             {
             return View('la.projects.index', [
                 'show_actions' => $this->show_action,
                 'listing_cols' => $this->listing_cols,
@@ -235,12 +238,19 @@ class ProjectsController extends Controller {
      * @return
      */
     public function dtajax() {
+         $role = \Session::get('role');
         $values = DB::table('projects')->select(['id', 'name', 'manager_id', 'lead_id', 'client_id', DB::raw('DATE_FORMAT(start_date, "%d %b %Y") as start_date'), DB::raw('DATE_FORMAT(end_date, "%d %b %Y") as end_date')])->whereNull('deleted_at');
-        $out = Datatables::of($values)->make();
+          if ($role != 'superAdmin') {  
+              $values = DB::table('projects')->select(['id', 'name', 'manager_id', 'lead_id', 'client_id', DB::raw('DATE_FORMAT(start_date, "%d %b %Y") as start_date'), DB::raw('DATE_FORMAT(end_date, "%d %b %Y") as end_date')])->whereNull('deleted_at')
+               ->where('manager_id', '=', Auth::user()->context_id)
+              ->whereNull('deleted_at');
+            
+          }   
+       $out = Datatables::of($values)->make();
         $data = $out->getData();
-
+     
         $fields_popup = ModuleFields::getModuleFields('Projects');
-
+       
         for ($i = 0; $i < count($data->data); $i++) {
             for ($j = 0; $j < count($this->listing_cols); $j++) {
                 $col = $this->listing_cols[$j];
@@ -287,8 +297,9 @@ class ProjectsController extends Controller {
                 ->where('resource_allocations.end_date', '>=', (($request->date) ? $request->date : date('Y-m-d')))
                 ->where('resource_allocations.employee_id', Auth::user()->context_id)
                 ->get();
-
+             
         return $projects;
+        
     }
 
 }

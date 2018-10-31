@@ -16,8 +16,8 @@ Team Leave Dashboard
 <div class="box box-success">
     <div class="box-body" style="background: #FFF">
         @if(!empty($leaveMaster))
-        <div class="row">
-            <div class="col-md-3 col-md-offset-2">
+        <div class="row" style="padding-bottom:5px">
+            <div class="col-md-3">
                 <div class="input-group date">
                     <input class="form-control date_search" placeholder="Enter From Date" required="" name="start_date" id="start_date" type="text" value="" autocomplete="off">
                     <span class="input-group-addon">
@@ -25,7 +25,7 @@ Team Leave Dashboard
                     </span>
                 </div>
             </div>
-            <div class="col-md-3 col-md-offset-1">
+            <div class="col-md-3">
                 <div class="input-group date">
                     <input class="form-control date_search" placeholder="Enter To Date" required="" name="end_date" id="end_date" type="text" value="" autocomplete="off">
                     <span class="input-group-addon">
@@ -33,8 +33,9 @@ Team Leave Dashboard
                     </span>
                 </div>
             </div>
-            @if($teamMember)
-             <div class="col-md-2 pull-right">
+           
+           
+             <div class="col-md-3">
                 <select id="employee_search" name="employee_search">
                     <option value="" selected="selected" >Select Employee</option>
                     <?php
@@ -46,7 +47,16 @@ Team Leave Dashboard
                     ?>
                 </select>
             </div>
-             @endif
+              <div class="col-md-3">
+                <select id="status_search" name="status_search">
+                    <option value="" selected="selected" >Select Status</option>
+                    <option value="1" >Approved</option>
+                    <option value="0" >Reject</option>
+                    <option value="2"  >Pending</option>
+                  
+                </select>
+            </div>
+           
             
         </div>
         <input type="text" readonly="true" id="holder" class="pull-right" style="border:none;">
@@ -90,7 +100,7 @@ function dateSorting() {
         url: "{{ url(config('laraadmin.adminRoute') . '/datesearch') }}",
         type: 'POST',
         data: {
-             'name': $('#employees_name.employee_search').val(),
+             'name': $('#employees_name.employee_search').val(),'Approved': $('#status_search.status_search').val(),
             'start_date': $('#start_date.date_search').val(), 'end_date': $('#end_date.date_search').val(), _token: "{{ csrf_token() }}"
         },
         success: function (data) {
@@ -144,7 +154,7 @@ function myfunction(button)
 }
 
 $(document).ready(function () {
-    $('#start_date, #end_date, #employee_search').val('');
+    $('#start_date, #end_date, #employee_search, #status_search').val('');
 
     var table = $('#searchdate').DataTable({
         Processing: true,
@@ -159,6 +169,8 @@ $(document).ready(function () {
                 d.start_date = $('#start_date').val();
                 d.end_date = $('#end_date').val();
                  d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
+                   d.status_search = (($('#status_search').length > 0) ? $('#status_search').val() : '');
+                   
                 d.teamMember = "{{$teamMember}}";
                 d._token = "{{ csrf_token()}}";
                 filterDatatableData(d);
@@ -181,7 +193,7 @@ $(document).ready(function () {
             $('.tooltips').tooltip();
         }
     });
-     $("#employee_search").on('change dp.change', function () {
+     $("#employee_search, #status_search").on('change dp.change', function () {
          
         table.draw();
         });
@@ -194,7 +206,7 @@ $(document).ready(function () {
 //      table.draw();
    
 });
-$('#employee_search').select2();
+$('#employee_search, #status_search').select2();
 
 
 </script>
