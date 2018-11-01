@@ -106,7 +106,7 @@ class TimesheetsController extends Controller {
                 if ($people_under_lead != '')
                     $where = 'submitor_id IN (' . $people_under_lead . ')';
             }
-           
+
             $employees = DB::table('timesheets')
                     ->select([DB::raw('distinct(timesheets.submitor_id)'), DB::raw('employees.name AS employee_name')])
                     ->leftJoin('employees', 'timesheets.submitor_id', '=', 'employees.id')
@@ -476,7 +476,7 @@ class TimesheetsController extends Controller {
                     $data->data[$i][$j] = '<a href="' . url(config('laraadmin.adminRoute') . '/timesheets/' . $data->data[$i][0]) . '">' . $data->data[$i][$j] . '</a>';
                 }
                 if ($col == 'comments') {
-                    $data->data[$i][$j] = '<span class="tooltips" title="'.$data->data[$i][$j].'">' . ((strlen($data->data[$i][$j])>20) ? substr($data->data[$i][$j], 0, 20).'...' : $data->data[$i][$j]) . '</span>';
+                    $data->data[$i][$j] = '<span class="tooltips" title="' . $data->data[$i][$j] . '">' . ((strlen($data->data[$i][$j]) > 20) ? substr($data->data[$i][$j], 0, 20) . '...' : $data->data[$i][$j]) . '</span>';
                 }
             }
 
@@ -610,43 +610,46 @@ class TimesheetsController extends Controller {
      */
     public function ajaxExportTimeSheetToAuthority(Request $request) {
         //code to export excel
-        $sheet_data = Employee::
-                        select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
-                        ->where('date', '>=', date('Y-m-d', strtotime($request->start_date)))
-                        ->where('date', '<=', date('Y-m-d', strtotime($request->end_date)))
-                        ->whereNull('timesheets.deleted_at')
-                        ->leftJoin('timesheets', 'timesheets.submitor_id', '=', 'employees.id')
-                        ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
-                        ->leftJoin('tasks', 'timesheets.task_id', '=', 'tasks.id')
-                        ->leftJoin('projects_sprints', 'timesheets.projects_sprint_id', '=', 'projects_sprints.id')
-                        ->groupBy('employees.id', 'date', 'timesheets.project_id', 'timesheets.task_id')
-                        ->orderBy(DB::raw("STR_TO_DATE(date,'%Y-%m-%d')"), 'desc')
-                        ->orderBy('employees.name', 'asc')
-                        ->get()->toArray();
-        $existingEmployees = [];
-        $bade_log = config('custom.bade_log');
+        $date = date('Y-m-d', strtotime($request->start_date));
+        $end_date = date('Y-m-d', strtotime($request->end_date));
+        while (strtotime($date) <= strtotime($end_date)) {
+            $sheet_data = Employee::
+                            select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
+                            ->where('date', $date)
+                            ->whereNull('timesheets.deleted_at')
+                            ->leftJoin('timesheets', 'timesheets.submitor_id', '=', 'employees.id')
+                            ->leftJoin('projects', 'timesheets.project_id', '=', 'projects.id')
+                            ->leftJoin('tasks', 'timesheets.task_id', '=', 'tasks.id')
+                            ->leftJoin('projects_sprints', 'timesheets.projects_sprint_id', '=', 'projects_sprints.id')
+                            ->groupBy('employees.id', 'date', 'timesheets.project_id', 'timesheets.task_id')
+                            ->orderBy('employees.name', 'asc')
+                            ->get()->toArray();
+            $existingEmployees = [];
+            $bade_log = config('custom.bade_log');
 
-        foreach ($sheet_data as $row) {
-            if (!in_array($row['Emp_Code'], $existingEmployees)) {
-                $existingEmployees[] = $row['Emp_Code'];
+            foreach ($sheet_data as $row) {
+                if (!in_array($row['Emp_Code'], $existingEmployees)) {
+                    $existingEmployees[] = $row['Emp_Code'];
+                }
             }
-        }
 
-        $employees_No_timesheet = Employee::select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('employees.name as Employee'), 'email'])->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
+            $employees_No_timesheet = Employee::select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('employees.name as Employee'), 'email'])->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
 
-        foreach ($employees_No_timesheet as $defected_employee) {
-            if (!in_array($defected_employee['email'], $bade_log)) {
-                $sheet_data[] = [
-                    'Emp_Code' => $defected_employee['Emp_Code'],
-                    'Date' => date('d M Y', strtotime('-1 days')),
-                    'Employee' => $defected_employee['Employee'],
-                    'Project' => '-',
-                    'Sprint_Name' => '-',
-                    'Task' => '-',
-                    'Description' => '-',
-                    'Effort_Hours' => '-'
-                ];
+            foreach ($employees_No_timesheet as $defected_employee) {
+                if (!in_array($defected_employee['email'], $bade_log)) {
+                    $sheet_data[] = [
+                        'Emp_Code' => $defected_employee['Emp_Code'],
+                        'Date' => date('d M Y', $date),
+                        'Employee' => $defected_employee['Employee'],
+                        'Project' => '-',
+                        'Sprint_Name' => '-',
+                        'Task' => '-',
+                        'Description' => '-',
+                        'Effort_Hours' => '-'
+                    ];
+                }
             }
+            $date = date("Y-m-d", strtotime("+1 day", strtotime($date)));
         }
 
         $file = \Excel::create('Timesheet_' . date('d M Y'), function($excel) use ($sheet_data) {
