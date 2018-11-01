@@ -1,3 +1,11 @@
+
+
+<br />
+    @if (\Session::has('success'))
+    <div class="alert alert-success">
+        <p>{{ \Session::get('success') }}</p>
+    </div><br />
+ @endif
 <!-- Left side column. contains the logo and sidebar -->
 <aside class="main-sidebar">
 
@@ -8,6 +16,8 @@
         @if (! Auth::guest())
         <div class="user-panel">
             <div class="pull-left image">
+<!--             <img src="la-assets/img/Profile_Image/tripan.jpg" class="img-circle" alt="User Image" />-->
+                
                 <img src="{{ Gravatar::fallback(asset('la-assets/img/user2-160x160.jpg'))->get(Auth::user()->email) }}" class="img-circle" alt="User Image" />
             </div>
             <div class="pull-left info">

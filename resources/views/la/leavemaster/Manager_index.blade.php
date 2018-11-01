@@ -33,9 +33,9 @@ Team Leave Dashboard
                     </span>
                 </div>
             </div>
-           
-           
-             <div class="col-md-3">
+
+
+            <div class="col-md-3">
                 <select id="employee_search" name="employee_search">
                     <option value="" selected="selected" >Select Employee</option>
                     <?php
@@ -47,17 +47,17 @@ Team Leave Dashboard
                     ?>
                 </select>
             </div>
-              <div class="col-md-3">
+            <div class="col-md-3">
                 <select id="status_search" name="status_search">
                     <option value="" selected="selected" >Select Status</option>
                     <option value="1" >Approved</option>
                     <option value="0" >Reject</option>
                     <option value="2"  >Pending</option>
-                  
+
                 </select>
             </div>
-           
-            
+
+
         </div>
         <input type="text" readonly="true" id="holder" class="pull-right" style="border:none;">
         <table class="table table-striped table-bordered"  id="searchdate">
@@ -79,7 +79,7 @@ Team Leave Dashboard
             @endif
             </thead>
             </tr>
-            
+
         </table>
         @else
         <div>No Record found!</div>
@@ -100,7 +100,7 @@ function dateSorting() {
         url: "{{ url(config('laraadmin.adminRoute') . '/datesearch') }}",
         type: 'POST',
         data: {
-             'name': $('#employees_name.employee_search').val(),'Approved': $('#status_search.status_search').val(),
+            'name': $('#employees_name.employee_search').val(), 'Approved': $('#status_search.status_search').val(),
             'start_date': $('#start_date.date_search').val(), 'end_date': $('#end_date.date_search').val(), _token: "{{ csrf_token() }}"
         },
         success: function (data) {
@@ -141,7 +141,7 @@ function myfunction(button)
                 success: function (data) {
                     var vid = $(button).attr('data-id');
                     $(button).parents('td').siblings('td').children(".status").parents('td')
-.html((approved) ? '<span class="text-success status">Approved</span>' : '<span class="text-danger status">Rejected</span>');
+                            .html((approved) ? '<span class="text-success status">Approved</span>' : '<span class="text-danger status">Rejected</span>');
                     $(button).parents('td').html('Action Taken');
                     $('[data-id=' + vid + ']').remove();
                     swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
@@ -168,9 +168,9 @@ $(document).ready(function () {
             data: function (d) {
                 d.start_date = $('#start_date').val();
                 d.end_date = $('#end_date').val();
-                 d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
-                   d.status_search = (($('#status_search').length > 0) ? $('#status_search').val() : '');
-                   
+                d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
+                d.status_search = (($('#status_search').length > 0) ? $('#status_search').val() : '');
+
                 d.teamMember = "{{$teamMember}}";
                 filterDatatableData(d);
             },
@@ -183,27 +183,29 @@ $(document).ready(function () {
                 return JSON.stringify(json); // return JSON string
             }
         },
-         language: {
+        language: {
             lengthMenu: "_MENU_",
-                    search: "_INPUT_",
-                    searchPlaceholder: "Search"
-            },
+            search: "_INPUT_",
+            searchPlaceholder: "Search"
+        },
         drawCallback: function (data) {
             $('.tooltips').tooltip();
         }
     });
-     $("#employee_search, #status_search").on('change dp.change', function () {
-         
+    $("#employee_search, #status_search").on('change dp.change', function () {
+
         table.draw();
-        });
+    });
 
     $('.date').on('dp.change', function (e) {
-      table.draw();
+        table.draw();
     });
-//     $('#employee_search').on('change', function (e) {
+//     $('#status_search').on('change', function (e) {
 //         
 //      table.draw();
-   
+
+
+
 });
 $('#employee_search, #status_search').select2();
 
