@@ -612,8 +612,9 @@ class TimesheetsController extends Controller {
         //code to export excel
         $date = date('Y-m-d', strtotime($request->start_date));
         $end_date = date('Y-m-d', strtotime($request->end_date));
+        $sheet_data = [];
         while (strtotime($date) <= strtotime($end_date)) {
-            $sheet_data = Employee::
+            $sheet_data_rows = Employee::
                             select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as Date'), DB::raw('employees.name as Employee'), DB::raw('projects.name as Project'), DB::raw('projects_sprints.name as Sprint_Name'), DB::raw('tasks.name as Task'), DB::raw('comments as Description'), DB::raw('SUM(((hours*60)+minutes)/60) as Effort_Hours')])
                             ->where('date', $date)
                             ->whereNull('timesheets.deleted_at')
@@ -627,10 +628,11 @@ class TimesheetsController extends Controller {
             $existingEmployees = [];
             $bade_log = config('custom.bade_log');
 
-            foreach ($sheet_data as $row) {
+            foreach ($sheet_data_rows as $row) {
                 if (!in_array($row['Emp_Code'], $existingEmployees)) {
                     $existingEmployees[] = $row['Emp_Code'];
                 }
+                $sheet_data[] = $row;
             }
 
             $employees_No_timesheet = Employee::select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('employees.name as Employee'), 'email'])->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
