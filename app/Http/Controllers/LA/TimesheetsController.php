@@ -635,20 +635,42 @@ class TimesheetsController extends Controller {
                 $sheet_data[] = $row;
             }
 
-            $employees_No_timesheet = Employee::select([DB::raw('employees.emp_code as Emp_Code'), DB::raw('employees.name as Employee'), 'email'])->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
+            $employees_No_timesheet = Employee::select(['id', DB::raw('employees.emp_code as Emp_Code'), DB::raw('employees.name as Employee'), 'email'])->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
 
             foreach ($employees_No_timesheet as $defected_employee) {
                 if (!in_array($defected_employee['email'], $bade_log)) {
-                    $sheet_data[] = [
-                        'Emp_Code' => $defected_employee['Emp_Code'],
-                        'Date' => date('d M Y', strtotime($date)),
-                        'Employee' => $defected_employee['Employee'],
-                        'Project' => '-',
-                        'Sprint_Name' => '-',
-                        'Task' => '-',
-                        'Description' => '-',
-                        'Effort_Hours' => '-'
-                    ];
+                    $check_if_on_leave = DB::table('leavemaster')
+                            ->where('EmpId', $defected_employee['id'])
+                            ->where('FromDate', '<=', $date)
+                            ->where('ToDate', '>=', $date)
+                            ->whereNull('deleted_at')
+                            ->count();
+                    if ($check_if_on_leave > 0) {
+                        $sheet_data[] = [
+                            'Emp_Code' => $defected_employee['Emp_Code'],
+                            'Date' => date('d M Y', strtotime($date)),
+                            'Employee' => $defected_employee['Employee'],
+                            'Project' => 'Leave',
+                            'Sprint_Name' => '-',
+                            'Task' => 'Leave',
+                            'Description' => '-',
+                            'Effort_Hours' => '8'
+                        ];
+                    }
+
+//                    commented defaulters who have not filled timesheet 
+//                    but where not on leave too
+                    
+//                    $sheet_data[] = [
+//                        'Emp_Code' => $defected_employee['Emp_Code'],
+//                        'Date' => date('d M Y', strtotime($date)),
+//                        'Employee' => $defected_employee['Employee'],
+//                        'Project' => '-',
+//                        'Sprint_Name' => '-',
+//                        'Task' => '-',
+//                        'Description' => '-',
+//                        'Effort_Hours' => '-'
+//                    ];
                 }
             }
             $date = date("Y-m-d", strtotime("+1 day", strtotime($date)));
