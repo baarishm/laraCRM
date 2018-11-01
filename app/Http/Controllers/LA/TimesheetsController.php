@@ -635,7 +635,7 @@ class TimesheetsController extends Controller {
                 $sheet_data[] = $row;
             }
 
-            $employees_No_timesheet = Employee::select(['id', DB::raw('employees.emp_code as Emp_Code'), DB::raw('employees.name as Employee'), 'email'])->whereNull('deleted_at')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
+            $employees_No_timesheet = Employee::select(['id', DB::raw('employees.emp_code as Emp_Code'), DB::raw('employees.name as Employee'), 'email'])->where('withdraw', '0')->whereNotIn('emp_code', $existingEmployees)->get()->toArray();
 
             foreach ($employees_No_timesheet as $defected_employee) {
                 if (!in_array($defected_employee['email'], $bade_log)) {
