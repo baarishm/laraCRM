@@ -639,7 +639,7 @@ class TimesheetsController extends Controller {
                 if (!in_array($defected_employee['email'], $bade_log)) {
                     $sheet_data[] = [
                         'Emp_Code' => $defected_employee['Emp_Code'],
-                        'Date' => date('d M Y', $date),
+                        'Date' => date('d M Y', strtotime($date)),
                         'Employee' => $defected_employee['Employee'],
                         'Project' => '-',
                         'Sprint_Name' => '-',
