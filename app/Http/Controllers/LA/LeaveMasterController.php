@@ -429,6 +429,9 @@ class LeaveMasterController extends Controller {
             $employee = Employee::find($leavemaster->EmpId);
             if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
                 if ($leavemaster->LeaveType == 7) {//compoff
+                    if(Comp_Off_Management::where('id',$leavemaster->comp_off_id)->where('availed','1')->count() > 0){
+                        return "Comp off Already availed. Kindly reject the leave application!";
+                    }
                     $comp_off = $employee->comp_off - $_GET['days'];
                     $available_leaves = $employee->available_leaves;
                     $availed_leaves = $employee->availed_leaves;
@@ -438,7 +441,7 @@ class LeaveMasterController extends Controller {
                     $available_leaves = $employee->available_leaves - $_GET['days'];
                     $availed_leaves = $employee->availed_leaves + $_GET['days'];
                 }
-            } else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') {
+            } else if (!$leavemaster->Approved && $leavemaster->ApprovedBy != '' && $leavemaster->RejectedBy != '') { //rejected
                 if ($leavemaster->LeaveType == 7) {//compoff
                     $comp_off = $employee->comp_off + $_GET['days'];
                     $available_leaves = $employee->available_leaves;
