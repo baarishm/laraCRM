@@ -45,6 +45,7 @@
 					@la_input($module, 'salary_cur')
 					@la_input($module, 'date_hire')
 					@la_input($module, 'is_confirmed')
+                                       
 					--}}
                 <div class="form-group">
                     <label for="role">Role* :</label>
@@ -57,6 +58,7 @@
                         @endforeach
                     </select>
                 </div>
+                  
                 <br>
                 <div class="form-group">
                     {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/projects') }}">Cancel</a></button>

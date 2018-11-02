@@ -50,6 +50,7 @@
 					@la_input($module, 'dept')
 					@la_input($module, 'date_hire')
 					@la_input($module, 'is_confirmed')
+//                                         @la_input($module, 'image')
 					--}}
                 @if(Entrust::hasRole('SUPER_ADMIN'))
                 <div class="form-group">

@@ -64,6 +64,7 @@ class LAConfigController extends Controller
 		foreach($all as $key => $value) {
 			LAConfigs::where('key', $key)->update(['value' => $value]);
 		}
+                
 		
 		return redirect(config('laraadmin.adminRoute')."/la_configs");
 	}	
