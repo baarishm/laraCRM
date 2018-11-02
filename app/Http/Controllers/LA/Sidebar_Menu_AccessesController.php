@@ -19,6 +19,7 @@ use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
 use App\Models\Sidebar_Menu_Access;
 
+
 class Sidebar_Menu_AccessesController extends Controller {
 
     public $show_action = true;
@@ -44,14 +45,15 @@ class Sidebar_Menu_AccessesController extends Controller {
      */
     public function index() {
         $module = Module::get('Sidebar_Menu_Accesses');
-
-        if (Module::hasAccess($module->id)) {
+        
+       if (Module::hasAccess($module->id)) {
             return View('la.sidebar_menu_accesses.index', [
                 'show_actions' => $this->show_action,
                 'listing_cols' => $this->listing_cols,
                 'module' => $module
+              
             ]);
-        } else {
+          } else {
             return redirect(config('laraadmin.adminRoute') . "/");
         }
     }

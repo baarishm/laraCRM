@@ -551,9 +551,11 @@ class LeaveMasterController extends Controller {
             $whereDate = ' (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($date)) . '")';
         } else if (($request->end_date != null && $request->end_date != "") && ($request->start_date != null && $request->start_date != "")) {
             $whereDate = ' ((leavemaster.FromDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.ToDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->start_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->start_date)) . '") OR (leavemaster.FromDate <= "' . date('Y-m-d', strtotime($request->end_date)) . '" and leavemaster.ToDate >= "' . date('Y-m-d', strtotime($request->end_date)) . '"))';
-        } else if ($request->employee_search != '') {
+        } 
+        if ($request->employee_search != '') {
             $teamname = ' leavemaster.EmpId = "' . $request->employee_search . '"';
-        } else if ($request->status_search != '') {
+        } 
+        if ($request->status_search != '') {
             $status = ' leavemaster.Approved  ' . (($request->status_search == '2') ? ' IS NULL ' : '=' . $request->status_search );
         }
 

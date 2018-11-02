@@ -91,14 +91,16 @@
             <!-- Menu Toggle Button -->
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <!-- The user image in the navbar-->
-                <img src="{{ Gravatar::fallback(asset('la-assets/img/user2-160x160.jpg'))->get(Auth::user()->email) }}" class="user-image" alt="User Image"/>
+<!--                <img src="la-assets/img/Profile_Image/tripan.jpg" class="img-circle" alt="User Image"  style="width: 25px;height: 25px;"/>-->
+                <img src="{{ asset('la-assets/img/Profile_Image/')}}<?php echo '/'.\Session::get('employee_details')['image'] ; ?>" class="img-circle" alt="User Image" style="width: 25px;height: 25px; border-radius: 50%" />
                 <!-- hidden-xs hides the username on small devices so only the image appears. -->
                 <span class="hidden-xs">{{ Auth::user()->name }}</span>
             </a>
             <ul class="dropdown-menu">
                 <!-- The user image in the menu -->
                 <li class="user-header">
-                    <img src="{{ Gravatar::fallback(asset('la-assets/img/user2-160x160.jpg'))->get(Auth::user()->email) }}" class="img-circle" alt="User Image" />
+<!--                    <img src="la-assets/img/Profile_Image/tripan.jpg" class="img-circle" alt="User Image" />-->
+                    <img src="{{ asset('la-assets/img/Profile_Image/')}}<?php echo '/'.\Session::get('employee_details')['image'] ; ?>" class="img-circle" alt="User Image" style=" border-radius: 50%"/>
                     <p>
                         {{ Auth::user()->name }}
                         <?php
