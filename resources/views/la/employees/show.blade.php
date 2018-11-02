@@ -122,6 +122,7 @@ Employee View
                         @la_display($module, 'second_approver')
                         @la_display($module, 'dept')
                         @la_display($module, 'date_hire')
+<!--                         @la_input($module, 'image')-->
                     </div>
                 </div>
             </div>

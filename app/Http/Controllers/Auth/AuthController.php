@@ -151,6 +151,8 @@ use AuthenticatesAndRegistersUsers,
                 $request->session()->put('holiday_list', json_encode($holiday_list));
                 $request->session()->put('role', Employee::employeeRole());
                 $request->session()->put('employee_details', $emp_details);
+                
+
                 return redirect($this->redirectTo);
             }
         } else {

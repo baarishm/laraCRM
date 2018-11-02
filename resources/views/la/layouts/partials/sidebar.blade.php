@@ -1,3 +1,11 @@
+
+
+<br />
+@if (\Session::has('success'))
+<div class="alert alert-success">
+    <p>{{ \Session::get('success') }}</p>
+</div><br />
+@endif
 <!-- Left side column. contains the logo and sidebar -->
 <aside class="main-sidebar">
 
@@ -8,8 +16,10 @@
         @if (! Auth::guest())
         <div class="user-panel">
             <div class="pull-left image">
-                <img src="{{ Gravatar::fallback(asset('la-assets/img/user2-160x160.jpg'))->get(Auth::user()->email) }}" class="img-circle" alt="User Image" />
+<!--             <img src="la-assets/img/Profile_Image/tripan.jpg" class="img-circle" alt="User Image" />-->
+                <img src="{{ asset('la-assets/img/Profile_Image/')}}<?php echo '/'.\Session::get('employee_details')['image'] ; ?>" class="img-circle" alt="User Image" style="border-radius: 50%" />
             </div>
+
             <div class="pull-left info">
                 <p>{{ Auth::user()->name }}</p>
                 <!-- Status -->
@@ -39,30 +49,32 @@
                 <?php
                 $menuItems = Dwij\Laraadmin\Models\Menu::where("parent", 0)->orderBy('hierarchy', 'asc')->get();
                 $role_id = DB::table('role_user')->select(['role_id'])->whereRaw('user_id = "' . Auth::user()->id . '"')->first();
-                $roleMenu = DB::table('sidebar_menu_accesses')->whereRaw('role_id = ' . $role_id->role_id. ' and deleted_at IS NULL')->pluck('menu_id');
+                $roleMenu = DB::table('sidebar_menu_accesses')->whereRaw('role_id = ' . $role_id->role_id . ' and deleted_at IS NULL')->pluck('menu_id');
                 ?>
-                @foreach ($menuItems as $menu)
-                    @if($menu->type == "module")
-                        <?php
-                        $temp_module_obj = Module::get($menu->name);
-                        ?>
-                        @la_access($temp_module_obj->id)
-                            @if(isset($module->id) && $module->name == $menu->name && in_array($menu->id, $roleMenu))
-                                <?php echo LAHelper::print_menu($menu, true); ?>
-                            @else
-                                <?php if (in_array($menu->id, $roleMenu)) {
-                                    echo LAHelper::print_menu($menu);
-                                } ?>
-                            @endif
-                        @endla_access
-                    @else
-                        <?php
-                        if (in_array($menu->id, $roleMenu)) {
-                            echo LAHelper::print_menu($menu);
-                        }
-                        ?>
-                    @endif
-                @endforeach
+            @foreach ($menuItems as $menu)
+            @if($menu->type == "module")
+            <?php
+            $temp_module_obj = Module::get($menu->name);
+            ?>
+            @la_access($temp_module_obj->id)
+            @if(isset($module->id) && $module->name == $menu->name && in_array($menu->id, $roleMenu))
+            <?php echo LAHelper::print_menu($menu, true); ?>
+            @else
+            <?php
+            if (in_array($menu->id, $roleMenu)) {
+                echo LAHelper::print_menu($menu);
+            }
+            ?>
+            @endif
+            @endla_access
+            @else
+            <?php
+            if (in_array($menu->id, $roleMenu)) {
+                echo LAHelper::print_menu($menu);
+            }
+            ?>
+            @endif
+            @endforeach
             <!-- LAMenus -->
 
         </ul><!-- /.sidebar-menu -->
