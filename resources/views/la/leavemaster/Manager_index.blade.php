@@ -208,12 +208,6 @@ $(document).ready(function () {
 //     $('#status_search').on('change', function (e) {
 //         
 //      table.draw();
-
-<<<<<<< HEAD
-=======
-
-
->>>>>>> optimize_code
 });
 $('#employee_search, #status_search').select2();
 
