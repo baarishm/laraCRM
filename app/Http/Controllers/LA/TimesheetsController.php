@@ -654,7 +654,7 @@ class TimesheetsController extends Controller {
                             'Sprint_Name' => '-',
                             'Task' => 'Leave',
                             'Description' => '-',
-                            'Effort_Hours' => '9'
+                            'Effort_Hours' => 9
                         ];
                     }
 
