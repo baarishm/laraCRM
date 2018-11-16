@@ -72,7 +72,6 @@
 					@la_input($module, 'second_approver')
 					@la_input($module, 'dept')
 					@la_input($module, 'date_hire')
-//                                         @la_input($module, 'image')
 					--}}
                     <div class="form-group">
                         <label for="role">Role* :</label>
