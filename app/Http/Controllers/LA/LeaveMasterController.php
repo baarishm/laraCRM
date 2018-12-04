@@ -646,12 +646,12 @@ class LeaveMasterController extends Controller {
 
                         $output = '';
                         $output .= '<a href="' . url(config('laraadmin.adminRoute') . '/leaves/' . $leaveMasterRow->id . '/edit') . '" class="btn btn-warning btn-xs" style="display:inline;padding:2px 5px 3px 5px;"><i class="fa fa-edit"></i></a>';
-                        $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.leaves.destroy', $leaveMasterRow->id], 'method' => 'delete', 'style' => 'display:inline', 'class' => 'delete']);
+//                        $output .= Form::open(['route' => [config('laraadmin.adminRoute') . '.leaves.destroy', $leaveMasterRow->id], 'method' => 'delete', 'style' => 'display:inline', 'class' => 'delete']);
                         $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
                         $output .= Form::close();
                         $record[] = (string) $output;
                     } else {
-                        $record[] = '';
+                        $record[] = 'No Action Taken';
                     }
                     $array[] = $record;
                 }
