@@ -650,8 +650,10 @@ class LeaveMasterController extends Controller {
                         $output .= ' <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>';
                         $output .= Form::close();
                         $record[] = (string) $output;
-                    } else {
+                    } else if ((($leaveMasterRow->Approved == '' || $leaveMasterRow->Approved == 'NULL') && date('Y-m-d', strtotime('-' . LAConfigs::getByKey('before_days_leave') . 'days')) > $leaveMasterRow->FromDate)) {
                         $record[] = 'No Action Taken';
+                    }   else {
+                        $record[] = '';
                     }
                     $array[] = $record;
                 }
