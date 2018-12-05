@@ -30,20 +30,22 @@ class Kernel extends ConsoleKernel {
      * @return void
      */
     protected function schedule(Schedule $schedule) {
-        $schedule->command('leave:add')
+        $schedule->command('leave:add')                     //every month on 24th 10 AM
                 ->cron('0 10 24 * *');
-        $schedule->command('leave:carryForward')
+        $schedule->command('leave:carryForward')            //every 1st Jan 10 AM
                 ->cron('0 10 1 1 *');
-        $schedule->command('timesheet:dailyReport')
+        $schedule->command('timesheet:dailyReport')         //every day 10 AM
                 ->cron('0 10 * * *');
-        $schedule->command('timesheet:weekTrack')
+        $schedule->command('timesheet:weekTrack')           //every friday 6 PM
                 ->cron('0 18 5 * *');
-        $schedule->command('leave:weekTrack')
+        $schedule->command('leave:weekTrack')               //every monday 10 AM
                 ->cron('0 10 1 * *');
-        $schedule->command('compOff:collapse')
+        $schedule->command('compOff:collapse')              //every day 10 AM
                 ->cron('0 10 * * *');
-        $schedule->command('timesheet:dailyEntryTrack')
+        $schedule->command('timesheet:dailyEntryTrack')     //every day 10 AM
                 ->cron('0 10 * * *');
+        $schedule->command('leave:approvalReminder')        //every monday 10 AM
+                ->cron('0 10 1 * *');
     }
 
 }
