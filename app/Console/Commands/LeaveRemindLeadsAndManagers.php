@@ -9,7 +9,7 @@ use DB;
 use Mail;
 use Log;
 
-class remindLeadsAndManagers extends Command {
+class LeaveRemindLeadsAndManagers extends Command {
 
       /**
        * The name and signature of the console command.
@@ -110,7 +110,7 @@ class remindLeadsAndManagers extends Command {
        * @param array $leaves_pending Pending leaves record array
        */
       private function create_table($empRecord, $leaves_pending) {
-            $managers_table = "";
+            $table = "";
             $rows = '';
             foreach ($empRecord as $record) {
                   if (!empty($leaves_pending[$record['id']])) {
@@ -128,8 +128,8 @@ class remindLeadsAndManagers extends Command {
             }
 
             if ($rows != '') {
-                  $managers_table .= "<table border=1>";
-                  $managers_table .= "<tr>"
+                  $table .= "<table border=1>";
+                  $table .= "<tr>"
                           . "<th>Name</th>"
                           . "<th>From</th>"
                           . "<th>To</th>"
@@ -137,10 +137,10 @@ class remindLeadsAndManagers extends Command {
                           . "<th>Reason</th>"
                           . "<th>Apply Date</th>"
                           . "</tr>";
-                  $managers_table .= $rows;
-                  $managers_table .= "</table>";
+                  $table .= $rows;
+                  $table .= "</table>";
             }
-            return $managers_table;
+            return $table;
       }
 
 }
