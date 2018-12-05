@@ -20,6 +20,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\TimesheetEntryTrack',
         'App\Console\Commands\TimesheetEntryTrackDaily',
         'App\Console\Commands\CompOffCollapse',
+        'App\Console\Commands\RemindLeadsAndManagers',
     ];
 
     /**
