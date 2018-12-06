@@ -575,7 +575,7 @@ class LeaveMasterController extends Controller {
                         if ($people_under_lead != '')
                               $where = 'EmpId IN (' . $people_under_lead . ')';
                   }
-                  if ($where == '' && $role == 'superAdmin') { //nobody under lead or manager
+                  if ($where == '' && $role != 'superAdmin') { //nobody under lead or manager
                         $where = 'EmpId IN (0)';
                   }
             } else {
