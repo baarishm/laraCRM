@@ -33,13 +33,15 @@
       }
       
       function sendMail(){
+            $('div.overlay').removeClass('hide');
             var monthly = document.getElementById('month').value;
             var weekly = document.getElementById('week').value;
 
             var xhttp = new XMLHttpRequest();
             xhttp.onreadystatechange = function () {
                   if (this.readyState == 4 && this.status == 200) {
-
+                        $('div.overlay').addClass('hide');
+                        alert('Mail sent successfully!');
                   }
             };
             xhttp.open("POST", "{{ url(config('laraadmin.adminRoute') . '/project/sendMailWithGraphs') }}", true);
