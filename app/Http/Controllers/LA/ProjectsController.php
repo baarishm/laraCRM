@@ -342,9 +342,13 @@ class ProjectsController extends Controller {
                     . "Team Ganit PlusMinus";
 
 
-            $recipients['to'] = 'varsha.mittal@ganitsoft.com';
+            $recipients['to'] = 'mohit.arora@ganitsoft.com';
+            $recipients['cc'] = 'ashok.chand@ganitsoft.com';
+            $recipients['bcc'] = 'varsha.mittal@ganitsoft.com';
             if (Mail::send('emails.test', ['html' => $html], function ($m) use($recipients) {
                           $m->to($recipients['to'])
+                                  ->cc($recipients['cc'])
+                                  ->bcc($recipients['bcc'])
                                   ->subject('Labour involved with projects till date');
                     })) {
                   echo "Mail sent";
