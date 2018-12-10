@@ -70,7 +70,7 @@ Team Leave Dashboard
             <th>Applied Date</th>
             <th>From Date</th>
             <th>To Date</th>
-            <th>No Of Days</th>
+            <th style="width:74px !important;">No of Days</th>
             <th>Leave Type</th>
             <th>Purpose</th>
             <th>Leave Status</th>
@@ -121,6 +121,7 @@ function myfunction(button)
     {
         approved = 1;
     }
+  
     swal({
         title: "Enter Comment",
         input: "textarea",

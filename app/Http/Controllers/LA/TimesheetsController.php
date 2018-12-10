@@ -427,7 +427,8 @@ class TimesheetsController extends Controller {
                 $people_under_lead = Employee::getEngineersUnder('Lead');
                 if ($people_under_lead != '')
                     $where = 'submitor_id IN (' . $people_under_lead . ')';
-            } else if ($role == 'engineer') {
+            } 
+            else if ($role == 'engineer') {
                 $this->show_action = true;
                 $where = 'submitor_id = ' . Auth::user()->context_id;
             }

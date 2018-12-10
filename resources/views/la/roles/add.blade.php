@@ -25,16 +25,17 @@
     </div>
     <div class="box-body">
         <div class="row">
-            <div class="col-md-8 col-md-offset-2">
+            <div class="col-md-8 col-md-offset-2 form-input">
                 {!! Form::open(['action' => 'LA\RolesController@store', 'id' => 'role-add-form']) !!}
                 @la_input($module, 'name', null, null, "form-control text-uppercase", ["placeholder" => "Role Name in CAPITAL LETTERS with '_' to JOIN e.g. 'SUPER_ADMIN'"])
                 @la_input($module, 'display_name')
-                @la_input($module, 'description')
                 @la_input($module, 'parent')
                 @la_input($module, 'dept')
+                @la_input($module, 'description')
+            
                 <br>
-                <div class="form-group">
-                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/projects') }}">Cancel</a></button>
+                <div class="form-group text-right" style="width: 88%;float:none;clear: both;">
+                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!} <button class="btn btn-default cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/projects') }}">Cancel</a></button>
                 </div>
                 {!! Form::close() !!}
             </div>

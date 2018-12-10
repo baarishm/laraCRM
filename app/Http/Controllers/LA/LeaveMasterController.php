@@ -585,9 +585,6 @@ class LeaveMasterController extends Controller {
                 ->whereNull('employees.deleted_at')
                 ->orderBy('FromDate', 'desc');
 
-
-
-
         if ($where != '') {
             $leaveMaster_query->whereRaw($where);
         }

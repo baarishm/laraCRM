@@ -92,7 +92,11 @@
             <a href="#" class="dropdown-toggle" data-toggle="dropdown">
                 <!-- The user image in the navbar-->
 <!--                <img src="la-assets/img/Profile_Image/tripan.jpg" class="img-circle" alt="User Image"  style="width: 25px;height: 25px;"/>-->
-                <img src="{{ asset('la-assets/img/Profile_Image/')}}<?php echo '/'.\Session::get('employee_details')['image'] ; ?>" class="img-circle" alt="User Image" style="width: 25px;height: 25px; border-radius: 50%" />
+          <img src="{{ asset('la-assets/img/Profile_Image/')}}<?php echo '/'.((\Session::get('employee_details')['image'] != '0' ) ? \Session::get('employee_details')['image'] : 'images.png'); ?>" class="img-circle" alt="User Image" style="width: 25px;height: 25px; border-radius: 50%">
+               
+<!--                <img src="{{ asset('la-assets/img/Profile_Image/')}}<?php echo '/'.\Session::get('employee_details')['image'] ; ?>" class="img-circle" alt="User Image" style="width: 25px;height: 25px; border-radius: 50%" /> -->
+                
+               
                 <!-- hidden-xs hides the username on small devices so only the image appears. -->
                 <span class="hidden-xs">{{ Auth::user()->name }}</span>
             </a>
@@ -100,7 +104,7 @@
                 <!-- The user image in the menu -->
                 <li class="user-header">
 <!--                    <img src="la-assets/img/Profile_Image/tripan.jpg" class="img-circle" alt="User Image" />-->
-                    <img src="{{ asset('la-assets/img/Profile_Image/')}}<?php echo '/'.\Session::get('employee_details')['image'] ; ?>" class="img-circle" alt="User Image" style=" border-radius: 50%"/>
+                   <img src="{{ asset('la-assets/img/Profile_Image/')}}<?php echo '/'.((\Session::get('employee_details')['image'] != '0' ) ? \Session::get('employee_details')['image'] : 'images.png'); ?>" class="img-circle" alt="User Image" style=" border-radius: 50%">
                     <p>
                         {{ Auth::user()->name }}
                         <?php
