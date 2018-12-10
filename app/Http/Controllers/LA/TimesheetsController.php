@@ -106,6 +106,9 @@ class TimesheetsController extends Controller {
                         if ($people_under_lead != '')
                               $where = 'submitor_id IN (' . $people_under_lead . ')';
                   }
+                  if ($where == '' && $role != 'superAdmin') { //nobody under lead or manager
+                        $where = 'submitor_id IN (0)';
+                  }
 
                   $employees = DB::table('timesheets')
                           ->select([DB::raw('distinct(timesheets.submitor_id)'), DB::raw('employees.name AS employee_name')])
@@ -431,7 +434,7 @@ class TimesheetsController extends Controller {
                         $this->show_action = true;
                         $where = 'submitor_id = ' . Auth::user()->context_id;
                   }
-                  if ($where == '' && $role == 'superAdmin') { //nobody under lead or manager
+                  if ($where == '' && $role != 'superAdmin') { //nobody under lead or manager
                         $where = 'submitor_id IN (0)';
                   }
             }

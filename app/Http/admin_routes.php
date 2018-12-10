@@ -75,6 +75,8 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL', 'p
     Route::resource(config('laraadmin.adminRoute') . '/projects', 'LA\ProjectsController');
     Route::get(config('laraadmin.adminRoute') . '/project_dt_ajax', 'LA\ProjectsController@dtajax');
     Route::post(config('laraadmin.adminRoute') . '/projectList', 'LA\ProjectsController@ajaxProjectList');
+    Route::get(config('laraadmin.adminRoute') . "/project/graphicalRepresentation", 'LA\ProjectsController@graphicalRepresentationSetup');
+    Route::post(config('laraadmin.adminRoute') . "/project/sendMailWithGraphs", 'LA\ProjectsController@ajaxSendMailWithGraphs');
 
     /* ================== Tasks ================== */
     Route::resource(config('laraadmin.adminRoute') . '/tasks', 'LA\TasksController');
