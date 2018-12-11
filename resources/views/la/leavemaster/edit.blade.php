@@ -87,7 +87,7 @@ Edit Apply  Leave
                         </div>
                         <div class="form-group col-md-3" style=" <?php echo ($leaveMaster->half_day == '1') ? '' : 'display: none'; ?>" id="halfday">
                             <label for="half_day">Half Day</label>
-                            <input class="duration" type="checkbox" name="half_day" id="half_day" <?php echo ($value=="1") ? 'checked':'' ?>/>
+                            <input class="duration form-control" type="checkbox" name="half_day" id="half_day" <?php echo ($value=="1") ? 'checked':'' ?>/>
                         </div>
 
                         <div class="form-group col-md-3" style="margin-top:25px">

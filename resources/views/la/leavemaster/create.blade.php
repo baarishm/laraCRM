@@ -93,7 +93,7 @@ Apply For Leave
                         </div>
                         <div class="form-group col-md-3" style="display: none" id="halfday">
                             <label for="half_day">Half Day</label>
-                            <input class="duration" type="checkbox" name="half_day" id="half_day" /> 
+                            <input class="duration form-control" type="checkbox" name="half_day" id="half_day" /> 
                         </div>
                         
                         <div class="col-md-3" style="margin-top: 25px;">
