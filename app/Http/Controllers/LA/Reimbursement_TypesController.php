@@ -23,7 +23,7 @@ class Reimbursement_TypesController extends Controller
 {
 	public $show_action = true;
 	public $view_col = 'name';
-	public $listing_cols = ['id', 'name', 'verification_level', 'document_required', 'limit', 'limit_variance', 'employee grade', 'created_by', 'updated_by', 'deleted_by'];
+	public $listing_cols = ['id', 'name', 'verification_level', 'document_required', 'limit', 'limit_variance', 'employee grade ', 'created_by', 'updated_by', 'deleted_by'];
 	
 	public function __construct() {
 		// Field Access of Listing Columns
