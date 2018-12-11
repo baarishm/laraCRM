@@ -140,10 +140,11 @@ $(function () {
             ajax: {
             dataType: "json",
                     url: "{{ url(config('laraadmin.adminRoute') . '/reimbursement_form_dt_ajax') }}",
-                    type : 'get',
+                    type : 'post',
                     data:function(d){
                     d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
                             d.teamMember = "{{$teamMember}}";
+							d._token = "{{csrf_token()}}";
                             filterDatatableData(d);
                     }
             },

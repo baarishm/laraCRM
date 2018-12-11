@@ -171,7 +171,7 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL', 'p
 
 	/* ================== Reimbursement_Forms ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/reimbursement_forms', 'LA\Reimbursement_FormsController');
-	Route::get(config('laraadmin.adminRoute') . '/reimbursement_form_dt_ajax', 'LA\Reimbursement_FormsController@dtajax');
+	Route::post(config('laraadmin.adminRoute') . '/reimbursement_form_dt_ajax', 'LA\Reimbursement_FormsController@dtajax');
     Route::get( "admin/reimbursement_form/teamMemberReimbursement", 'LA\Reimbursement_FormsController@teamMemberReimbursement');
     Route::post(config('laraadmin.adminRoute') . '/reimbursement_forms/store', 'LA\Reimbursement_FormsController@store');
     Route::get('/approvereimbursement', 'LA\Reimbursement_FormsController@ajaxApproveReimbursement');
