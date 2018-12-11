@@ -22,10 +22,10 @@ class CreateReimbursementTypesTable extends Migration
             ["verification_level", "Verification Level", "Integer", false, "1", 0, 11, false],
             ["document_required", "Document Required", "Integer", false, "0", 0, 11, false],
             ["limit", "Limit", "Decimal", false, "", 0, 11, true],
-            ["limit_variance", "Limit Variance ", "Decimal", false, "0", 0, 11, true],
-            ["employee grade ", "Employee Grade", "TextField", false, "", 0, 256, true],
-            ["created_by", "Created By", "Dropdown", false, "", 0, 256, true, "@employees"],
-            ["updated_by", "Update By", "Dropdown", false, "", 0, 256, true, "@employees"],
+            ["limit_variance", "Limit Variance", "Decimal", false, "0", 0, 11, true],
+            ["employee grade", "Employee Grade", "TextField", false, "", 0, 256, true],
+            ["created_by", "Created By", "Dropdown", false, "", 0, 0, true, "@employees"],
+            ["updated_by", "Update By", "Dropdown", false, "", 0, 0, true, "@employees"],
             ["deleted_by", "Deleted By", "Dropdown", false, "", 0, 0, false, "@employees"],
         ]);
 		

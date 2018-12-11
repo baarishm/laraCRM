@@ -64,7 +64,7 @@
 					@la_input($module, 'document_required')
 					@la_input($module, 'limit')
 					@la_input($module, 'limit_variance')
-					@la_input($module, 'employee grade ')
+					@la_input($module, 'employee grade')
 					@la_input($module, 'created_by')
 					@la_input($module, 'updated_by')
 					@la_input($module, 'deleted_by')
@@ -94,7 +94,13 @@ $(function () {
 	$("#example1").DataTable({
 		processing: true,
         serverSide: true,
-        ajax: "{{ url(config('laraadmin.adminRoute') . '/reimbursement_type_dt_ajax') }}",
+		ajax: {
+            url:"{{ url(config('laraadmin.adminRoute') . '/reimbursement_type_dt_ajax') }}",
+                    type : 'get',
+                    data:function(d){
+                            filterDatatableData(d);
+                    }
+            },
 		language: {
 			lengthMenu: "_MENU_",
 			search: "_INPUT_",

@@ -38,7 +38,7 @@
 					@la_input($module, 'document_required')
 					@la_input($module, 'limit')
 					@la_input($module, 'limit_variance')
-					@la_input($module, 'employee grade ')
+					@la_input($module, 'employee grade')
 					@la_input($module, 'created_by')
 					@la_input($module, 'updated_by')
 					@la_input($module, 'deleted_by')

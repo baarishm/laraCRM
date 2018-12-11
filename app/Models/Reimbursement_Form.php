@@ -22,6 +22,4 @@ class Reimbursement_Form extends Model
 	protected $guarded = [];
 
 	protected $dates = ['deleted_at'];
-        
-       
 }

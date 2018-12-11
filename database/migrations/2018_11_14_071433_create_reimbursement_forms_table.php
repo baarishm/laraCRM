@@ -17,23 +17,23 @@ class CreateReimbursementFormsTable extends Migration
      */
     public function up()
     {
-        Module::generate("Reimbursement_forms", 'reimbursement_forms', 'emp_id', 'fa-file-text-o', [
+        Module::generate("Reimbursement_forms", 'reimbursement_forms', 'emp_id', 'fa-cutlery', [
             ["emp_id", "Applicant", "Dropdown", false, "", 0, 0, false, "@employees"],
             ["type_id", "Reimbursement Type", "Dropdown", false, "", 0, 0, true, "@reimbursement_types"],
             ["amount", "Amount", "Decimal", false, "0", 0, 11, true],
             ["user_comment", "User Comment", "Textarea", false, "", 0, 0, false],
-            ["document_attached", "Document Attached", "Checkbox", false, "0", 0, 0, false],
             ["verified_level", "Verified Level", "Integer", false, "0", 0, 11, false],
-            ["paid_status ", "Paid Status ", "Integer", false, "0", 0, 11, false],
-            ["verfication_status ", "Verfication Status ", "Integer", false, "0", 0, 11, false],
+            ["paid_status", "Paid Status", "Integer", false, "0", 0, 11, false],
+            ["document_attached", "Document Attached", "Checkbox", false, "0", 0, 0, false],
+            ["verfication_status", "Verfication Status", "Integer", false, "0", 0, 11, false],
             ["hard_copy_accepted", "Hard Copy Accepted", "Checkbox", false, "0", 0, 0, false],
-            ["payment_date ", "Payment Date ", "Datetime", false, "", 0, 0, false],
+            ["payment_date", "Payment Date", "Datetime", false, "", 0, 0, false],
             ["cosharing", "Shared With(Names)", "TextField", false, "", 0, 256, false],
             ["cosharing_count", "Cosharing Count", "Integer", false, "0", 0, 11, false],
             ["created_by", "Created By", "Dropdown", false, "", 0, 0, true, "@employees"],
             ["update_by", "Update By", "Dropdown", false, "", 0, 0, true, "@employees"],
             ["deleted_by", "Deleted By", "Dropdown", false, "", 0, 0, false, "@employees"],
-            ["date", "Date", "Date", false, "", 0, 0, true],
+            ["date", "Date", "Date", true, "", 0, 0, true],
         ]);
 		
 		/*

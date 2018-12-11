@@ -112,7 +112,7 @@
 						@la_display($module, 'document_required')
 						@la_display($module, 'limit')
 						@la_display($module, 'limit_variance')
-						@la_display($module, 'employee grade ')
+						@la_display($module, 'employee grade')
 						@la_display($module, 'created_by')
 						@la_display($module, 'updated_by')
 						@la_display($module, 'deleted_by')
