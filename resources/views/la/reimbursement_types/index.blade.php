@@ -94,6 +94,7 @@ $(function () {
 	$("#example1").DataTable({
 		processing: true,
         serverSide: true,
+        searching: false,
         ajax: {
             dataType: "json",
                     url: "{{ url(config('laraadmin.adminRoute') . '/reimbursement_type_dt_ajax') }}",

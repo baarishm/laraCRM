@@ -25,8 +25,8 @@ class Reimbursement_FormsController extends Controller {
 
     public $show_action = true;
     public $view_col = 'id';
-    public $listing_cols = ['id', 'type_id', 'amount', 'user_comment', 'document_attached', 'verified_level', 'paid_status ', 'hard_copy_accepted', 'payment_date ', 'cosharing', 'cosharing_count', 'created_by', 'update_by', 'deleted_by', 'date'];
-    public $custom_cols = ['id', 'emp_id', 'type_id', 'amount', 'user_comment', 'document_attached', 'verified_level', 'paid_status ', 'hard_copy_accepted', 'payment_date ', 'cosharing', 'cosharing_count', 'created_by', 'update_by', 'deleted_by', 'date'];
+    public $listing_cols = ['id', 'type_id', 'amount', 'user_comment', 'document_attached', 'verified_level', 'paid_status', 'hard_copy_accepted', 'payment_date', 'cosharing', 'cosharing_count', 'created_by', 'update_by', 'deleted_by', 'date'];
+    public $custom_cols = ['id', 'emp_id', 'type_id', 'amount', 'user_comment', 'document_attached', 'verified_level', 'paid_status', 'hard_copy_accepted', 'payment_date', 'cosharing', 'cosharing_count', 'created_by', 'update_by', 'deleted_by', 'date'];
 
     public function __construct() {
         // Field Access of Listing Columns
