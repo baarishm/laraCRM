@@ -94,7 +94,14 @@ $(function () {
 	$("#example1").DataTable({
 		processing: true,
         serverSide: true,
-        ajax: "{{ url(config('laraadmin.adminRoute') . '/reimbursement_type_dt_ajax') }}",
+        ajax: {
+            dataType: "json",
+                    url: "{{ url(config('laraadmin.adminRoute') . '/reimbursement_type_dt_ajax') }}",
+                    type : 'get',
+                    data:function(d){
+                            filterDatatableData(d);
+                    }
+            },
 		language: {
 			lengthMenu: "_MENU_",
 			search: "_INPUT_",
