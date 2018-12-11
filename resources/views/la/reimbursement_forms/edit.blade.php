@@ -269,6 +269,9 @@ Edit Apply  Reimbursement
                                         todayHighlight: 'true',
                                         changeMonth: true,
                                         changeYear: true,
+                                         minDate: -30,
+                                        maxDate: '+0day',
+                                        numberOfMonths: 1
 
                                     });
 

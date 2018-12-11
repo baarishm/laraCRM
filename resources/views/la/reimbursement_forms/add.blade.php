@@ -139,21 +139,20 @@ Apply For Reimbursement
                                     $('#type_id').on('change', function () {
                                         ReimbursementType(this);
                                     });
-                                    
+
                                     $('#cosharing').keypress(function (e) {
-        var regex = new RegExp("^[a-zA-Z]+$");
-        var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
-        if (regex.test(str)) {
-            return true;
-        }
-        else
-        {
-        e.preventDefault();
-       //  swal('Please Enter Alphabate');
-        return false;
-        }
-    });
-                                    
+                                        var regex = new RegExp("^[a-zA-Z]+$");
+                                        var str = String.fromCharCode(!e.charCode ? e.which : e.charCode);
+                                        if (regex.test(str)) {
+                                            return true;
+                                        } else
+                                        {
+                                            e.preventDefault();
+                                            //  swal('Please Enter Alphabate');
+                                            return false;
+                                        }
+                                    });
+
 
                                     $("input[name$='document_attached']").click(function () {
                                         var test = $(this).val();
@@ -178,6 +177,7 @@ Apply For Reimbursement
                                     });
 
 
+
                                 });
 
 
@@ -190,8 +190,11 @@ Apply For Reimbursement
                                         changeMonth: true,
                                         changeYear: true,
 
-                                    });
+                                        minDate: -30,
+                                        maxDate: '+0day',
+                                        numberOfMonths: 1
 
+                                    });
 
                                 });
 
