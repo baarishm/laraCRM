@@ -86,7 +86,7 @@ Edit Apply  Leave
                             <input type="text" class="form-control" name="LeaveReason" autocomplete="off"  placeholder="Leave Purpose" required maxlength="180" value="{{$leaveMaster -> LeaveReason or old('LeaveReason')}}"> 
                         </div>
                         <div class="form-group col-md-3" style=" <?php echo ($leaveMaster->half_day == '1') ? '' : 'display: none'; ?>" id="halfday">
-                            <label for="half_day">Half Day</label>
+                            <label for="half_day">Half Day</label><br/>
                             <input class="duration" type="checkbox" name="half_day" id="half_day" <?php echo ($value=="1") ? 'checked':'' ?>/>
                         </div>
 
