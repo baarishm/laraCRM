@@ -21,7 +21,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\TimesheetEntryTrackDaily',
         'App\Console\Commands\CompOffCollapse',
         'App\Console\Commands\LeaveRemindLeadsAndManagers',
-        'App\Console\Commands\LeaveRemindLeadsAndManagers',
+        'App\Console\Commands\LeaveDailyList',
     ];
 
     /**
