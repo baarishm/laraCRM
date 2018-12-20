@@ -97,5 +97,4 @@ class LeaveDailyList extends Command {
                   Log::info(' - CRON : Mail to Mohit for list of employees on leave today - ' . date('d M Y') . '.');
             }
       }
-
 }
