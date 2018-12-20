@@ -3,6 +3,10 @@
 namespace App\Console\Commands;
 
 use Illuminate\Console\Command;
+use App\Models\LeaveMaster;
+use DB;
+use Mail;
+use Log;
 
 class LeaveDailyList extends Command {
 
@@ -38,14 +42,13 @@ class LeaveDailyList extends Command {
             //code to export excel
             $sheet_data = LeaveMaster::
                             select([DB::raw('employees.name as Employee'), DB::raw('leavemaster.NoOfDays as Total_Days'), DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), DB::raw('if(leavemaster.approved = 1, "Approved", if(leavemaster.approved = 0, "Rejected","Pending")) as Status')])
-                            ->where('FromDate', '<=', 'CURDATE()')
-                            ->where('ToDate', '>=', 'CURDATE()')
-                            ->where('withdraw', '=', '0')
+                            ->whereRaw('FromDate <= CURDATE()')
+                            ->whereRaw('ToDate >= CURDATE()')
+                            ->whereRaw('withdraw = 0')
                             ->leftJoin('employees', 'leavemaster.EmpId', '=', 'employees.id')
                             ->leftJoin('employees as approver', 'leavemaster.ApprovedBy', '=', 'approver.id')
                             ->orderBy('leavemaster.created_at', 'desc')
                             ->get()->toArray();
-
 
             $html = "Dear Mohit Arora,"
                     . "<br>"
@@ -76,6 +79,7 @@ class LeaveDailyList extends Command {
                     . "<br><br>"
                     . "Regards,<br>"
                     . "Team Ganit PlusMinus";
+            
 //            $recipients['to'] = ['mohit.arora@ganitsoft.com', 'ashok.chand@ganitsoft.com'];
             $recipients['to'] = ['varsha.mittal@ganitsoft.com'];
 
