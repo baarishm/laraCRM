@@ -21,6 +21,7 @@ class Kernel extends ConsoleKernel {
         'App\Console\Commands\TimesheetEntryTrackDaily',
         'App\Console\Commands\CompOffCollapse',
         'App\Console\Commands\LeaveRemindLeadsAndManagers',
+        'App\Console\Commands\LeaveRemindLeadsAndManagers',
     ];
 
     /**
@@ -46,6 +47,8 @@ class Kernel extends ConsoleKernel {
                 ->cron('0 10 * * *');
         $schedule->command('leave:approvalReminder')        //every monday 10 AM
                 ->cron('0 10 1 * *');
+        $schedule->command('leave:DailyList')               //every day 10 AM
+                ->cron('0 10 * * *');
     }
 
 }
