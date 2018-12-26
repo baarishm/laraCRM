@@ -25,21 +25,21 @@
     </div>
     <div class="box-body">
         <div class="row">
-            <div class="col-md-8 col-md-offset-2 form-input">
+            <div class="col-md-8 col-md-offset-2">
                 {!! Form::open(['action' => 'LA\ProjectsController@store', 'id' => 'project-add-form']) !!}
                 @la_form($module)
 
                 {{--
-                    @la_input($module, 'client_id')
-                    @la_input($module, 'name')
-                    @la_input($module, 'manager_id')
-                    @la_input($module, 'lead_id')
-                    @la_input($module, 'start_date')
-                    @la_input($module, 'end_date')
-                    --}}
+					@la_input($module, 'client_id')
+					@la_input($module, 'name')
+					@la_input($module, 'manager_id')
+					@la_input($module, 'lead_id')
+					@la_input($module, 'start_date')
+					@la_input($module, 'end_date')
+					--}}
                 <br>
-                <div class="form-group text-right" style="width: 88% !Important;">
-                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!} <button class="btn btn-default cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/projects') }}">Cancel</a></button>
+                <div class="form-group">
+                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/projects') }}">Cancel</a></button>
                 </div>
                 {!! Form::close() !!}
             </div>

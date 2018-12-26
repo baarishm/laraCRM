@@ -63,45 +63,41 @@ class LeaveRemindLeadsAndManagers extends Command {
                             ->select(['employees.id', 'lead.email as lead_email'])
                             ->get()
                     )->groupBy('lead_email');
-
-
+            
+            
             if ($leaves_pending != null || !empty($leaves_pending)) {
                   foreach ($managers as $manager_email => $empRecord) {
-                        if ($table = $this->create_table($empRecord, $leaves_pending)) {
-                              $mail_body = "Dear Manager, <br>"
-                                      . "Following is the list of leaves to be approved/rejected by you: <br><br>";
-                              $mail_body .= $table;
-                              $mail_body .= "<br><br>"
-                                      . "Regards,<br>"
-                                      . "Team Ganit PlusMinus";
+                        $mail_body = "Dear Manager, <br>"
+                                . "Following is the list of leaves to be approved/rejected by you: <br><br>";
+                        $mail_body .= $this->create_table($empRecord, $leaves_pending);
+                        $mail_body .= "<br><br>"
+                                . "Regards,<br>"
+                                . "Team Ganit PlusMinus";
 
-                              //send mail to manager
-                              $recipients['to'] = [$manager_email];
+                        //send mail to manager
+                        $recipients['to'] = [$manager_email];
 
-                              Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
-                                    $m->to($recipients['to'])
-                                            ->subject('Leaves pending to be approved/rejected.');
-                              });
-                        }
+                        Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
+                              $m->to($recipients['to'])
+                                      ->subject('Leaves pending to be approved/rejected.');
+                        });
                   }
 
                   foreach ($leads as $lead_email => $empRecord) {
-                        if ($table = $this->create_table($empRecord, $leaves_pending)) {
-                              $mail_body = "Dear Lead, <br>"
-                                      . "Following is the list of leaves to be approved/rejected by you: <br><br>";
-                              $mail_body .= $table;
-                              $mail_body .= "<br><br>"
-                                      . "Regards,<br>"
-                                      . "Team Ganit PlusMinus";
+                        $mail_body = "Dear Lead, <br>"
+                                . "Following is the list of leaves to be approved/rejected by you: <br><br>";
+                        $mail_body .= $this->create_table($empRecord, $leaves_pending);
+                        $mail_body .= "<br><br>"
+                                . "Regards,<br>"
+                                . "Team Ganit PlusMinus";
 
-                              //send mail to lead
-                              $recipients['to'] = [$lead_email];
+                        //send mail to lead
+                        $recipients['to'] = [$lead_email];
 
-                              Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
-                                    $m->to($recipients['to'])
-                                            ->subject('Leaves pending to be approved/rejected.');
-                              });
-                        }
+                        Mail::send('emails.test', ['html' => $mail_body], function ($m) use($recipients) {
+                              $m->to($recipients['to'])
+                                      ->subject('Leaves pending to be approved/rejected.');
+                        });
                   }
             }
             Log::info(' - CRON :  Reminder mail for leave approval  On ' . date('d M Y'));
@@ -116,7 +112,6 @@ class LeaveRemindLeadsAndManagers extends Command {
       private function create_table($empRecord, $leaves_pending) {
             $table = "";
             $rows = '';
-            
             foreach ($empRecord as $record) {
                   if (!empty($leaves_pending[$record['id']])) {
                         foreach ($leaves_pending[$record['id']] as $leave_record) {
@@ -132,9 +127,7 @@ class LeaveRemindLeadsAndManagers extends Command {
                   }
             }
 
-            if ($rows == '') {
-                  return false;
-            } else {
+            if ($rows != '') {
                   $table .= "<table border=1>";
                   $table .= "<tr>"
                           . "<th>Name</th>"
