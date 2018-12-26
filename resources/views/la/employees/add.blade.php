@@ -80,5 +80,17 @@
         var date = new Date().toShortFormat();
         $('[name="date_hire"]').val(date);
     });
+
+
+    $(function ()
+    {
+        $("#datepicker, #datejoin").datepicker({
+            changeMonth: true,
+            changeYear: true,
+            yearRange: "-100:+0",
+            format: 'd M yyyy'});
+    });
+    $('#First_approver,#second_approver').select2();
+    
 </script>
 @endpush
