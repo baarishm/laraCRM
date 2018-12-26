@@ -166,3 +166,4 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL', 'p
         return view('la.notificationList');
     });
 });
+ 
