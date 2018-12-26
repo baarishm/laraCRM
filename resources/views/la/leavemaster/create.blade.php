@@ -92,7 +92,8 @@ Apply For Leave
                             <input type="text" value="{{ old('LeaveReason')}}" class="form-control" name="LeaveReason" autocomplete="off" required placeholder="Reason" maxlength="180"  >   
                         </div>
                         <div class="form-group col-md-3" style="display: none" id="halfday">
-                            <input class="duration" type="checkbox" name="half_day" value="1" id="half_day"  style="margin: 34px 0 0;" />Half Day<br>  
+                            <label for="half_day">Half Day</label><br/>
+                            <input class="duration" type="checkbox" name="half_day" id="half_day" /> 
                         </div>
                         
                         <div class="col-md-3" style="margin-top: 25px;">
