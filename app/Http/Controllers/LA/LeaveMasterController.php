@@ -559,6 +559,7 @@ class LeaveMasterController extends Controller {
                   $status = ' leavemaster.Approved  ' . (($request->status_search == '2') ? ' IS NULL ' : '=' . $request->status_search );
             }
 
+
             $where = 'EmpId = ' . Auth::user()->context_id;
             if ($request->teamMember) {
                   $where = '';
@@ -587,6 +588,9 @@ class LeaveMasterController extends Controller {
                     ->leftJoin('employees', 'employees.id', '=', 'leavemaster.EmpId')
                     ->whereNull('employees.deleted_at')
                     ->orderBy('FromDate', 'desc');
+
+
+
 
             if ($where != '') {
                   $leaveMaster_query->whereRaw($where);
