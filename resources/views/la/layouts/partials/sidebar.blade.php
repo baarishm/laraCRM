@@ -16,8 +16,7 @@
         @if (! Auth::guest())
         <div class="user-panel">
             <div class="pull-left image">
-<!--             <img src="la-assets/img/Profile_Image/tripan.jpg" class="img-circle" alt="User Image" />-->
-                <img src="{{ asset('la-assets/img/Profile_Image/')}}<?php echo '/'.\Session::get('employee_details')['image'] ; ?>" class="img-circle" alt="User Image" style="border-radius: 50%" />
+                <img src="{{ asset('la-assets/img/Profile_Image/')}}<?php echo '/'.((\Session::get('employee_details')['image'] != '' ) ? \Session::get('employee_details')['image'] : 'images.png'); ?>" class="img-circle" alt="User Image" style="border-radius: 50%"> 
             </div>
 
             <div class="pull-left info">

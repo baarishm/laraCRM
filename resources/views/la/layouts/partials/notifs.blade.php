@@ -20,7 +20,7 @@
                     <ul class="menu">
                         <li><!-- start message -->
                             <a href="#">
-                                <div class="pull-left">
+                                <div class="pull-left"> 
                                     <!-- User Image -->
                                     <img src="@if(isset(Auth::user()->email)) {{ Gravatar::fallback(asset('la-assets/img/user2-160x160.jpg'))->get(Auth::user()->email) }} @else asset('/img/user2-160x160.jpg' @endif" class="img-circle" alt="User Image"/>
                                 </div>
