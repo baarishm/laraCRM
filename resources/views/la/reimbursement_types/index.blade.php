@@ -1,5 +1,5 @@
 @extends("la.layouts.app")
-
+ 
 @section("contentheader_title", "Reimbursement Types")
 @section("contentheader_description", "Reimbursement Types listing")
 @section("section", "Reimbursement Types")

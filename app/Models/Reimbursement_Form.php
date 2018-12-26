@@ -1,8 +1,4 @@
 <?php
-/**
- * Model genrated using LaraAdmin
- * Help: http://laraadmin.com
- */
 
 namespace App\Models;
 

@@ -1,5 +1,5 @@
 @extends("la.layouts.app")
-
+ 
 @section("contentheader_title")
 	<a href="{{ url(config('laraadmin.adminRoute') . '/reimbursement_types') }}">Reimbursement Type</a> :
 @endsection

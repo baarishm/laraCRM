@@ -236,5 +236,6 @@
             format: 'd M yyyy'});
     });
     $('#First_approver,#second_approver').select2();
+    
 </script>
 @endpush

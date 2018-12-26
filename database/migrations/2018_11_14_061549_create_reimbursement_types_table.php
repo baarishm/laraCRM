@@ -1,8 +1,4 @@
 <?php
-/**
- * Migration genrated using LaraAdmin
- * Help: http://laraadmin.com
- */
 
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;

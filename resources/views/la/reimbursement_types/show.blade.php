@@ -1,5 +1,5 @@
 @extends('la.layouts.app')
-
+ 
 @section('htmlheader_title')
 	Reimbursement Type View
 @endsection

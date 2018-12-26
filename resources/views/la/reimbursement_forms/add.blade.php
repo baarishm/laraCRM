@@ -1,6 +1,6 @@
 @extends("la.layouts.app")
 @section("contentheader_title")
-
+ 
 <?php
 // start the session
 session_start();

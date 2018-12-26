@@ -1,8 +1,4 @@
 <?php
-/**
- * Controller genrated using LaraAdmin
- * Help: http://laraadmin.com
- */
 
 namespace App\Http\Controllers\LA;
 
@@ -12,7 +8,7 @@ use App\Http\Requests;
 use Auth;
 use DB;
 use Validator;
-use Datatables; 
+use Datatables;
 use Collective\Html\FormFacade as Form;
 use Dwij\Laraadmin\Models\Module;
 use Dwij\Laraadmin\Models\ModuleFields;
