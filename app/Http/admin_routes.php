@@ -178,3 +178,4 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL', 'p
     Route::get(config('laraadmin.adminRoute') . '/reimbursement_images_delete_ajax', 'LA\Reimbursement_FormsController@removeimagesajax');
     
 });
+ 
