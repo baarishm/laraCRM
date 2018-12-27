@@ -33,8 +33,8 @@
 					@la_input($module, 'name')
 					--}}
                 <br>
-                <div class="form-group text-right">
-                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!} <button class="btn btn-default  cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/tasks') }}">Cancel</a></button>
+                <div class="form-group">
+                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/tasks') }}">Cancel</a></button>
                 </div>
                 {!! Form::close() !!}
             </div>

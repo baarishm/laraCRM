@@ -11,7 +11,7 @@ View Apply  Leave
             <th>Employee Id</th>
             <th>Start Date</th>
             <th>End Date</th>
-            <th>No Of Days</th>
+            <th>Number Of Days</th>
             <th>Leave Purpose</th>
             <th>Leave Type</th>
              <th>Leave Duration</th>

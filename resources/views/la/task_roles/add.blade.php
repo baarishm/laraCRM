@@ -25,7 +25,7 @@
     </div>
     <div class="box-body">
         <div class="row">
-            <div class="col-md-4 col-md-offset-4">
+            <div class="col-md-8 col-md-offset-2">
                 {!! Form::open(['action' => 'LA\Task_RolesController@store', 'id' => 'task_roles-add-form']) !!}
                 @la_form($module)
 
@@ -34,8 +34,8 @@
 					@la_input($module, 'task_id')
 					--}}
                 <br>
-                <div class="form-group text-right">
-                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!} <button class="btn btn-default  cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/task_roles') }}">Cancel</a></button>
+                <div class="form-group">
+                    {!! Form::submit( 'Submit', ['class'=>'btn btn-success']) !!} <button class="btn btn-default pull-right cancel-button"><a href="{{ url(config('laraadmin.adminRoute') . '/task_roles') }}">Cancel</a></button>
                 </div>
                 {!! Form::close() !!}
             </div>
