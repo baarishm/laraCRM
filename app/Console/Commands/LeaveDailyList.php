@@ -57,6 +57,7 @@ class LeaveDailyList extends Command {
                           . "<br>";
 
                   if ($sheet_data->count() == 0) {
+                        return ; //as asked, if nobody is on leave then no email notification has to be sent
                         $html .= "Nobody is on leave today.";
                   } else {
                         $html .= "List of employees on leave is as under : <br> "
