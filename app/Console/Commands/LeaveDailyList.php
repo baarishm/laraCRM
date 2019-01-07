@@ -40,8 +40,8 @@ class LeaveDailyList extends Command {
        * @return mixed
        */
       public function handle() {
-            //not saturday or sunday and not a holiday
-            if ((date('N') != 6 || date('N') != 0) && (Holidays_List::where('day', date('Y-m-d'))->count() == 0)) {
+            //not saturday and not sunday and not a holiday
+            if ((date('N') != 6 && date('N') != 0) && (Holidays_List::where('day', date('Y-m-d'))->count() == 0)) {
                   $sheet_data = LeaveMaster::
                           select([DB::raw('employees.name as Employee'), DB::raw('leavemaster.NoOfDays as Total_Days'), DB::raw('DATE_FORMAT(FromDate,\'%d %b %Y\') as FromDate'), DB::raw('DATE_FORMAT(ToDate,\'%d %b %Y\') as ToDate'), DB::raw('if(leavemaster.approved = 1, "Approved", if(leavemaster.approved = 0, "Rejected","Pending")) as Status')])
                           ->whereRaw('FromDate <= CURDATE()')
@@ -56,7 +56,7 @@ class LeaveDailyList extends Command {
                           . "<br>"
                           . "<br>";
 
-                  if (empty($sheet_data)) {
+                  if ($sheet_data->count() == 0) {
                         $html .= "Nobody is on leave today.";
                   } else {
                         $html .= "List of employees on leave is as under : <br> "
