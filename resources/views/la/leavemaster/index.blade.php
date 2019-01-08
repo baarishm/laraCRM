@@ -24,7 +24,7 @@ $role = \Session::get('role');
 
 
         <div class="col-md-2 mt5">
-            <label>(Since Jan <?php echo date('Y'); ?> </label>
+            <label>(Since Jan <?php echo date('Y'); ?>) </label>
 
         </div>
         
