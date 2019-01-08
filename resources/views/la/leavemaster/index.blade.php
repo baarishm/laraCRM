@@ -23,6 +23,11 @@ $role = \Session::get('role');
     <div class="row" style="background: #dee2f7;">
 
 
+        <div class="col-md-1 mt5">
+            <label>(Since Jan 2019) </label>
+
+        </div>
+        
         <div class="col-md-2 mt5">
             <label for="Name" style="color:blue;">Total Leaves : {{$empdetail->total_leaves}}</label>
 
