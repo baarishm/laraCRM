@@ -124,7 +124,7 @@ $('document').ready(function () {
 
     //hide overlay
     $('button[type="submit"], input[type="submit"]').on('click', function () {
-        if (!$(this).closest('form')[0].checkValidity() || $('.error').length != 0) {
+        if ($(this).closest('form').length > 0 && !$(this).closest('form')[0].checkValidity() || $('.error').length != 0) {
             $('div.overlay').addClass('hide');
         }
     });

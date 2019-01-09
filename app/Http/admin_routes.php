@@ -173,10 +173,13 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL', 'p
 
 	/* ================== Reimbursement_Forms ================== */
 	Route::resource(config('laraadmin.adminRoute') . '/reimbursement_forms', 'LA\Reimbursement_FormsController');
-	Route::post(config('laraadmin.adminRoute') . '/reimbursement_form_dt_ajax', 'LA\Reimbursement_FormsController@dtajax');
+	Route::Post(config('laraadmin.adminRoute') . '/reimbursement_form_dt_ajax', 'LA\Reimbursement_FormsController@dtajax');
     Route::get( "admin/reimbursement_form/teamMemberReimbursement", 'LA\Reimbursement_FormsController@teamMemberReimbursement');
-    Route::post(config('laraadmin.adminRoute') . '/reimbursement_forms/store', 'LA\Reimbursement_FormsController@store');
+    Route::get( "admin/reimbursement_form/accountApprovalReimbursement", 'LA\Reimbursement_FormsController@accountApprovalReimbursement');
+    Route::POST(config('laraadmin.adminRoute') . '/reimbursement_forms/store', 'LA\Reimbursement_FormsController@store');
     Route::get('/approvereimbursement', 'LA\Reimbursement_FormsController@ajaxApproveReimbursement');
+    Route::get('/approvedreimbursement', 'LA\Reimbursement_FormsController@ajaxApprovedReimbursement');
     Route::get(config('laraadmin.adminRoute') . '/reimbursement_images_delete_ajax', 'LA\Reimbursement_FormsController@removeimagesajax');
+   
 });
  

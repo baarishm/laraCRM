@@ -44,6 +44,7 @@ class DepartmentsController extends Controller
 	 */
 	public function index()
 	{
+            
 		$module = Module::get('Departments');
 		
 		if(Module::hasAccess($module->id)) {
