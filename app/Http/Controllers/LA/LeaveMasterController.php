@@ -693,7 +693,7 @@ class LeaveMasterController extends Controller {
                                           $record[] = 'Action Taken';
                                     } else {
                                           $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . '>Approve</button> '
-                                                  . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . ' style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                                                  . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . ' style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
                                     }
                               } else if ($role == 'manager') {
                                     if (($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->ApprovedBy != '' && $leaveMasterRow->RejectedBy != '') {
