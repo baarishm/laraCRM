@@ -24,6 +24,11 @@ $role = \Session::get('role');
 
 
         <div class="col-md-2 mt5">
+            <label>(Since Jan <?php echo date('Y'); ?>) </label>
+
+        </div>
+        
+        <div class="col-md-2 mt5">
             <label for="Name" style="color:blue;">Total Leaves : {{$empdetail->total_leaves}}</label>
 
         </div>
@@ -41,7 +46,7 @@ $role = \Session::get('role');
             <label for="Name" style="color:green;">Available Comp-Offs : {{$empdetail->comp_off}}</label>
 
         </div>
-        <div class="col-md-3">
+        <div class="col-md-2">
             <a  href="leaves/create" class="btn btn-info pull-right">Apply Leave</a>
 
 

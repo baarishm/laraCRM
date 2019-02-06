@@ -424,7 +424,7 @@ class LeaveMasterController extends Controller {
 
             LeaveMaster::where('id', $_GET['id'])->update($update_field);
             $leavemaster = LeaveMaster::find($_GET['id']);
-            if ($leavemaster->LeaveType != 8) {//birthday leave
+            if ($leavemaster->LeaveType != 8 && $leavemaster->LeaveType != 9) {//not a birthday leave and WFH
                   $leaveType = Leave_Type::find($leavemaster->LeaveType);
                   $employee = Employee::find($leavemaster->EmpId);
                   if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
@@ -457,15 +457,15 @@ class LeaveMasterController extends Controller {
                   DB::update("update employees set comp_off = $comp_off, available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leavemaster->EmpId]);
             }
 
-            $employee_update = Employee::find($leavemaster->EmpId);
+            $employee = Employee::find($leavemaster->EmpId);
 
             $mail_data = [
                 'approved' => $_GET['approved'],
                 'action_by' => ucwords(Auth::user()->name),
                 'comment' => $_GET['actionReason'],
                 'action_date' => date('d M Y'),
-                'mail_to' => $employee_update->email,
-                'mail_to_name' => ucwords($employee_update->name),
+                'mail_to' => $employee->email,
+                'mail_to_name' => ucwords($employee->name),
                 'leave_from' => date('d M Y', strtotime($leavemaster->FromDate)),
                 'leave_to' => date('d M Y', strtotime($leavemaster->ToDate))
             ];
@@ -693,7 +693,7 @@ class LeaveMasterController extends Controller {
                                           $record[] = 'Action Taken';
                                     } else {
                                           $record[] = '<button type="button" class="btn btn-success" name="Approved" id="Approved" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . '>Approve</button> '
-                                                  . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . 'onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . ' style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
+                                                  . '<button type="button" class="btn btn" name="Rejected" id="Rejected" data-id =' . $leaveMasterRow->id . ' onclick="myfunction(this);" data-days = ' . $leaveMasterRow->NoOfDays . ' style="background-color: #f55753;border-color: #f43f3b;color: white" >Reject</button> ';
                                     }
                               } else if ($role == 'manager') {
                                     if (($leaveMasterRow->Approved == '1' || $leaveMasterRow->Approved == '0') && $leaveMasterRow->ApprovedBy != '' && $leaveMasterRow->RejectedBy != '') {

@@ -109,7 +109,7 @@ class LeaveAdditionCron extends Command {
                           . "Regards,<br>"
                           . "Team Ganit PlusMinus";
 
-                  $recipients['to'] = ['priyanka.kandpal@ganitsoftech.com', 'ashok.chand@ganitsoft.com', 'varsha.mittal@ganitsoftech.com'];
+                  $recipients['to'] = ['priyanka.kandpal@ganitsoftech.com', 'ashok.chand@ganitsoft.com', 'neeta.chawla@ganitsoft.com', 'varsha.mittal@ganitsoftech.com'];
 
                   Mail::send('emails.test', ['html' => $approval_html], function ($m) use($recipients) {
 

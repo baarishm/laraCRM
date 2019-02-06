@@ -41,7 +41,7 @@ class LeaveCarryForward extends Command {
 
         foreach ($employees as $employee) {
             if ($employee->available_leaves > 6) {
-                Employee::find($employee->id)->update(['available_leaves' => '6']);
+                Employee::find($employee->id)->update(['available_leaves' => '6', 'availed_leaves' => '0']);
             }
         }
         
