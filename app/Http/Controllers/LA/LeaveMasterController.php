@@ -424,7 +424,7 @@ class LeaveMasterController extends Controller {
 
             LeaveMaster::where('id', $_GET['id'])->update($update_field);
             $leavemaster = LeaveMaster::find($_GET['id']);
-            if ($leavemaster->LeaveType != 8) {//birthday leave
+            if ($leavemaster->LeaveType != 8 && $leavemaster->LeaveType != 9) {//not a birthday leave and WFH
                   $leaveType = Leave_Type::find($leavemaster->LeaveType);
                   $employee = Employee::find($leavemaster->EmpId);
                   if ($leavemaster->Approved && $leavemaster->ApprovedBy != '') {
@@ -457,15 +457,15 @@ class LeaveMasterController extends Controller {
                   DB::update("update employees set comp_off = $comp_off, available_leaves = $available_leaves, availed_leaves = $availed_leaves where id = ?", [$leavemaster->EmpId]);
             }
 
-            $employee_update = Employee::find($leavemaster->EmpId);
+            $employee = Employee::find($leavemaster->EmpId);
 
             $mail_data = [
                 'approved' => $_GET['approved'],
                 'action_by' => ucwords(Auth::user()->name),
                 'comment' => $_GET['actionReason'],
                 'action_date' => date('d M Y'),
-                'mail_to' => $employee_update->email,
-                'mail_to_name' => ucwords($employee_update->name),
+                'mail_to' => $employee->email,
+                'mail_to_name' => ucwords($employee->name),
                 'leave_from' => date('d M Y', strtotime($leavemaster->FromDate)),
                 'leave_to' => date('d M Y', strtotime($leavemaster->ToDate))
             ];
