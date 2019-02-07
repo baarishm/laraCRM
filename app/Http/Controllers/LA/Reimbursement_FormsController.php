@@ -22,8 +22,8 @@ class Reimbursement_FormsController extends Controller {
 
     public $show_action = true;
     public $view_col = 'id';
-    public $listing_cols = ['id', 'type_id', 'amount', 'user_comment', 'document_attached', 'verified_level', 'hard_copy_accepted', 'cosharing', 'cosharing_count', 'created_by', 'update_by', 'deleted_by', 'date'];
-    public $custom_cols = ['id', 'emp_id', 'type_id', 'amount', 'user_comment', 'document_attached', 'verified_level', 'hard_copy_accepted', 'cosharing', 'cosharing_count', 'created_by', 'update_by', 'deleted_by', 'date'];
+    public $listing_cols = ['id', 'type_id', 'amount', 'user_comment', 'document_attached', 'verified_level', 'hard_copy_attached', 'cosharing', 'cosharing_count', 'created_by', 'update_by', 'deleted_by', 'date'];
+    public $custom_cols = ['id', 'emp_id', 'type_id', 'amount', 'user_comment', 'document_attached', 'verified_level', 'hard_copy_attached', 'cosharing', 'cosharing_count', 'created_by', 'update_by', 'deleted_by', 'date'];
 
     public function __construct() {
         // Field Access of Listing Columns
@@ -325,7 +325,7 @@ class Reimbursement_FormsController extends Controller {
                 if ($images[$i] != '') {
                     $images[$i]->move(storage_path('/uploads'), $images[$i]->getClientOriginalName());
                     Reimbursement_Document::insert([
-                        'reimbursement_application_id' => $insert_row->id,
+                        'request_id' => $insert_row->id,
                         'name' => $images[$i]->getClientOriginalName()
                     ]);
                 }
@@ -433,8 +433,8 @@ class Reimbursement_FormsController extends Controller {
                             ->get();
                     $images = DB::table('reimbursement_documents')
                             ->select([DB::raw('reimbursement_forms.* , reimbursement_documents.*')])
-                            ->leftJoin('reimbursement_forms', 'reimbursement_forms.id', '=', 'reimbursement_documents.reimbursement_application_id')
-                            ->where('reimbursement_documents.reimbursement_application_id', '=', $id)
+                            ->leftJoin('reimbursement_forms', 'reimbursement_forms.id', '=', 'reimbursement_documents.request_id')
+                            ->where('reimbursement_documents.request_id', '=', $id)
                             ->whereNull('reimbursement_documents.deleted_at')
                             ->whereNull('reimbursement_forms.deleted_at')
                             ->get();
@@ -510,7 +510,7 @@ class Reimbursement_FormsController extends Controller {
                 if ($images[$i] != '') {
                     $images[$i]->move(storage_path('/uploads'), $images[$i]->getClientOriginalName());
                     Reimbursement_Document::insert([
-                        'reimbursement_application_id' => $id,
+                        'request_id' => $id,
                         'name' => $images[$i]->getClientOriginalName()
                     ]);
                 }
@@ -580,19 +580,19 @@ class Reimbursement_FormsController extends Controller {
         if ($request->teamMember && $request->account == 0) {
             $this->custom_cols = [($request->teamMember) ? 'reimbursement_forms.emp_id' : 'reimbursement_forms.id', DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as date'), 'type_id', 'amount', DB::raw("(case when (document_attached = 0) THEN 'No' ELSE 'Yes' end) as document_attached"), 'cosharing_count', 'user_comment', DB::raw("(case when (verified_level = 3 ) THEN 'Rejected' 
                         when(verified_level =1) THEN 'Approved' 
-                        ELSE 'Pending'  end) AS verified_level"), 'hard_copy_accepted', 'approved_by', 'rejected_by',
+                        ELSE 'Pending'  end) AS verified_level"), 'hard_copy_attached', 'approved_by', 'rejected_by',
                 (!$request->teamMember) ? 'emp_id' : 'id'
             ];
         } else if (!$request->teamMember && $request->account == 0) {
             $this->custom_cols = [($request->teamMember) ? 'reimbursement_forms.emp_id' : 'reimbursement_forms.id', DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as date'), 'type_id', 'amount', DB::raw("(case when (document_attached = 0) THEN 'No' ELSE 'Yes' end) as document_attached"), 'cosharing_count', 'user_comment', DB::raw("(case when (verified_level = 3 ) THEN 'Rejected ' 
                         when(verified_level =1) THEN 'Approved' 
-                        ELSE 'Pending'  end) AS verified_level"), 'hard_copy_accepted', 'approved_by', 'rejected_by',
+                        ELSE 'Pending'  end) AS verified_level"), 'hard_copy_attached', 'approved_by', 'rejected_by',
                 (!$request->teamMember) ? 'emp_id' : 'id'
             ];
         } else if ($request->teamMember || $request->account == 1) {
             $this->custom_cols = [($request->account == 1) ? 'reimbursement_forms.emp_id' : 'reimbursement_forms.id', DB::raw('DATE_FORMAT(date,\'%d %b %Y\') as date'), 'type_id', 'amount', DB::raw("(case when (document_attached = 0) THEN 'No' ELSE 'Yes' end) as document_attached"), 'cosharing_count', 'user_comment', DB::raw("(case when (verified_level = 3 ) THEN 'Rejected' 
                         when(verified_level =1) THEN 'Approved' 
-                        ELSE 'Pending'  end) AS verified_level"), 'hard_copy_accepted', 'approved_by', 'rejected_by',
+                        ELSE 'Pending'  end) AS verified_level"), 'hard_copy_attached', 'approved_by', 'rejected_by',
                 (!$request->account == 1) ? 'emp_id' : 'id'
             ];
         }

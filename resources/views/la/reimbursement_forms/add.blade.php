@@ -32,7 +32,7 @@ Apply For Reimbursement
                 <form method="POST" action="{{url(config('laraadmin.adminRoute').'/reimbursement_forms/store')}}" enctype="multipart/form-data">
                     <input type="hidden" name="_token" value="{{ csrf_token()}}">
                     <input type="hidden" id="verified_approval" name="verified_approval" value="1">
-                     <input type="hidden" id="hard_copy_accepted" name="hard_copy_accepted" value="1">
+                     <input type="hidden" id="hard_copy_attached" name="hard_copy_attached" value="1">
 
                     <div class="row">
                          <div class="form-group col-md-4">
@@ -55,7 +55,7 @@ Apply For Reimbursement
                                 <?php
                                 if (!empty($reimbursement_types)) {
                                     foreach ($reimbursement_types as $value) {
-                                        echo '<option data-doc-req="' . $value->document_required . '" value="' . $value->id . '" data-limit="'.$value->limit.'" data-limit_variance="'.$value->limit_variance.'" data-hard-copy="'.$value->hard_copy_accepted.'" data-verification-level="'.$value->verification_level.'">' . $value->name . ' </option>';
+                                        echo '<option data-doc-req="' . $value->document_required . '" value="' . $value->id . '" data-limit="'.$value->limit.'" data-limit_variance="'.$value->limit_variance.'" data-hard-copy="'.$value->document_required.'" data-verification-level="'.$value->verification_level.'">' . $value->name . ' </option>';
                                     }
                                 }
                                 ?>
@@ -246,7 +246,7 @@ Apply For Reimbursement
                                             $('#doc-att-no').find('input').prop("checked", "checked").trigger('click');
                                             $('#doc-att-no').show();
                                         }
-                                         $("#hard_copy_accepted").val(hard); 
+                                         $("#hard_copy_attached").val(hard); 
                                      
                                     })
                                     $("#type_id").trigger("change");

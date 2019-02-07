@@ -25,7 +25,7 @@ Edit Apply  Reimbursement
                     <input type="hidden" style="display:none" id="isImages" name="isImages" value="0">
                     <input type="hidden" name="_token" value="{{ csrf_token()}}">
                     <input type="hidden" id="verified_approval" name="verified_approval" value="1">
-                     <input type="hidden" id="hard_copy_accepted" name="hard_copy_accepted" value="1">
+                     <input type="hidden" id="hard_copy_attached" name="hard_copy_attached" value="1">
                     <input name="_method" type="hidden" value="PATCH">
                     <div class="row">
                          <div class="form-group col-md-4">
@@ -50,7 +50,7 @@ Edit Apply  Reimbursement
                                 if (!empty($reimbursement_form)) {
                                     foreach ($reimb_types as $value) {
 
-                                        echo '<option value="' . $value->id . '" ' . (($reimbursement_form->type_id == $value->id) ? 'selected' : '' ) . ' data-limit="'.$value->limit.'" data-limit_variance="'.$value->limit_variance.'" data-hard-copy="'.$value->hard_copy_accepted.'" data-verification-level="'.$value->verification_level.'" >' . $value->name . '</option>';
+                                        echo '<option value="' . $value->id . '" ' . (($reimbursement_form->type_id == $value->id) ? 'selected' : '' ) . ' data-limit="'.$value->limit.'" data-limit_variance="'.$value->limit_variance.'" data-hard-copy="'.$value->document_required.'" data-verification-level="'.$value->verification_level.'" >' . $value->name . '</option>';
                                     }
                                 }
                                 ?>
@@ -306,7 +306,7 @@ Edit Apply  Reimbursement
                                             $('#doc-att-no').find('input').prop("checked", "checked").trigger('click');
                                             $('#doc-att-no').show();
                                         }
-                                         $("#hard_copy_accepted").val(hard);
+                                         $("#hard_copy_attached").val(hard);
                                     })
                                     $("#type_id").trigger("change");
                                     
