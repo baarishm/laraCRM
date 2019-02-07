@@ -20,7 +20,7 @@ $role = \Session::get('role');
     </div><br />
 
     @endif
-    <div class="row" style="background: #dee2f7;">
+    <div class="row leave-counts">
 
 
         <div class="col-md-2 mt5">
@@ -42,7 +42,7 @@ $role = \Session::get('role');
             <label for="Name" style="color:green;">Available Leaves : {{$empdetail->available_leaves}}</label>
 
         </div>
-        <div class="col-md-2 mt5">
+        <div class="col-md-3 mt5">
             <label for="Name" style="color:green;">Available Comp-Offs : {{$empdetail->comp_off}}</label>
 
         </div>

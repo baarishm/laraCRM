@@ -3,7 +3,7 @@
 @section('htmlheader_title')
 Reimbursement Form View
 @endsection
-@section('main-content')
+
 <?php
 // start the session
 session_start();
@@ -16,84 +16,56 @@ $_SESSION['csrf_token'] = $csrf_token;
 <?php
 $role = \Session::get('role');
 ?>
+@section("main-content")
 
-<div id="page-content" class="profile2">
-    <div class="bg-primary clearfix">
-        <div class="col-md-4">
-            <div class="row">
-                <div class="col-md-3">
-                    <div class="profile-icon text-primary"><i class="fa {{ $module->fa_icon }}"></i></div>
-                </div>
-                <div class="col-md-9">
-                    <h4 class="name">{{ $reimbursement_form->$view_col }}</h4>
-                    <div class="row stats">
-                        <div class="col-md-4"><i class="fa fa-facebook"></i> 234</div>
-                        <div class="col-md-4"><i class="fa fa-twitter"></i> 12</div>
-                        <div class="col-md-4"><i class="fa fa-instagram"></i> 89</div>
-                    </div>
-                    <p class="desc">Test Description in one line</p>
-                </div>
-            </div>
-        </div>
-        <div class="col-md-3">
-            <div class="dats1"><div class="label2">Admin</div></div>
-            <div class="dats1"><i class="fa fa-envelope-o"></i> superadmin@gmail.com</div>
-            <div class="dats1"><i class="fa fa-map-marker"></i> Pune, India</div>
-        </div>
-        <div class="col-md-4">
-            <div class="dats1 pb">
-                <div class="clearfix">
-                    <span class="pull-left">Task #1</span>
-                    <small class="pull-right">20%</small>
-                </div>
-                <div class="progress progress-xs active">
-                    <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 20%" role="progressbar" aria-valuenow="20" aria-valuemin="0" aria-valuemax="100">
-                        <span class="sr-only">20% Complete</span>
-                    </div>
-                </div>
-            </div>
-            <div class="dats1 pb">
-                <div class="clearfix">
-                    <span class="pull-left">Task #2</span>
-                    <small class="pull-right">90%</small>
-                </div>
-                <div class="progress progress-xs active">
-                    <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 90%" role="progressbar" aria-valuenow="90" aria-valuemin="0" aria-valuemax="100">
-                        <span class="sr-only">90% Complete</span>
-                    </div>
-                </div>
-            </div>
-            <div class="dats1 pb">
-                <div class="clearfix">
-                    <span class="pull-left">Task #3</span>
-                    <small class="pull-right">60%</small>
-                </div>
-                <div class="progress progress-xs active">
-                    <div class="progress-bar progress-bar-warning progress-bar-striped" style="width: 60%" role="progressbar" aria-valuenow="60" aria-valuemin="0" aria-valuemax="100">
-                        <span class="sr-only">60% Complete</span>
-                    </div>
-                </div>
-            </div>
+@if(count($errors))
+<div class="form-group">
+    <div class="alert alert-danger">
+        <ul>
+            @foreach($errors->all() as $error)
+            <li>{{$error}}</li>
+            @endforeach
+        </ul>
+    </div>
+</div>
+@endif
+<style>
+    .profile2 .panel.infolist .form-group {
+        border-bottom: none;
+    }
+    td, th {
+        padding: 0px 10px 5px;
+    }
+    
+    .time-footer{
+           position: relative;
+        width: 100%;
+        margin-left: 0px;
+    }
+</style>
+
+   
+<div>
+        <div class="col-md-6" style="padding:5px 15px;">
+<!--            <h4 class="name">Form Id: {{ $reimbursement_form -> $view_col}}</h4>-->
+<h4><strong>Reimbursement Details</strong></h4>
         </div>
 
         @if($teamMember )
-
-        <div class="col-md-1 actions">
-
-        </div>
+        <div class="col-md-6"></div>
         @else
 
-        <div class="col-md-1 actions">
+        <div class="col-md-6 text-right" style="padding:10px;">
             <?php
             if ($reimbursement_form->verified_level == 0) {
                 ?> 
                 @la_access("Reimbursement_Forms", "edit")
-                <a href="{{ url(config('laraadmin.adminRoute') . '/reimbursement_forms/'.$reimbursement_form->id.'/edit') }}" class="btn btn-xs btn-edit btn-default"><i class="fa fa-pencil"></i></a><br>
+                <a href="{{ url(config('laraadmin.adminRoute').'/reimbursement_forms/'.$reimbursement_form -> id.'/edit')}}" class="btn btn-primary btn-xs"><i class="fa fa-pencil"></i></a>
                 @endla_access
 
                 @la_access("Reimbursement_Forms", "delete")
                 {{ Form::open(['route' => [config('laraadmin.adminRoute') . '.reimbursement_forms.destroy', $reimbursement_form->id], 'method' => 'delete', 'style'=>'display:inline']) }}
-                <button class="btn btn-default btn-delete btn-xs" type="submit"><i class="fa fa-times"></i></button>
+                <button class="btn btn-danger btn-xs" type="submit"><i class="fa fa-times"></i></button>
                 {{ Form::close() }}
                 @endla_access
                 <?php
@@ -103,108 +75,291 @@ $role = \Session::get('role');
         </div>
         @endif
     </div>
+    <div class= "clearfix"></div>
     <ul data-toggle="ajax-tab" class="nav nav-tabs profile" role="tablist">
-        <li class=""><a href="{{ url(config('laraadmin.adminRoute') . '/reimbursement_forms') }}" data-toggle="tooltip" data-placement="right" title="Back to Reimbursement Forms"><i class="fa fa-chevron-left"></i></a></li>
+        <li class=""><a href="{{ url(config('laraadmin.adminRoute').'/reimbursement_forms')}}" data-toggle="tooltip" data-placement="bottom" title="Back to Reimbursement Forms" style="padding: 18px;"><i class="fa fa-chevron-left"></i></a></li>
         <li class="active"><a role="tab" data-toggle="tab" class="active" href="#tab-general-info" data-target="#tab-info"><i class="fa fa-bars"></i> General Info</a></li>
         <li class=""><a role="tab" data-toggle="tab" href="#tab-timeline" data-target="#tab-timeline"><i class="fa fa-clock-o"></i> Timeline</a></li>
     </ul>
+    
+    
     <div class="tab-content">
         <div role="tabpanel" class="tab-pane active fade in" id="tab-info">
             <div class="tab-content">
                 <div class="panel infolist">
-                    <div class="panel-default panel-heading">
-                        <h4>General Info</h4>
-                    </div>
-                    <div class="panel-body">
-                        @la_display($module, 'emp_id')
-                        @la_display($module, 'type_id')
-                        @la_display($module, 'amount')
-                        @la_display($module, 'user_comment')
-                        @la_display($module, 'document_attached')
-                        <!--@la_display($module, 'verified_level')-->
-                        @la_display($module, 'paid_status ')
-                        @la_display($module, 'verfication_status ')
-                        @la_display($module, 'hard_copy_accepted')
-                        @la_display($module, 'payment_date ')
-                        @la_display($module, 'cosharing_count')
-                        @la_display($module, 'created_by')
-                        @la_display($module, 'update_by')
-                        @la_display($module, 'deleted_by')
-                        <!--                        <div class="form-group col-md-12">-->
-                        <div class="form-group col-md-2">
-                            <label for="cosharing" class="control-label">Co-Sharing Names:</label>
+                   
+                    <div class="panel-body info-lables">
+                        
+                        <div class="panel-default panel-heading">
+                            <h4>General Info</h4>
                         </div>
-                        <div class="col-md-10">
-                            <select name="cosharing[]" id="cosharing" class="js-example-basic-multiple" multiple="multiple" disabled="disable"  > 
-                                <?php
-                                if (!empty($reimbursement_form)) {
-                                    foreach ($employeename as $value) {
-                                        echo '<option value="' . $value->id . '" ' . (in_array($value->id, $reimbursement_form->cosharing) ? 'selected' : '') . "> " . $value->name . '</option>';
+                        
+                        <table style="width:100%;">
+                            <tr>
+                                <td>
+                                    <label for="amount" class="control-label">Applicant Name:</label> 
+                                    <?php
+                                    if (!empty($reimbursement_form)) {
+                                        foreach ($employeename as $value) {
+                                            if ($reimbursement_form->emp_id == $value->id)
+                                                echo $value->name;
+                                        }
                                     }
-                                }
-                                ?>
-                            </select> 
+                                    ?>
+                                </td>
+                                <td>
+                                    <label for="amount" class="control-label">Amount (INR):</label> 
+                                    {{$reimbursement_form -> amount or old('amount')}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td>
+                                    <label>Reimbursement Type: </label>
+                                    <?php
+                                    if (!empty($reimbursement_form)) {
+                                        foreach ($reimb_types as $value) {
+                                            if ($reimbursement_form->type_id == $value->id)
+                                                echo $value->name;
+                                        }
+                                    }
+                                    ?>
+                                </td>
+                                <td> <label for="date" >Expenses Date:</label>{{$reimbursement_form -> Date}}</td>
+                            </tr>
+                            
+                            <tr>
+                                <td >
+                                    <label for="cosharing" class="control-label">Co-Sharing Names:</label>
+                                    <select name="cosharing[]" id="cosharing" class="js-example-basic-multiple" multiple="multiple" disabled="disable"  > 
+                                        <?php
+                                        if (!empty($reimbursement_form)) {
+                                            foreach ($employeename as $value) {
+                                                echo '<option value="' . $value->id . '" ' . (in_array($value->id, $reimbursement_form->cosharing) ? 'selected' : '') . "> " . $value->name . '</option>';
+                                            }
+                                        }
+                                        ?>
+                                    </select>
+                                </td>
+                                 <td ><label for="Cosharing_count" class="control-label">Employee Count:</label> {{count($reimbursement_form -> cosharing)}}</td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <label  for="number">User Comment:</label> 
+                                    {{$reimbursement_form -> user_comment or old('user_comment')}}
+                                </td>
+                            </tr>
+                            <tr>
+                                <td colspan="2">
+                                    <label  for="number"> Image:</label>
+                                    <?php foreach ($images as $image) { ?>
+                                        <a href="<?php echo asset('uploads') . '\\' . $image->name ?>" target="_blank" type="btn" >
+                                            <?php
+                                            echo $image->name;
+                                            ?>
+                                        </a>
+                                    <?php
+                                    }
+                                    ?> 
+                                </td>
+                            </tr>
+                            
+                            <tr>
+                                 <td>
+                                    <label for="date">Approval Date:</label> 
+                                    <?php if ((!empty($updateby) && $updateby[0]->updated_at != Null)) {
+                                        ?>
+                                        <?php $Date = date('d M Y', strtotime($updateby[0]->updated_at)); ?>
+                                        {{$Date}}
+                                        <?php
+                                    } else {
+                                        ?><h6>---</h6>
+                                        <?php
+                                    }
+                                    ?>
+                                 </td>
+                                 <td>
+                                    <label for="date">Action taken by: </label>
+                                    <?php if ((!empty($updateby) && $updateby[0]->action_taken_by != Null)) {
+                                        ?>
+                                        <?php
+                                        if (!empty($updateby[0]->action_taken_by)) {
+                                            foreach ($employeename as $value) {
+                                                if ($updateby[0]->action_taken_by == $value->id)
+                                                    echo $value->name;
+                                            }
+                                        }
+                                        ?>
+                                        <?php
+                                    }else {
+                                        ?><h6>None</h6>
+                                        <?php
+                                    }
+                                    ?>
+                                 </td>
+                             </tr>
+                        </table>
+                        
+                        <hr/>
+                        <div class="clearfix"></div>
+                        <div class="panel-default panel-heading">
+                            <h4>Payment Info</h4>
                         </div>
-                        <!--                        </div>-->
-                        <div class="col-md-12">
 
-                            <label for="date"class="col-md-2">Date:</label>
+                        <div class="clearfix"></div>
+                     
+                      
+                <?php  if($teamMember ==0 && $account ==1){   ?>
+                         <div class="clearfix"></div>
+                         
+                        <table>
+                            <tr>
+                                <td>
+                                    <label>Payment Date:</label>
+                                        <input type="text"  class="form-control" id="datepicker" ng-model="payment_date" name="payment_date" 
+                                               autocomplete="off" placeholder="Payment Date"  readonly='true' required="required" />
+                                </td>
+                                <td>
+                                    <label>Payment Mode:</label>
+                                    <select name="payment_mode" class="form-control" id="mode" value="{{$reimbursement_form -> payment_mode or old('payment_mode')}}" required="=required">
+                                        <option value="Cash">Cash</option>
+                                        <option value="Cheque">Cheque</option>
+                                        <option value="onlinetransfer">Online Transfer</option>
+                                </select>
+                                </td>
+                                <td>
+                                    <label>Payment Amount:</label>
+                                    <input type="text" value="{{$reimbursement_form -> paid_amount or old('paid_amount')}}" class="form-control" 
+                                   id="amount"  name="paid_amount" autocomplete="off"  placeholder="Payment Amount" required="required" />
+                                </td>
+                            </tr>
+                             
+                        </table>
+                        <div class="clearfix"></div>
+                        <?php 
 
-                            <div class="col-md-10">
-                                <?php echo $reimbursement_form->Date; ?>
-                            </div>
-                        </div>
-                        <div class="form-group col-md-12" text="right">
-                            @if($teamMember)
+                        } else if ($teamMember == 0 && $account == 0 || $teamMember == 1 && $account == 0){
+                            ?>
+                       
+                        
+                           <table>
+                            <tr>
+                                <td>
+                                     <label>Payment Date:</label>
+                
+                                    <?php if ( $reimbursement_form -> payment_date == Null || $reimbursement_form -> payment_date == 0000-00-00 ) {
+
+                                       ?>
+                                        <h6>--</h6>
+                                   <?php
+                                   }else{
+                                       ?>
+                                    <?php $PayDate = date('d M Y', strtotime($reimbursement_form -> payment_date)); ?>
+                                       {{$PayDate}}
+                                       <?php
+                                   } 
+
+                                   ?>
+                                </td>
+                                <td>
+                                    <label>Payment Mode:</label>
+                                    <?php
+                                    if (!empty($reimbursement_form->payment_mode )) {
+                                    echo $reimbursement_form->payment_mode;
+                                   }else{
+                                    ?>
+                                    <h6>None</h6>
+                                    <?php
+                                   }
+                                   ?>
+                                </td>
+                                <td>
+                                    <label>Payment Amount:</label> 
+                                   {{$reimbursement_form -> paid_amount}}
+                                </td>
+                            </tr>
+                             
+                        </table>
+                        
+                        <?php
+                               }
+                               ?>
+                        
+
+
+                        <div class="form-group row status-bottom" text="right">
+                            @if($teamMember || $account)
                             <?php
-                            if ($role == 'lead') {
+                              if ((!empty($reimbursement_status) && $reimbursement_status[0]->status == 2)) {
+                                ?>
+                                <div class="col-md-12 text-right" >
+                                    <h5><span class="rejected">Rejected at level <?php echo $reimbursement_level->verified_level ?></span></h5>
+                                </div>
+                                <?php
+                            } else {
 
-                                if ($reimbursement_form->verified_level == 0) {
+                                if ($reimbursement_level->verified_level + 1 == $reimbursement_level->level) {
                                     ?>
 
-                                    <div class="col-md-12 text-right" >
-                                        <button class="btn btn-success"  data-id ="{{ $reimbursement_form->$view_col }}" onclick="myfunction(this);" id="Approved"  type="submit">Approve</button>
-                                        <button class="btn btn"  data-id ="{{ $reimbursement_form->$view_col }}" onclick="myfunction(this);"  id="Rejected" style="background-color: #f55753;border-color: #f43f3b;color: white;margin-left: 5px;">Reject</button>
+                                    <div class="col-md-12 text-right" id="button">
+                                        <button class="btn btn-success"  data-id ="{{ $reimbursement_form -> $view_col}}" onclick="myfunction(this);" id="Approved"  type="submit" data-value="1" >Approve</button>
+                                        <button class="btn btn" data-value="2"  data-id ="{{ $reimbursement_form -> $view_col}}" onclick="myfunction(this);"  id="Rejected" style="background-color: #f55753;border-color: #f43f3b;color: white;margin-left: 5px;" >Reject</button>
                                     </div>
 
                                     <?php
-                                } else {
+                                } else if ($reimbursement_level->verified_level + 1 > $reimbursement_level->level) {
                                     ?>
 
                                     <div class="col-md-12 text-right" >
-                                        <h5> Action taken</h5>
+                                        <h5><span class="action-taken">Action already taken</span></h5>
+                                    </div>
+
+                                    <?php
+                                } else if ($reimbursement_level->verified_level + 1 < $reimbursement_level->level) {
+                                    ?>
+
+                                    <div class="col-md-12 text-right" >
+                                        <h5><span class="action-pending"><i class="fa fa-exclamation-circle"></i> Action pending at level <?php echo $reimbursement_level->verified_level + 1 ?></span></h5> 
                                     </div>
 
                                     <?php
                                 }
-                            } else if ($role == 'manager') {
-//                                echo "<pre>hello"; print_r($reimbursement_level);die;
-                                if (isset($reimbursement_level) && $reimbursement_level->status == 0 && $reimbursement_level->approved_by == Auth::user()->context_id && $reimbursement_level->level == 2) {
-                                    ?>
+                            }
 
-                                    <div class="col-md-12 text-right buttons-div" >
-                                        <button class="btn btn-success"  data-id ="{{ $reimbursement_form->id }}" onclick="mybutton(this);" id="Approved" data-value="1"  type="submit">Approve</button>
-                                        <button class="btn btn"  data-id ="{{ $reimbursement_form->id }}" data-value="2"  onclick="mybutton(this);"  id="Rejected" style="background-color: #f55753;border-color: #f43f3b;color: white;margin-left: 5px;">Reject</button>
-                                    </div>
+                            ?>
 
-                                    <?php
-                                } else if (isset($reimbursement_level) && $reimbursement_level->status != '0' && $reimbursement_level->approved_by == Auth::user()->context_id && $reimbursement_level->level == 2) {
-                                    ?> 
-                                    <div class="col-md-12 text-right" >
-                                        <h5> Action taken</h5>
-                                    </div>
+                            @endif
+                            @if(!$teamMember && !$account)
+                         <?php //   echo "<pre>"; print_r($join_approve_form[0]->action_taken_by);die; ?>
 
+                            <?php
+                            if ($reimbursement_form->verified_level == 0) {
+                                ?>
 
-                                    <?php
-                                } else  {
-                                    ?> 
-                                    <div class="col-md-12 text-right" >
-                                        <h5> Approval pending level one</h5>
-                                    </div>
+                                <div class="col-md-12 text-right" >
+                                    <h5> <span class="action-pending">  <i class="fa fa-exclamation-circle"></i>  Pending at level one </span> </h5> 
+                                </div>
+                                <?php
+                            } else if ((!empty($reimbursement_status) && $reimbursement_status[0]->status == 2) && $reimbursement_form->verified_level !== 0) {
+                                ?>
 
+                                <div class="col-md-12 text-right" >
+                                    <h5><span class="rejected">Reject at level <?php echo $reimbursement_form->verified_level ?></span></h5>
+                                </div>
+                                <?php
+                            } else if ($reimbursement_form->verified_level !== 0 && $reimbursement_form->verified_level < $reimbursement_form->verified_approval) {
+                                ?>
 
-                                    <?php
-                                }
+                                <div class="col-md-12 text-right" >
+                                    <h5><span class="action-pending"><i class="fa fa-exclamation-circle"></i> Action pending at level  <?php echo $reimbursement_form->verified_level + 1 ?></span></h5>
+                                </div>
+                                <?php
+                            } else if ($reimbursement_form->verified_level != 0 && $reimbursement_form->verified_level == $reimbursement_form->verified_approval) {
+                                ?>
+
+                                <div class="col-md-12 text-right" >
+                                    <h5><span class="app-close">Application close </span></h5>
+                                </div>
+                                <?php
                             }
                             ?>
                             @endif
@@ -213,163 +368,778 @@ $role = \Session::get('role');
                 </div>
             </div>
         </div>
-        <div role="tabpanel" class="tab-pane fade in p20 bg-white" id="tab-timeline">
-            <ul class="timeline timeline-inverse">
+        <div role="tabpanel" class="tab-pane fade in p20 bg-white info-lables" id="tab-timeline">
+            <div class="panel-default panel-heading">
+                  <h4>Timeline</h4>
+            </div>
+            <div class="row">
+                <div class="col-sm-10">
+                    <ul class="timeline timeline-inverse">
                 <!-- timeline time label -->
                 <li class="time-label">
-                    <span class="bg-red">
-                        10 Feb. 2014
+                    <span>
+                        <h6>Applied date</h6>
+                        <?php $ApplyDate = date('d M Y', strtotime($reimbursement_form['created_at'])); ?>
+                        {{$ApplyDate}}
+
                     </span>
                 </li>
                 <!-- /.timeline-label -->
                 <!-- timeline item -->
                 <li>
-                    <i class="fa fa-envelope bg-blue"></i>
+                    <?php
+                    if ($reimbursement_form->verified_level == 0) {
+                        ?>
+                        <i class="fa fa-clock-o fa-2 bg-grey"></i>
 
-                    <div class="timeline-item">
-                        <span class="time"><i class="fa fa-clock-o"></i> 12:05</span>
+                        <div class="timeline-item">
+                            <span class="time"> </span>
+                           
+                            <h5>  Action pending </h5>
 
-                        <h3 class="timeline-header"><a href="#">Support Team</a> sent you an email</h3>
-
-                        <div class="timeline-body">
-                            Etsy doostang zoodles disqus groupon greplin oooj voxy zoodles,
-                            weebly ning heekya handango imeem plugg dopplr jibjab, movity
-                            jajah plickers sifteo edmodo ifttt zimbra. Babblely odeo kaboodle
-                            quora plaxo ideeli hulu weebly balihoo...
+                            <div class="timeline-body">
+                                status pending...
+                            </div>
+                            <div class="timeline-footer">
+                                
+                            </div>
                         </div>
-                        <div class="timeline-footer">
-                            <a class="btn btn-primary btn-xs">Read more</a>
-                            <a class="btn btn-danger btn-xs">Delete</a>
+                       
+                        <?php
+                    } else if ($reimbursement_form->verified_level > 0) {
+                        ?>
+                        <i class="fa fa-check fa-2 bg-blue"></i>
+
+                        <div class="timeline-item">
+                            <span class="time"></span>
+                           
+                            <h5>In process</h5>
+
+                            <div class="timeline-body">
+                                Application check  and under process...
+                            </div>
+                            <div class="timeline-footer">
+                                
+                            </div>
                         </div>
-                    </div>
-                </li>
-                <!-- END timeline item -->
-                <!-- timeline item -->
-                <li>
-                    <i class="fa fa-user bg-aqua"></i>
+                        <?php
+                    }
+                    ?>
+                   
 
-                    <div class="timeline-item">
-                        <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+                    <?php if ($reimbursement_form['verified_approval'] == 3) { ?>  
+                        <?php if (!empty($join_approve_form[0]) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1) { ?>
+                        <li>
+                            <i class="fa fa-check fa-2 bg-green"></i>
 
-                        <h3 class="timeline-header no-border"><a href="#">Sarah Young</a> accepted your friend request
-                        </h3>
-                    </div>
-                </li>
-                <!-- END timeline item -->
-                <!-- timeline item -->
-                <li>
-                    <i class="fa fa-comments bg-yellow"></i>
+                            <div class="timeline-item">
+                                <span class="time">
+                                    <?php if((!empty($join_approve_form) && $join_approve_form[0]->updated_at != Null)){
+                                        ?>
+                                     <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[0]->updated_at)); ?>
+                                    <i class="fa fa-clock-o"></i>{{$ApplyDate}}
+                                     <?php
+                                           }else{
+                                               ?>
+                                     <?php
+                                           }
+                                           ?>
+                                </span>
+                                <span > 
+                                    <label for="date"> Action taken by: </label>
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null)) {
+                                        ?>
+                                        <?php
+                                        if (!empty($join_approve_form[0]->action_taken_by)) {
+                                            foreach ($employeename as $value) {
+                                                if ($join_approve_form[0]->action_taken_by == $value->id)
+                                                    echo $value->name;
+                                            }
+                                        }
+                                        ?>
+                                        <?php
+                                        }else {
+                                            ?><h6>None</h6>
+                                            <?php
+                                        }
+                                        ?>
+                                       
+                                </span>
 
-                    <div class="timeline-item">
-                        <span class="time"><i class="fa fa-clock-o"></i> 27 mins ago</span>
+                                <h4> Approve level  one </h4>
 
-                        <h3 class="timeline-header"><a href="#">Jay White</a> commented on your post</h3>
+                            </div>
+                        </li>
 
-                        <div class="timeline-body">
-                            Take me to your leader!
-                            Switzerland is small and neutral!
-                            We are more like Germany, ambitious and misunderstood!
-                        </div>
-                        <div class="timeline-footer">
-                            <a class="btn btn-warning btn-flat btn-xs">View comment</a>
-                        </div>
-                    </div>
-                </li>
-                <!-- END timeline item -->
-                <!-- timeline time label -->
-                <li class="time-label">
-                    <span class="bg-green">
-                        3 Jan. 2014
-                    </span>
-                </li>
-                <!-- /.timeline-label -->
-                <!-- timeline item -->
-                <li>
-                    <i class="fa fa-camera bg-purple"></i>
+                        <?php
+                    } else if (!empty($join_approve_form[0]) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 2 && $join_approve_form[0]->level == 1) {
+                        ?>
 
-                    <div class="timeline-item">
-                        <span class="time"><i class="fa fa-clock-o"></i> 2 days ago</span>
+                        <li>
+                            <i class="fa fa-times-circle bg-red"></i>
 
-                        <h3 class="timeline-header"><a href="#">Mina Lee</a> uploaded new photos</h3>
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i> </span>
 
-                        <div class="timeline-body">
-                            <img src="http://placehold.it/150x100" alt="..." class="margin">
-                            <img src="http://placehold.it/150x100" alt="..." class="margin">
-                            <img src="http://placehold.it/150x100" alt="..." class="margin">
-                            <img src="http://placehold.it/150x100" alt="..." class="margin">
-                        </div>
-                    </div>
-                </li>
-                <!-- END timeline item -->
-                <li>
-                    <i class="fa fa-clock-o bg-gray"></i>
-                </li>
+                                <h3 class="timeline-header no-border"> Reject on level one
+                                </h3>
+                                <div class="timeline-body">
+                                    Application check  and reject level one...
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    } else {
+                        ?>
+                        <li>
+                            <i class="fa fa-clock-o fa-2 bg-grey"></i>
+
+                            <div class="timeline-item">
+                               
+                                <div class="col-sm-6 text-right">
+                                    <span class="time">
+                                        <label for="date">Action pending by: </label>
+                                        <?php if ((!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null)) {
+                                            ?>
+                                            <?php
+                                            if (!empty($join_approve_form[0]->action_taken_by)) {
+                                                foreach ($employeename as $value) {
+                                                    if ($join_approve_form[0]->action_taken_by == $value->id)
+                                                        echo $value->name;
+                                                }
+                                            }
+                                            ?>
+                                            <?php
+                                        }else {
+                                            ?><h6>None</h6>
+                                            <?php
+                                        }
+                                        ?>
+
+                                    </span>
+                                </div>
+                                
+                                
+                                <h3 class="timeline-header no-border">  Pending on level one </h3>
+                                <div class="timeline-body">
+                                    Application pending level one...
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    }
+                    ?>
+
+                    <?php if ((!empty($join_approve_form[1]) && $join_approve_form[1]->action_taken_by != Null && $join_approve_form[1]->status == 1 && $join_approve_form[1]->level == 2)) { ?>
+                        <li>
+                            <i class="fa fa-check fa-2 bg-green"></i>
+
+                            <div class="timeline-item">
+                                 <span class="time">
+                                    <?php if((!empty($join_approve_form) && $join_approve_form[1]->updated_at != Null)){
+                                        ?>
+                                     <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[1]->updated_at)); ?>
+                                    <i class="fa fa-clock-o"></i> {{$ApplyDate}}
+                                     <?php
+                                           }else{
+                                               ?>
+                                     <?php
+                                           }
+                                           ?>
+                                </span>
+                                
+                                <span>
+                                
+                                    <label for="date">Action taken by: </label>
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
+                                        ?>
+                                        <?php
+                                        if (!empty($join_approve_form[1]->action_taken_by)) {
+                                            foreach ($employeename as $value) {
+                                                if ($join_approve_form[1]->action_taken_by == $value->id)
+                                                    echo $value->name;
+                                            }
+                                        }
+                                        ?>
+                                        <?php
+                                    }else {
+                                        ?><h6>None</h6>
+                                        <?php
+                                    }
+                                    ?>
+                                
+                                </span>
+
+                                <h3 class="timeline-header no-border"> Approve level two
+                                </h3>
+
+                            </div>
+                        </li>
+
+                        <?php
+                    } else if ((!empty($join_approve_form[1]) && $join_approve_form[1]->action_taken_by != Null && $join_approve_form[1]->status == 2 && $join_approve_form[1]->level == 2)) {
+                        ?>
+
+                        <li>
+                            <i class="fa fa-times-circle bg-red"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+
+                                <h3 class="timeline-header no-border"> Reject on level two
+                                </h3>
+                                <div class="timeline-body">
+                                    Application check  and reject level two...
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    } else {
+                        if ((!empty($join_approve_form[1]) && $join_approve_form[1]->action_taken_by != Null && $join_approve_form[1]->status == 0 && $join_approve_form[1]->level == 2) && (!empty($join_approve_form[0]) && $join_approve_form[0]->action_taken_by != Null && ($join_approve_form[0]->status == 1 || $join_approve_form[0]->status == 0 ) && $join_approve_form[0]->level == 1)) {
+                            ?>
+                            <li>
+                                <i class="fa fa-clock-o fa-2 bg-grey"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time"> 
+                                         
+                                    <label for="date">Action pending by: </label>
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
+                                        ?>
+                                        <?php
+                                        if (!empty($join_approve_form[1]->action_taken_by)) {
+                                            foreach ($employeename as $value) {
+                                                if ($join_approve_form[1]->action_taken_by == $value->id)
+                                                    echo $value->name;
+                                            }
+                                        }
+                                        ?>
+                                        <?php
+                                    }else {
+                                        ?><h6>None</h6>
+                                        <?php
+                                    }
+                                    ?>
+                               
+                                    </span>
+
+                                    <h3 class="timeline-header no-border">  Pending on level two
+                                    </h3>
+                                    <div class="timeline-body">
+                                        Application pending level two...
+                                    </div>
+                                </div>
+                            </li>
+                            <?php
+                        } else {
+                            ?>
+                            <?php
+                        }
+                    }
+                    ?>
+                    <?php if ((!empty($join_approve_form[2]) && $join_approve_form[2]->action_taken_by != Null && $join_approve_form[2]->status == 1 && $join_approve_form[2]->level == 3)) { ?>
+                        <li>
+                            <i class="fa fa-check fa-2 bg-green"></i>
+
+                            <div class="timeline-item">
+                                 <span class="time">
+                                    <?php if((!empty($join_approve_form) && $join_approve_form[2]->updated_at != Null)){
+                                        ?>
+                                     <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[2]->updated_at)); ?>
+                                    <i class="fa fa-clock-o"></i>{{$ApplyDate}}
+                                     <?php
+                                           }else{
+                                               ?>
+                                     <?php
+                                           }
+                                           ?>
+                                </span>
+                                <span>
+                               
+                                    <label for="date">Action taken by: </label>
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[2]->action_taken_by != Null)) {
+                                        ?>
+                                        <?php
+                                        if (!empty($join_approve_form[2]->action_taken_by)) {
+                                            foreach ($employeename as $value) {
+                                                if ($join_approve_form[2]->action_taken_by == $value->id)
+                                                    echo $value->name;
+                                            }
+                                        }
+                                        ?>
+                                        <?php
+                                    }else {
+                                        ?><h6>None</h6>
+                                        <?php
+                                    }
+                                    ?>
+                                 
+                                </span>
+
+                                <h3 class="timeline-header no-border"> Approve level three
+                                </h3>
+
+                            </div>
+                        </li>
+
+                        <?php
+                    } else if ((!empty($join_approve_form[2]) && $join_approve_form[2]->action_taken_by != Null && $join_approve_form[2]->status == 2 && $join_approve_form[2]->level == 3)) {
+                        ?>
+
+                        <li>
+                            <i class="fa fa-times-circle bg-red"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+
+                                <h3 class="timeline-header no-border"> Reject on level three
+                                </h3>
+                                <div class="timeline-body">
+                                    Application check  and reject level three...
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    } else {
+                        if ((!empty($join_approve_form[2]) && $join_approve_form[2]->action_taken_by != Null && $join_approve_form[2]->status == 0 && $join_approve_form[2]->level == 3) && (!empty($join_approve_form[0]) && $join_approve_form[0]->action_taken_by != Null && ($join_approve_form[0]->status == 1 || $join_approve_form[0]->status == 0 ) && $join_approve_form[0]->level == 1) && (!empty($join_approve_form[1]) && $join_approve_form[1]->action_taken_by != Null && ($join_approve_form[1]->status == 1 || $join_approve_form[1]->status == 0 ) && $join_approve_form[1]->level == 2)) {
+                            ?>
+                            <li>
+                                <i class="fa fa-clock-o fa-2 bg-grey"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time">
+                                      
+                                    <label for="date">Action pending by: </label>
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[2]->action_taken_by != Null)) {
+                                        ?>
+                                        <?php
+                                        if (!empty($join_approve_form[2]->action_taken_by)) {
+                                            foreach ($employeename as $value) {
+                                                if ($join_approve_form[2]->action_taken_by == $value->id)
+                                                    echo $value->name;
+                                            }
+                                        }
+                                        ?>
+                                        <?php
+                                    }else {
+                                        ?><h6>None</h6>
+                                        <?php
+                                    }
+                                    ?>
+                                 
+                                    </span>
+
+                                    <h3 class="timeline-header no-border">  Pending on level three
+                                    </h3>
+                                    <div class="timeline-body">
+                                        Application pending level three...
+                                    </div>
+                                </div>
+                            </li>
+                            <?php
+                        } else {
+                            ?>
+                            <?php
+                        }
+                    }
+
+                    if ($reimbursement_form->verified_level == $reimbursement_form->verified_approval || (!empty($join_approve_form[2]) && $join_approve_form[2]->status == 2 && $join_approve_form[2]->level == 3) || (!empty($join_approve_form) && $join_approve_form[1]->status == 2 && $join_approve_form[1]->level == 2) || (!empty($join_approve_form) && $join_approve_form[0]->status == 2 && $join_approve_form[0]->level == 1)) {
+                        ?>
+
+                        <li>
+                            <i class="fa fa-check fa-2 bg-green"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+
+                                <h3 class="timeline-header no-border">Application close
+                                </h3>
+                                <div class="timeline-body">
+                                    Application check and close...
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    } else if (!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1) {
+                        ?>
+                        <li>
+                            <i class="fa fa-clock-o fa-2 bg-blue"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"></span>
+
+                                <h3 class="timeline-header no-border">Application in progress
+                                </h3>
+                                <div class="timeline-body">
+                                    Application in progress...
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    } else {
+                        ?>
+                        <li>
+                            <i class="fa fa-clock-o fa-2 bg-grey"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"></span>
+
+                                <h3 class="timeline-header no-border">Application pending
+                                </h3>
+                                <div class="timeline-body">
+                                    Application pending...
+                                </div>
+                            </div>
+                        </li>
+
+                        <?php
+                    }
+                } else {
+                    if (!empty($join_approve_form[0]) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1) {
+                        ?>
+                        <li>
+                            <i class="fa fa-check fa-2 bg-green"></i>
+
+                            <div class="timeline-item">
+                                 <span class="time">
+                                    <?php if((!empty($join_approve_form) && $join_approve_form[0]->updated_at != Null)){
+                                        ?>
+                                     <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[0]->updated_at)); ?>
+                                    <i class="fa fa-clock-o"></i>{{$ApplyDate}}
+                                     <?php
+                                           }else{
+                                               ?>
+                                     <?php
+                                           }
+                                           ?>
+                                </span>
+                                <span>
+                                    <label for="date">Action taken by: </label>
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null)) {
+                                        ?>
+                                        <?php
+                                        if (!empty($join_approve_form[0]->action_taken_by)) {
+                                            foreach ($employeename as $value) {
+                                                if ($join_approve_form[0]->action_taken_by == $value->id)
+                                                    echo $value->name;
+                                            }
+                                        }
+                                        ?>
+                                        <?php
+                                    }else {
+                                        ?><h6>None</h6>
+                                        <?php
+                                    }
+                                    ?>
+                                </span>
+                               
+
+                                <h3 class="timeline-header no-border"> Approve level  one</h3>
+
+                            </div>
+                        </li>
+
+                        <?php
+                    } else if (!empty($join_approve_form[0]) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 2 && $join_approve_form[0]->level == 1) {
+                        ?>
+
+                        <li>
+                            <i class="fa fa-times-circle bg-red"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+
+                                <h3 class="timeline-header no-border"> Reject on level one
+                                </h3>
+                                <div class="timeline-body">
+                                    Application check  and reject level one...
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    } else {
+                        ?>
+                        <li>
+                            <i class="fa fa-clock-o fa-2 bg-grey"></i>
+
+                            <div class="timeline-item">
+                                <span class="time">
+                                    <td>
+                                    <label for="date">Action pending by: </label>
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null)) {
+                                        ?>
+                                        <?php
+                                        if (!empty($join_approve_form[0]->action_taken_by)) {
+                                            foreach ($employeename as $value) {
+                                                if ($join_approve_form[0]->action_taken_by == $value->id)
+                                                    echo $value->name;
+                                            }
+                                        }
+                                        ?>
+                                        <?php
+                                    }else {
+                                        ?><h6>None</h6>
+                                        <?php
+                                    }
+                                    ?>
+                                 </td>
+                                </span>
+
+                                <h3 class="timeline-header no-border">   Pending on level one
+                                </h3>
+                                
+                                <div class="timeline-body">
+                                    Application pending level one...
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    }
+                    ?>
+
+                    <?php if ((!empty($join_approve_form[1]) && $join_approve_form[1]->action_taken_by != Null && $join_approve_form[1]->status == 1 && $join_approve_form[1]->level == 2)) { ?>
+                        <li>
+                            <i class="fa fa-check fa-2 bg-green"></i>
+
+                            <div class="timeline-item">
+                                 <span class="time">
+                                    <?php if((!empty($join_approve_form) && $join_approve_form[1]->updated_at != Null)){
+                                        ?>
+                                     <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[1]->updated_at)); ?>
+                                    <i class="fa fa-clock-o"></i>{{$ApplyDate}}
+                                     <?php
+                                           }else{
+                                               ?>
+                                     <?php
+                                           }
+                                           ?>
+                                </span>
+                                <span>
+                                     <td>
+                                    <label for="date">Action taken by: </label>
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
+                                        ?>
+                                        <?php
+                                        if (!empty($join_approve_form[1]->action_taken_by)) {
+                                            foreach ($employeename as $value) {
+                                                if ($join_approve_form[1]->action_taken_by == $value->id)
+                                                    echo $value->name;
+                                            }
+                                        }
+                                        ?>
+                                        <?php
+                                    }else {
+                                        ?><h6>None</h6>
+                                        <?php
+                                    }
+                                    ?>
+                                 </td>
+                                </span>
+
+                                <h3 class="timeline-header no-border"> Approve level two
+                                </h3>
+
+                            </div>
+                        </li>
+
+                        <?php
+                    } else if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null && $join_approve_form[1]->status == 2 && $join_approve_form[1]->level == 2)) {
+                        ?>
+
+                        <li>
+                            <i class="fa fa-times-circle bg-red"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+
+                                <h3 class="timeline-header no-border"> Reject on level two
+                                </h3>
+                                <div class="timeline-body">
+                                    Application check  and reject level two...
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    } else {
+                        if ((!empty($join_approve_form[1]) && $join_approve_form[1]->action_taken_by != Null && $join_approve_form[1]->status == 0 && $join_approve_form[1]->level == 2) && (!empty($join_approve_form[0]) && $join_approve_form[0]->action_taken_by != Null && ($join_approve_form[0]->status == 1 || $join_approve_form[0]->status == 0 ) && $join_approve_form[0]->level == 1)) {
+                            ?>
+                            <li>
+                                <i class="fa fa-clock-o fa-2 bg-grey"></i>
+
+                                <div class="timeline-item">
+                                    <span class="time">
+                                         <td>
+                                    <label for="date">Action pending by: </label>
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
+                                        ?>
+                                        <?php
+                                        if (!empty($join_approve_form[1]->action_taken_by)) {
+                                            foreach ($employeename as $value) {
+                                                if ($join_approve_form[1]->action_taken_by == $value->id)
+                                                    echo $value->name;
+                                            }
+                                        }
+                                        ?>
+                                        <?php
+                                    }else {
+                                        ?><h6>None</h6>
+                                        <?php
+                                    }
+                                    ?>
+                                 </td>
+                                    </span>
+
+                                    <h3 class="timeline-header no-border">   Pending on level two
+                                    </h3>
+                                    <div class="timeline-body">
+                                        Application pending level two...
+                                    </div>
+                                </div>
+                            </li>
+                            <?php
+                        } else {
+                            ?>
+                            <?php
+                        }
+                    }
+                    ?>
+
+                    <?php
+
+                    if ($reimbursement_form->verified_level == $reimbursement_form->verified_approval || (!empty($join_approve_form) && $join_approve_form[1]->status == 2 && $join_approve_form[1]->level == 2 || (!empty($join_approve_form) && $join_approve_form[0]->status == 2 && $join_approve_form[0]->level == 1))) {
+                        ?>
+
+                        <li>
+                            <i class="fa fa-check fa-2 bg-green"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"></span>
+
+                                <h3 class="timeline-header no-border">Application close
+                                </h3>
+                                <div class="timeline-body">
+                                    Application check and close...
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    } else if (!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1) {
+                        ?>
+                        <li>
+                            <i class="fa fa-clock-o fa-2 bg-blue"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"></span>
+
+                                <h3 class="timeline-header no-border">Application in progress
+                                </h3>
+                                <div class="timeline-body">
+                                    Application in progress...
+                                </div>
+                            </div>
+                        </li>
+                        <?php
+                    } else {
+                        ?>
+                        <li>
+                            <i class="fa fa-clock-o fa-2 bg-grey"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"> </span>
+
+                                <h3 class="timeline-header no-border">Application pending
+                                </h3>
+                                <div class="timeline-body">
+                                    Application pending...
+                                </div>
+                            </div>
+                        </li>
+
+                        <?php
+                    }
+                }
+                ?>
             </ul>
-            <!--<div class="text-center p30"><i class="fa fa-list-alt" style="font-size: 100px;"></i> <br> No posts to show</div>-->
+                </div>
+            </div>
         </div>
+          
 
     </div>
-</div>
-</div>
-</div>
+<footer class="main-footer time-footer">
+    <div class="pull-right hidden-xs" data-created-by = "Varsha Mittal">
+        Powered by <a href="#">Ganit Softech</a>
+    </div>
+    <strong>Copyright &copy; 2018
+</footer>
 @endsection
+  
+
 <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
 
 <script>
+        $(document).ready(function () {
+            $('.js-example-basic-multiple').select2();
 
-                                            $(document).ready(function () {
-                                                $('.js-example-basic-multiple').select2();
-                                            });
-
-
-                                            function myfunction(button)
-                                            {
-                                                var controlid = $(button).attr('id');
-
-                                                var approved = 0;
-                                                if (controlid == 'Approved')
-                                                {
-                                                    var approved = 1;
-                                                }
-
-                                                $.ajax({
-                                                    url: "{{ url('/approvereimbursement') }}",
-                                                    type: 'GET',
-                                                    data: {
-                                                        'approved': approved, 'id': $(button).attr('data-id')
-                                                    },
-
-                                                    success: function (data) {
-                                                        var vid = $(button).attr('data-id');
-                                                        $(button).parents('td').siblings('td').children(".status").parents('td')
-                                                                .html((approved) ? '<span class="text-success status">Approved</span>' : '<span class="text-danger status">Rejected</span>');
-                                                        $(button).parents('td').html('Action Taken');
-                                                        $('[data-id=' + vid + ']').remove();
-                                                        swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
-                                                        $('div.overlay').addClass('hide');
-
-                                                    }
-                                                });
-                                            }
-
-                                            function mybutton(button)
-                                            {
-                                                var approved = $(button).attr('data-value');
-                                                $.ajax({
-                                                    url: "{{ url('/approvedreimbursement') }}",
-                                                    type: 'GET',
-                                                    data: {
-                                                        'approved': approved, 'form_id': $(button).attr('data-id')
-                                                    },
-
-                                                    success: function () {
-                                                        $(button).parents('div.buttons-div').html('Action Taken');
-                                                        swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
-                                                        $('div.overlay').addClass('hide');
-                                                    }
-                                                });
+            $('#datepicker').datepicker({
+                todayHighlight: 'true',
+                format: 'd M yyyy',
+                daysOfWeekDisabled: [0, 6],
+                minDate: 0
 
 
-                                            }
+            })
+        });
+
+        function myfunction(button)
+        {
+            var approved = $(button).attr('data-value');
+            var date_id = $('#datepicker').val();
+            var mode_id = $('#mode').val();
+            var amount_id = $('#amount').val();
+             var date = ('00-00-0000');
+            var mode = ('');
+            var amount=  parseFloat(0);
+
+            swal({
+                title: "Enter Comment",
+                input: "textarea",
+                showCancelButton: true,
+                closeOnConfirm: false,
+                inputPlaceholder: "Comment on approval and rejection "
+            }).then(function (inputValue) {
+                if (inputValue.dismiss === 'cancel') {
+                    return false;
+                } else {
+                    $('div.overlay').removeClass('hide');
+                    $.ajax({
+                        url: "{{ url('/approvereimbursement') }}",
+                        type: 'GET',
+                        data: {
+                            'approved': approved, 
+                            'id': $(button).attr('data-id'), 
+                            'actionReason': inputValue.value,
+                            'datepicker':((typeof date_id === "undefined") ? date : date_id),
+                            'mode':((typeof mode_id === "undefined") ? mode : mode_id),
+                            'amount': ((typeof amount_id === "undefined") ? amount : amount_id)
+                        },
+
+                        success: function (data) {
+                            $(button).parents('div.buttons-div').html('Action Taken');
+                            swal('Application has been successfully ' + ((approved == 1) ? 'Approved' : 'Rejected') + '!').then(                                                     function () {
+                                location.reload();
+                            });
+
+                            $('div.overlay').addClass('hide');
+                        }
+                    });
+                }
+            });
+
+        }
+
+
+
+
 </script>
 
