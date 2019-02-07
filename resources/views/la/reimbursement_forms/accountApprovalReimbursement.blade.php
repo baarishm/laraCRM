@@ -1,5 +1,5 @@
 @extends("la.layouts.app")
- 
+
 @section("contentheader_title", "Reimbursement Forms")
 @section("contentheader_description", "Reimbursement Forms listing")
 @section("section", "Reimbursement Forms")
@@ -26,47 +26,63 @@ $role = \Session::get('role');
     </ul>
 </div>
 @endif
-
+@if($account==1)
 <div class="box box-success">
     <!--<div class="box-header"></div>-->
     <div class="box-body">
         <div class="row ">
 
+            <div class="col-md-2 pull-right">
+                <select id="employee_search" name="employee_search">
+                    <option value="" selected="selected" >Select Employee</option>
+                    <?php
+                    if (!empty($employees)) {
+                        foreach ($employees as $value) {
+                            echo '<option value="' . $value->emp_id . '">' . $value->employee_name . '</option>';
+                        }
+                    }
+                    ?>
+                </select>
+            </div>
 
-                        
-            @if($teamMember)
-                        <div class="col-md-2 pull-right">
-                            <select id="employee_search" name="employee_search">
-                                <option value="" selected="selected" >Select Employee</option>
-            <?php
-            if (!empty($employees)) {
-                foreach ($employees as $value) {
-                    echo '<option value="' . $value->emp_id . '">' . $value->employee_name . '</option>';
-                }
-            }
-            ?>
-                            </select>
-                        </div>
             @endif
-
         </div>
 
         <table id="example1" class="table table-bordered">
             <thead>
-                <tr class="success">
-                    @foreach( $listing_cols as $col )
-                    <th>{{ $module->fields[$col]['label'] or ucfirst($col) }}</th>
-                    @endforeach
-                    <?php if ($role == 'engineer' || $role == 'manager' || $role == 'lead') {
-                        ?>
-                        @if($show_actions)
 
-                        <th>Actions</th>
-                        @endif
-                        <?php
-                    }
+            
+                <tr class="success">
+        @foreach( $listing_cols as $col )
+        <th>{{ $module->fields[$col]['label'] or ucfirst($col) }}</th>
+        @endforeach
+                <?php
+                if ($role == 'engineer' || $role == 'manager' || $role == 'lead') {
                     ?>
-                </tr>
+                @if($show_actions)
+
+
+                <th>Actions</th>
+                @endif 
+              
+            
+ <!--              <th>Date</th>
+                <th>Reimbursement type</th>
+                <th>Amount</th>
+                <th>Document Attech</th>
+                <th>Cosharing Count</th>
+                <th>User Comment</th>
+                <th>Verified status</th>-->
+<!--                               <th>Actions</th>-->
+                <?php
+            }
+            ?>
+            <!--                 </tr>
+                        <tr class="success">-->
+
+            <!--                </tr>-->
+
+
             </thead>
             <tbody>
 
@@ -130,60 +146,26 @@ $role = \Session::get('role');
 @push('scripts')
 <script src="{{ asset('la-assets/plugins/datatables/datatables.min.js') }}"></script>
 <script>
-//$(function () {
-//    $("#example1").DataTable({
-//    processing: true,
-//            serverSide: true,
-//            searching: false,
-//            ajax: {
-//            dataType: "json",
-//                    url: "{{ url(config('laraadmin.adminRoute') . '/reimbursement_form_dt_ajax') }}",
-//                    type : 'post',
-//                    data:function(d){
-//                    d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
-//                            d.teamMember = "{{$teamMember}}";
-//							d._token = "{{csrf_token()}}";
-//                            filterDatatableData(d);
-//                    }
-//            },
-//            language: {
-//            lengthMenu: "_MENU_",
-//                    search: "_INPUT_",
-//                    searchPlaceholder: "Search"
-//            },
-//            @if ($show_actions)
-//    columnDefs: [ { orderable: false, targets: [ - 1] }],
-//            @endif
-//    }
-//    );
-//    $("#employee_search").on('change dp.change', function () {
-//        table.draw();
-//    });
-//    $("#reimbursement_form-add-form").validate({
-//
-//    });
-//});
 
-//test
 $(function () {
 
     var groupColumn = 4;
     var table = $("#example1").DataTable({
-        
+
     processing: true,
             serverSide: true,
             searching: false,
-           
             ajax: {
             dataType: "json",
-            url:"{{ url(config('laraadmin.adminRoute') . '/reimbursement_form_dt_ajax') }}",
+                    url:"{{ url(config('laraadmin.adminRoute') . '/reimbursement_form_dt_ajax') }}",
                     type : 'Post',
                     v_token: "{{csrf_token()}}",
                     data:function(d){
-                   d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
+                    d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
                             d.teamMember = "{{$teamMember}}";
+                            d.account = "{{$account}}";
                             d._token = "{{csrf_token()}}";
-                           filterDatatableData(d);
+                            filterDatatableData(d);
                     }
             },
             language: {
@@ -202,7 +184,6 @@ $(function () {
                     //tooltip
                     $('.tooltips').tooltip({'placement': 'top'});
             },
-
             @if ($show_actions)
     columnDefs: [
     { orderable: false, targets: [ - 1] }],
@@ -213,7 +194,7 @@ $(function () {
         table.draw();
     });
 
-   
+
 
     $('#employee_search').select2();
     $('input[type="search"][aria-controls="example1"]').hide();
@@ -250,10 +231,10 @@ function myfunction(button)
             $('[data-id=' + vid + ']').remove();
             swal('Application has been successfully ' + ((approved) ? 'Approved' : 'Rejected') + '!');
             $('div.overlay').addClass('hide');
-            
+
         }
     });
- 
+
 
 }
 
@@ -261,3 +242,4 @@ function myfunction(button)
 
 </script>
 @endpush
+

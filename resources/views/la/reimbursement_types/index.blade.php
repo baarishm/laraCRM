@@ -60,11 +60,11 @@
 					
 					{{--
 					@la_input($module, 'name')
-					@la_input($module, 'verification_level')
+                                       @la_input($module, 'verification_level')
 					@la_input($module, 'document_required')
 					@la_input($module, 'limit')
 					@la_input($module, 'limit_variance')
-					@la_input($module, 'employee grade ')
+					@la_input($module, 'employee_grade')
 					@la_input($module, 'created_by')
 					@la_input($module, 'updated_by')
 					@la_input($module, 'deleted_by')
@@ -116,5 +116,33 @@ $(function () {
 		
 	});
 });
+
+
+
+$("input[name$='limit_variance']").on('keydown keyup change', function(){
+  if ($(this).val() > 100 || $(this).val() < 0){
+  swal("Enter No Between 0 to 100");
+  $(this).val('0');
+  }
+      
+});
+$("input[name$='limit']").on('keydown keyup change', function(){
+  if ( $(this).val() <= 0){
+  swal("Enter Valid Amount");
+    $(this).val('1');
+  }
+      
+});
+$("input[name$='verification_level']").on('keydown keyup change', function(){
+  if ($(this).val() > 2 || $(this).val() <= 0){
+  swal("Enter Valid Level");
+    $(this).val('1');
+  }
+      
+});
+  
+ 
+
+  
 </script>
 @endpush
