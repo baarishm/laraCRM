@@ -178,7 +178,6 @@ Route::group(['as' => $as, 'middleware' => ['auth', 'permission:ADMIN_PANEL', 'p
     Route::get( "admin/reimbursement_form/accountApprovalReimbursement", 'LA\Reimbursement_FormsController@accountApprovalReimbursement');
     Route::POST(config('laraadmin.adminRoute') . '/reimbursement_forms/store', 'LA\Reimbursement_FormsController@store');
     Route::get('/approvereimbursement', 'LA\Reimbursement_FormsController@ajaxApproveReimbursement');
-    Route::get('/approvedreimbursement', 'LA\Reimbursement_FormsController@ajaxApprovedReimbursement');
     Route::get(config('laraadmin.adminRoute') . '/reimbursement_images_delete_ajax', 'LA\Reimbursement_FormsController@removeimagesajax');
    
 });

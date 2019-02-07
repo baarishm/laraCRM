@@ -73,7 +73,7 @@ Edit Apply  Reimbursement
 
                         </div>
                         <div class="form-group col-md-2">
-                            <label for="Cosharing_count" class="control-label">Total</label>
+                            <label for="Cosharing_count" class="control-label">Emp Count</label>
                             <?php
                                 if
  ($reimbursement_form -> cosharing_count !=0 ) {
@@ -110,7 +110,7 @@ Edit Apply  Reimbursement
                                         <label style="margin-right: 20px;"><input type="radio"  name="document_attached" value="1" class="check" checked required  > Yes</label>
                                     </td>
                                     <td id="doc-att-no">
-                                        <label><input type="radio"  name="document_attached" value="0" checked class="uncheck"  > No</label>
+                                        <label><input type="radio"  name="document_attached" value="0" checked class="uncheck"> No</label>
                                     </td>
                                 </tr>
                             </table>
@@ -151,11 +151,11 @@ Edit Apply  Reimbursement
 
                                         <td style="text-align: left;">
                                             <div class="form-group col-md-12 text-right">
-                                                <a href="<?php echo storage_path('uploads') . '\\' .$image->name ?>" target="_blank"  ><input   value="view" type="button" ></a>
+                                                <a href="<?php echo asset('uploads') . '\\' .$image->name ?>" target="_blank" class="btn btn-success"  >View</a>
 
 
 
-                                                <button data-id="{{$image->id}}" class="btn btn-danger btn-xs removeimage" type="submit"  >Delete</ button>
+                                                <button data-id="{{$image->id}}" class="btn btn-danger removeimage" type="submit"  >Delete</ button>
                                             </div>
                                         </td>
                                     </tr> 
@@ -170,7 +170,7 @@ Edit Apply  Reimbursement
 
 
                         <div class="form-group col-md-12 text-right" >
-                            <button type="submit" onclick="CheckApproval() class="btn btn-success" id="myButton">Update</button>
+                            <button type="submit" onclick="CheckApproval();" class="btn btn-success" id="myButton">Update</button>
                         </div>
 
                     </div>
@@ -204,23 +204,14 @@ Edit Apply  Reimbursement
                                     //get dates from session
                                     var dates = "{{ Session::get('holiday_list') }}";
                                     dates = JSON.parse(dates.replace(/&quot;/g, '\"'));
-
-
-
-
-
                                     $('select').select2();
-
-                                    //Show/hide comp off list
-//                                    $('#type_id').on('change', function () {
-//                                        ReimbursementType(this);
-//                                    });
 
                                     $('.removeimage').click(function (e) {
                                         var image = inputs.length - 1;
                                         if (image == 0) {
                                             $("#isImages").val("0");
                                             $("#images-div").remove();
+                                            $("#isImages").val("");
 
 
 
@@ -238,7 +229,7 @@ Edit Apply  Reimbursement
                                                 $('div.overlay').addClass('hide');
                                                 button.parents('tr').remove();
                                                 if ($('#removeimage').length == 0) {
-                                                    $('.images-div').remove();
+                                                  
                                                 }
 
 
@@ -247,28 +238,23 @@ Edit Apply  Reimbursement
                                         });
                                     });
 
-                                    $("input[name$='document_attached']").click(function () {
+                                   $("input[name$='document_attached']").click(function () {
                                         var test = $(this).val();
-
-                                        $("div.imageupload").hide();
                                         $('.uncheck').click(function () {
+                                            $("div.imageupload").hide();
                                             ($("#name").val(''));
+                                        });
+                                        if (test == 1) {
+                                            $("#document_attached1").show();
+                                            $("#name").attr('required', true).show();
 
-                                        })
-
-                                         if (test==1) {
-                                      
-                                            $("#document_attached" + test).attr('required', 'required').show();
-                                          
+                                        } else {
+                                            $("div.imageupload").hide();
+                                            $("#name").attr('required', false).hide();
                                         }
                                     });
 
-
-//                                 
-
                                     $("#amount, #cosharingcount").keypress(function (e) {
-
-
                                         if (this.value.length == 0 && e.which == 48) {
                                             return false;
                                         }
@@ -291,12 +277,13 @@ Edit Apply  Reimbursement
                                     });
                                     
                                       $("#type_id").change(function () {
-
+                                      debugger;
                                         var req = $(this).children("option:selected").attr("data-doc-req");
                                          var  hard = $(this).children("option:selected").attr("data-hard-copy");
                                          limit_variance=$(this).children("option:selected").attr("data-limit_variance");
                                         limit=$(this).children("option:selected").attr("data-limit");
-                                        if (req == 'Yes') {
+                                        
+                                         if (hard == 'Yes') {
                                             $('#doc-att-yes').find('input').prop("checked", "checked").trigger('click');
                                             $('#doc-att-no').find('input').prop("checked", false);
                                             $('#doc-att-no').hide();
@@ -312,15 +299,20 @@ Edit Apply  Reimbursement
                                     
                                 });
                                   function CheckApproval(){
-                                        debugger;
-                                      var actualAmout=  parseFloat($("#amount").val());  
-                                      var limitVarianceAmout=parseFloat(limit*limit_variance/100);
-                                      var totalAmout=parseFloat(limit)+parseFloat(limitVarianceAmout);
-                                      if(actualAmout>totalAmout)
-                                          $("#verified_approval").val(2);                                 
+                                      var employee = parseInt($("#cosharing_count").val());
+                                        var emptotal = parseInt(employee+1);
+                                        var actualAmout = parseFloat($("#amount").val());
+                                        var amount = emptotal * (limit * limit_variance / 100);
+                                        var realamount = parseFloat(limit * emptotal);
+                                        var total = parseFloat(realamount) + parseFloat(amount);
+                                        if (actualAmout > total) {
+                                            $("#verified_approval").val(3);
+                                        } else {
+                                            $("#verified_approval").val(2);
+                                        }
+                                     
                                     }
-
-
+                                    
                                 $(function () {
                                     $("#datepicker").datepicker({
                                         dateFormat: 'dd M yy',
