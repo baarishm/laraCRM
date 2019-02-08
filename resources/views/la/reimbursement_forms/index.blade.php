@@ -182,6 +182,7 @@ $(function () {
                     data:function(d){
                    d.employee_search = (($('#employee_search').length > 0) ? $('#employee_search').val() : '');
                             d.teamMember = "{{$teamMember}}";
+                            d.account = "{{$account}}";
                             d._token = "{{csrf_token()}}";
                            filterDatatableData(d);
                     }

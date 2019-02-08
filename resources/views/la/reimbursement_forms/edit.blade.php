@@ -21,14 +21,14 @@ Edit Apply  Reimbursement
             <div class="col-md-8 col-md-offset-2">
 
 
-                <form method="post" action="{{action('LA\Reimbursement_FormsController@update', $reimbursement_form -> id )}}" enctype="multipart/form-data" id="editForm"  >
+                <form method="post" action="{{action('LA\Reimbursement_FormsController@update', $reimbursement_form -> id )}}" enctype="multipart/form-data" id="editForm"  data-same-app="<?php echo session('employee_details')->first_approver == session('employee_details')->second_approver; ?>" >
                     <input type="hidden" style="display:none" id="isImages" name="isImages" value="0">
                     <input type="hidden" name="_token" value="{{ csrf_token()}}">
                     <input type="hidden" id="verified_approval" name="verified_approval" value="1">
-                     <input type="hidden" id="hard_copy_attached" name="hard_copy_attached" value="1">
+                    <input type="hidden" id="hard_copy_attached" name="hard_copy_attached" value="1">
                     <input name="_method" type="hidden" value="PATCH">
                     <div class="row">
-                         <div class="form-group col-md-4">
+                        <div class="form-group col-md-4">
                             <label>Manager Name</label>
                             <input type="text" class="form-control" value="{{$manager}}" disabled/>
                         </div>
@@ -46,14 +46,14 @@ Edit Apply  Reimbursement
                         <div class="form-group col-md-4">
                             <label>Reimbursement Type</label>
                             <select name="type_id" id="type_id" class="form-control" >
-                                <?php
-                                if (!empty($reimbursement_form)) {
-                                    foreach ($reimb_types as $value) {
+                                  <?php
+                                  if (!empty($reimbursement_form)) {
+                                        foreach ($reimb_types as $value) {
 
-                                        echo '<option value="' . $value->id . '" ' . (($reimbursement_form->type_id == $value->id) ? 'selected' : '' ) . ' data-limit="'.$value->limit.'" data-limit_variance="'.$value->limit_variance.'" data-hard-copy="'.$value->document_required.'" data-verification-level="'.$value->verification_level.'" >' . $value->name . '</option>';
-                                    }
-                                }
-                                ?>
+                                              echo '<option value="' . $value->id . '" ' . (($reimbursement_form->type_id == $value->id) ? 'selected' : '' ) . ' data-limit="' . $value->limit . '" data-limit_variance="' . $value->limit_variance . '" data-hard-copy="' . $value->document_required . '" data-verification-level="' . $value->verification_level . '" >' . $value->name . '</option>';
+                                        }
+                                  }
+                                  ?>
 
                             </select>
                         </div>
@@ -61,35 +61,35 @@ Edit Apply  Reimbursement
                         <div class="form-group col-md-6">
                             <label for="Cosharing" class="control-label">Co-Sharing Names</label>
                             <select name="cosharing[]" id="cosharing" class="js-example-basic-multiple" multiple="multiple"  >
-                                <?php
-                                if (!empty($reimbursement_form)) {
-                                    foreach ($employeename as $value) {
+                                  <?php
+                                  if (!empty($reimbursement_form)) {
+                                        foreach ($employeename as $value) {
 
-                                        echo '<option value="' . $value->id . '" ' . (in_array($value->id, $reimbursement_form->cosharing) ? 'selected' : '') . " > " . $value->name . '</option>';
-                                    }
-                                }
-                                ?>
+                                              echo '<option value="' . $value->id . '" ' . (in_array($value->id, $reimbursement_form->cosharing) ? 'selected' : '') . " > " . $value->name . '</option>';
+                                        }
+                                  }
+                                  ?>
                             </select>
 
                         </div>
                         <div class="form-group col-md-2">
                             <label for="Cosharing_count" class="control-label">Emp Count</label>
                             <?php
-                                if
- ($reimbursement_form -> cosharing_count !=0 ) {
-                                    ?>
-                            <input type="text" value="{{count($reimbursement_form->cosharing)}}" class="form-control" 
-                                   id="cosharing_count"  name="cosharing_count" autocomplete="off"   />
-             <?php           }
-                          else {
-                              ?>
-                                   <input type="text" value="0" class="form-control" 
-                                   id="cosharing_count"  name="cosharing_count" autocomplete="off"   />
-                     <?php               }
-                ?>        
-                       
+                            if
+                            ($reimbursement_form->cosharing_count != 0) {
+                                  ?>
+                                  <input type="text" value="{{count($reimbursement_form->cosharing)}}" class="form-control" 
+                                         id="cosharing_count"  name="cosharing_count" autocomplete="off"   />
+                                   <?php
+                                   } else {
+                                         ?>
+                                  <input type="text" value="0" class="form-control" 
+                                         id="cosharing_count"  name="cosharing_count" autocomplete="off"   />
+                                   <?php }
+                                   ?>        
+
                         </div>
-                         <div class="form-group col-md-4">
+                        <div class="form-group col-md-4">
                             <label for="amount" class="control-label">Amount (INR)*</label>
                             <input  type="text" value="{{$reimbursement_form -> amount or old('amount')}}" class="form-control" 
                                     id="amount"  name="amount" autocomplete="off"   />
@@ -124,7 +124,7 @@ Edit Apply  Reimbursement
                             <input  type="file" id="name" class="form-control" name="name[]" placeholder="address" multiple onchange="validateImage()" value="{{ old('name')}}" >
 
                         </div>
- 
+
 
 
 
@@ -132,34 +132,34 @@ Edit Apply  Reimbursement
 
                             <?php
                             if (count($images) > 0) {
-                                ?> 
+                                  ?> 
 
-                                <label for="Number" class="selectimg"> <?php echo "Selected image:" ?></label>
-                                <?php
+                                  <label for="Number" class="selectimg"> <?php echo "Selected image:" ?></label>
+                                  <?php
                             }
                             ?>
 
                             <table style="width: 100%">
-                                <?php foreach ($images as $image) { ?>
+                                  <?php foreach ($images as $image) { ?>
 
-                                    <tr>
-                                        <td> 
-                                            <?php
-                                            echo $image->name;
-                                            ?>
-                                        </td>
+                                      <tr>
+                                          <td> 
+                                                <?php
+                                                echo $image->name;
+                                                ?>
+                                          </td>
 
-                                        <td style="text-align: left;">
-                                            <div class="form-group col-md-12 text-right">
-                                                <a href="<?php echo asset('uploads') . '\\' .$image->name ?>" target="_blank" class="btn btn-success"  >View</a>
+                                          <td style="text-align: left;">
+                                              <div class="form-group col-md-12 text-right">
+                                                  <a href="<?php echo asset('uploads') . '\\' . $image->name ?>" target="_blank" class="btn btn-success"  >View</a>
 
 
 
-                                                <button data-id="{{$image->id}}" class="btn btn-danger removeimage" type="submit"  >Delete</ button>
-                                            </div>
-                                        </td>
-                                    </tr> 
-                                    <?php
+                                                  <button data-id="{{$image->id}}" class="btn btn-danger removeimage" type="submit"  >Delete</ button>
+                                              </div>
+                                          </td>
+                                      </tr> 
+                                      <?php
                                 }
                                 ?>  
                             </table>
@@ -187,175 +187,176 @@ Edit Apply  Reimbursement
 <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
 
 <script type="text/javascript">
- var limit=0;
-                                   var limit_variance=0;
-                                $(document).ready(function () {
+                                  var limit = 0;
+                                  var limit_variance = 0;
+                                  $(document).ready(function () {
 
 
-                                    var uform = $('#editForm');
-                                    var inputs = uform[0].getElementsByClassName('btn btn-danger btn-xs removeimage');
-                                    if (inputs.length > 0) {
-                                        $("#isImages").val("1");
-                                    }
-
-
-                                    var emp_detail = "{{ Session::get('employee_details') }}";
-                                    emp_detail = JSON.parse(emp_detail.replace(/&quot;/g, '\"'));
-                                    //get dates from session
-                                    var dates = "{{ Session::get('holiday_list') }}";
-                                    dates = JSON.parse(dates.replace(/&quot;/g, '\"'));
-                                    $('select').select2();
-
-                                    $('.removeimage').click(function (e) {
-                                        var image = inputs.length - 1;
-                                        if (image == 0) {
-                                            $("#isImages").val("0");
-                                            $("#images-div").remove();
-                                            $("#isImages").val("");
-
-
-
+                                        var uform = $('#editForm');
+                                        var inputs = uform[0].getElementsByClassName('btn btn-danger btn-xs removeimage');
+                                        if (inputs.length > 0) {
+                                              $("#isImages").val("1");
                                         }
-                                        e.preventDefault();
-                                        var button = $(this);
-                                        var id = button.attr('data-id');
-
-                                        // now make the ajax request
-                                        $.ajax({
-                                            url: "{{ url(config('laraadmin.adminRoute') . '/reimbursement_images_delete_ajax') }}",
-                                            data: {id: id},
-                                            type: 'GET',
-                                            success: function () {
-                                                $('div.overlay').addClass('hide');
-                                                button.parents('tr').remove();
-                                                if ($('#removeimage').length == 0) {
-                                                  
-                                                }
 
 
+                                        var emp_detail = "{{ Session::get('employee_details') }}";
+                                        emp_detail = JSON.parse(emp_detail.replace(/&quot;/g, '\"'));
+                                        //get dates from session
+                                        var dates = "{{ Session::get('holiday_list') }}";
+                                        dates = JSON.parse(dates.replace(/&quot;/g, '\"'));
+                                        $('select').select2();
 
-                                            }
+                                        $('.removeimage').click(function (e) {
+                                              var image = inputs.length - 1;
+                                              if (image == 0) {
+                                                    $("#isImages").val("0");
+                                                    $("#images-div").remove();
+                                                    $("#isImages").val("");
+
+
+
+                                              }
+                                              e.preventDefault();
+                                              var button = $(this);
+                                              var id = button.attr('data-id');
+
+                                              // now make the ajax request
+                                              $.ajax({
+                                                    url: "{{ url(config('laraadmin.adminRoute') . '/reimbursement_images_delete_ajax') }}",
+                                                    data: {id: id},
+                                                    type: 'GET',
+                                                    success: function () {
+                                                          $('div.overlay').addClass('hide');
+                                                          button.parents('tr').remove();
+                                                          if ($('#removeimage').length == 0) {
+
+                                                          }
+
+
+
+                                                    }
+                                              });
                                         });
-                                    });
 
-                                   $("input[name$='document_attached']").click(function () {
-                                        var test = $(this).val();
-                                        $('.uncheck').click(function () {
-                                            $("div.imageupload").hide();
-                                            ($("#name").val(''));
+                                        $("input[name$='document_attached']").click(function () {
+                                              var test = $(this).val();
+                                              $('.uncheck').click(function () {
+                                                    $("div.imageupload").hide();
+                                                    ($("#name").val(''));
+                                              });
+                                              if (test == 1) {
+                                                    $("#document_attached1").show();
+                                                    $("#name").attr('required', true).show();
+
+                                              } else {
+                                                    $("div.imageupload").hide();
+                                                    $("#name").attr('required', false).hide();
+                                              }
                                         });
-                                        if (test == 1) {
-                                            $("#document_attached1").show();
-                                            $("#name").attr('required', true).show();
 
-                                        } else {
-                                            $("div.imageupload").hide();
-                                            $("#name").attr('required', false).hide();
-                                        }
-                                    });
+                                        $("#amount, #cosharingcount").keypress(function (e) {
+                                              if (this.value.length == 0 && e.which == 48) {
+                                                    return false;
+                                              }
 
-                                    $("#amount, #cosharingcount").keypress(function (e) {
-                                        if (this.value.length == 0 && e.which == 48) {
-                                            return false;
-                                        }
+                                              if (e.which == 46) {
+                                                    if ($(this).val().indexOf('.') != -1) {
+                                                          return false;
+                                                    }
+                                              }
 
-                                        if (e.which == 46) {
-                                            if ($(this).val().indexOf('.') != -1) {
-                                                return false;
-                                            }
-                                        }
+                                              if (e.which != 8 && e.which != 0 && e.which != 46 && (e.which < 48 || e.which > 57)) {
+                                                    return false;
+                                              }
+                                        });
 
-                                        if (e.which != 8 && e.which != 0 && e.which != 46 && (e.which < 48 || e.which > 57)) {
-                                            return false;
-                                        }
-                                    });
+                                        $("#cosharing").change(function () {
+                                              var count = ($(".select2-selection__rendered").children().length - 1);
+                                              $("#cosharing_count").val(count);
 
-                                    $("#cosharing").change(function () {
-                                        var count = ($(".select2-selection__rendered").children().length - 1);
-                                        $("#cosharing_count").val(count);
+                                        });
 
-                                    });
-                                    
-                                      $("#type_id").change(function () {
-                                    
-                                        var req = $(this).children("option:selected").attr("data-doc-req");
-                                         var  hard = $(this).children("option:selected").attr("data-hard-copy");
-                                         limit_variance=$(this).children("option:selected").attr("data-limit_variance");
-                                        limit=$(this).children("option:selected").attr("data-limit");
-                                        
-                                         if (hard == 'Yes') {
-                                            $('#doc-att-yes').find('input').prop("checked", "checked").trigger('click');
-                                            $('#doc-att-no').find('input').prop("checked", false);
-                                            $('#doc-att-no').hide();
+                                        $("#type_id").change(function () {
 
-                                        } else {
-                                            $('#doc-att-yes').find('input').prop("checked", false);
-                                            $('#doc-att-no').find('input').prop("checked", "checked").trigger('click');
-                                            $('#doc-att-no').show();
-                                        }
-                                         $("#hard_copy_attached").val(hard);
-                                    })
-                                    $("#type_id").trigger("change");
-                                    
-                                });
-                                   function CheckApproval(){
-                                       var employee =   $("#cosharing_count").val()!= '' ? parseInt($("#cosharing_count").val()):0 ;
-                                   
-                                        var emptotal = parseInt(employee)+1;
+                                              var req = $(this).children("option:selected").attr("data-doc-req");
+                                              var hard = $(this).children("option:selected").attr("data-hard-copy");
+                                              limit_variance = $(this).children("option:selected").attr("data-limit_variance");
+                                              limit = $(this).children("option:selected").attr("data-limit");
+
+                                              if (hard == 'Yes') {
+                                                    $('#doc-att-yes').find('input').prop("checked", "checked").trigger('click');
+                                                    $('#doc-att-no').find('input').prop("checked", false);
+                                                    $('#doc-att-no').hide();
+
+                                              } else {
+                                                    $('#doc-att-yes').find('input').prop("checked", false);
+                                                    $('#doc-att-no').find('input').prop("checked", "checked").trigger('click');
+                                                    $('#doc-att-no').show();
+                                              }
+                                              $("#hard_copy_attached").val(hard);
+                                        })
+                                        $("#type_id").trigger("change");
+
+                                  });
+                                  function CheckApproval() {
+                                        var employee = $("#cosharing_count").val() != '' ? parseInt($("#cosharing_count").val()) : 0;
+
+                                        var emptotal = parseInt(employee) + 1;
                                         var actualAmout = parseFloat($("#amount").val());
                                         var amount = emptotal * (limit * limit_variance / 100);
                                         var realamount = parseFloat(limit * emptotal);
                                         var total = parseFloat(realamount) + parseFloat(amount);
-                                        if (actualAmout > total) {
-                                            $("#verified_approval").val(3);
+                                        var same_approver = $("#editForm").attr('data-same-app');
+                                        if (actualAmout < total || same_approver) {
+                                              $("#verified_approval").val(2);
                                         } else {
-                                            $("#verified_approval").val(2);
+                                              $("#verified_approval").val(3);
                                         }
-                                     
-                                    }
-                                    
-                                $(function () {
-                                    $("#datepicker").datepicker({
-                                        dateFormat: 'dd M yy',
-                                        todayHighlight: 'true',
-                                        changeMonth: true,
-                                        changeYear: true,
-                                        minDate: -30,
-                                        maxDate: '+0day',
-                                        numberOfMonths: 1
 
-                                    });
+                                  }
 
-                                });
-                                function validateImage() {
-                                    var img = $("#name").val();
+                                  $(function () {
+                                        $("#datepicker").datepicker({
+                                              dateFormat: 'dd M yy',
+                                              todayHighlight: 'true',
+                                              changeMonth: true,
+                                              changeYear: true,
+                                              minDate: -30,
+                                              maxDate: '+0day',
+                                              numberOfMonths: 1
 
-                                    var exts = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
-                                    // split file name at dot
-                                    var get_ext = img.split('.');
-                                    // reverse name to check extension
-                                    get_ext = get_ext.reverse();
+                                        });
 
-                                    if (img.length > 0) {
-                                        if ($.inArray(get_ext[0].toLowerCase(), exts) > -1) {
-                                            return true;
+                                  });
+                                  function validateImage() {
+                                        var img = $("#name").val();
+
+                                        var exts = ['jpg', 'jpeg', 'png', 'gif', 'bmp'];
+                                        // split file name at dot
+                                        var get_ext = img.split('.');
+                                        // reverse name to check extension
+                                        get_ext = get_ext.reverse();
+
+                                        if (img.length > 0) {
+                                              if ($.inArray(get_ext[0].toLowerCase(), exts) > -1) {
+                                                    return true;
+                                              } else {
+                                                    swal({
+                                                          title: "Error",
+                                                          text: "Upload only jpg, jpeg, png, gif, bmp images",
+                                                          type: "error"
+                                                    }).then(() => {
+                                                          $('#name').val('');
+                                                    });
+
+                                                    return false;
+                                              }
                                         } else {
-                                            swal({
-                                                title: "Error",
-                                                text: "Upload only jpg, jpeg, png, gif, bmp images",
-                                                type: "error"
-                                            }).then(() => {
-                                                $('#name').val('');
-                                            });
-
-                                            return false;
+                                              swal("please upload an image");
+                                              return false;
                                         }
-                                    } else {
-                                        swal("please upload an image");
                                         return false;
-                                    }
-                                    return false;
-                                }
+                                  }
 
 
 
