@@ -44,11 +44,11 @@ class Handler extends ExceptionHandler {
        * @return \Illuminate\Http\Response
        */
       public function render($request, Exception $e) {
-            if ($e instanceof TokenMismatchException) {
-                  return response()->view('errors.419');
-            }
-            return response()->view('errors.code_error');
-//        return parent::render($request, $e);
+//            if ($e instanceof TokenMismatchException) {
+//                  return response()->view('errors.419');
+//            }
+//            return response()->view('errors.code_error');
+        return parent::render($request, $e);
       }
 
 }

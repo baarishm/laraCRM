@@ -225,8 +225,23 @@ $role = \Session::get('role');
                               <tr>
                                   <td>
                                       <label>Payment Date:</label>
-                    <input type="text"  class="form-control" id="payment_date" ng-model="payment_date" name="payment_date" value="<?php echo  date('d M Y', strtotime($reimbursement_form -> payment_date)); ?>"
+                                      <?php if($reimbursement_form -> payment_date =='0000-00-00' || $reimbursement_form -> payment_date ==''){
+                                          
+                               ?>
+                                    
+                                       <input type="text"  class="form-control" id="payment_date" ng-model="payment_date" name="payment_date"
                                              autocomplete="off" placeholder="Payment Date" />
+                                       
+                                       <?php
+                                      }
+                                      else{
+                                          ?>
+                                        <input type="text"  class="form-control" id="payment_date" ng-model="payment_date" name="payment_date" value="<?php echo  date('d M Y', strtotime($reimbursement_form -> payment_date)); ?>"
+                                             autocomplete="off" placeholder="Payment Date" />
+                                       <?php
+                                      }
+                                      ?>
+                  
                                   </td>
                                   <td>
                                       <label>Payment Mode:</label>
@@ -255,7 +270,7 @@ $role = \Session::get('role');
                                   <td>
                                       <label>Payment Date:</label>
 
-                                      <?php if ($reimbursement_form->payment_date == Null || $reimbursement_form->payment_date == 0000 - 00 - 00) {
+                                      <?php if ($reimbursement_form->payment_date == Null || $reimbursement_form->payment_date == 0000-00-00) {
                                             ?>
                                             <h6>--</h6>
                                             <?php
@@ -825,13 +840,11 @@ $role = \Session::get('role');
                                           </div>
                                       </li>
                                       <?php
-                                } else {
-                                      ?>
-                                      <?php
-                                }
+                                } 
+                              
                           }
 
-                          if ($reimbursement_form->verified_level == $reimbursement_form->verified_approval || (!empty($join_approve_form[2]) && $join_approve_form[2]->status == 2 && $join_approve_form[2]->level == 3) || (!empty($join_approve_form) && $join_approve_form[1]->status == 2 && $join_approve_form[1]->level == 2) || (!empty($join_approve_form) && $join_approve_form[0]->status == 2 && $join_approve_form[0]->level == 1)) {
+                          if ($reimbursement_form->verified_level == $reimbursement_form->verified_approval && (!empty($join_approve_form[2]) && $join_approve_form[2]->status == 2 && $join_approve_form[2]->level == 3) || (!empty($join_approve_form) && $join_approve_form[1]->status == 2 && $join_approve_form[1]->level == 2) || (!empty($join_approve_form) && $join_approve_form[0]->status == 2 && $join_approve_form[0]->level == 1)) {
                                 ?>
 
                                 <li>
@@ -1160,11 +1173,11 @@ $role = \Session::get('role');
                           ?>
 
                           <?php
-                          if ($reimbursement_form->verified_level == $reimbursement_form->verified_approval || (!empty($join_approve_form) && $join_approve_form[1]->status == 2 && $join_approve_form[1]->level == 2 || (!empty($join_approve_form) && $join_approve_form[0]->status == 2 && $join_approve_form[0]->level == 1))) {
+                          if ($reimbursement_form->verified_level == $reimbursement_form->verified_approval && (!empty($join_approve_form) && $join_approve_form[1]->status == 1 && $join_approve_form[1]->level == 2 && (!empty($join_approve_form) && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1))) {
                                 ?>
 
                                 <li>
-                                    <i class="fa fa-check fa-2 bg-red"></i>
+                                    <i class="fa fa-check fa-2 bg-green"></i>
 
                                     <div class="timeline-item">
                                         <span class="time"></span>
@@ -1175,11 +1188,11 @@ $role = \Session::get('role');
                                     </div>
                                 </li>
                                 <?php
-                          } else if ($reimbursement_form->verified_level == $reimbursement_form->verified_approval && (!empty($join_approve_form) && $join_approve_form[1]->status == 1 && $join_approve_form[1]->level == 2 && (!empty($join_approve_form) && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1))) {
+                          } else if ($reimbursement_form->verified_level == $reimbursement_form->verified_approval || (!empty($join_approve_form) && $join_approve_form[1]->status == 2 && $join_approve_form[1]->level == 2 || (!empty($join_approve_form) && $join_approve_form[0]->status == 2 && $join_approve_form[0]->level == 1))) {
                                 ?>
 
                                 <li>
-                                    <i class="fa fa-check fa-2 bg-green"></i>
+                                    <i class="fa fa-check fa-2 bg-red"></i>
 
                                     <div class="timeline-item">
                                         <span class="time"></span>
@@ -1263,10 +1276,12 @@ $role = \Session::get('role');
                                                 var date = ('00-00-0000');
                                                 var mode = ('');
                                                 var amount = parseFloat(0);
+                                                if(approved == 1){
                                                 if (($("#payment_date").length > 0 && $("#payment_date").val() == '') || ($("#amount").length > 0 && $("#amount").val() == '')) {
                                                       swal("Please fill all fields.");
                                                       return false;
                                                 }
+                                            }
                                                 swal({
                                                       title: "Enter Comment",
                                                       input: "textarea",

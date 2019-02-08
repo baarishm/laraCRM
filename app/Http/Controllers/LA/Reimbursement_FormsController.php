@@ -382,7 +382,7 @@ class Reimbursement_FormsController extends Controller {
                   $reimbursement_form['Date'] = date('d M Y', strtotime($reimbursement_form['Date']));
                   if (isset($reimbursement_form->id)) {
                         $cosharing = $reimbursement_form['cosharing'];
-                        $reimbursement_form['cosharing'] = ($cosharing == '') ? explode('|', $cosharing) : [];
+                        $reimbursement_form['cosharing'] = ($cosharing != '') ? explode('|', $cosharing) : [];
                         $module = Module::get('Reimbursement_Forms');
                         $module->row = $reimbursement_form;
                         $employeename = DB::table('employees')
@@ -431,7 +431,6 @@ class Reimbursement_FormsController extends Controller {
                                 ->where('status', '<>', 0)
                                 ->groupBy('action_taken_by')
                                 ->get(['reimbursement_approval.*', 'action_taken_by', DB::raw('MAX(level) as level_new')]);
-
                         return view('la.reimbursement_forms.show', [
                                     'join_approve_form' => $join_approve_form,
                                     'images' => $images,
@@ -665,7 +664,6 @@ class Reimbursement_FormsController extends Controller {
  ELSE 'Application close'  end) AS verified_level"), 'hard_copy_attached', DB::raw('reimbursement_forms.id as form_id')
                   ];
             }
-
             $where = 'emp_id = 0';
             if ($request->teamMember && !$request->account) {
                   $role = Employee::employeeRole();
@@ -686,10 +684,12 @@ class Reimbursement_FormsController extends Controller {
             } else if ($request->account) {
                   $where = '';
             } else {
+                $where = 'emp_id = ' . Auth::user()->context_id;
                   $this->show_action = true;
             }
 
             if ($request->teamMember && !$request->account) {
+              
                   $value = DB::table('reimbursement_forms')
                           ->select($this->custom_cols)
                           ->leftJoin('reimbursement_approval', 'reimbursement_forms.id', '=', 'reimbursement_approval.request_id')
@@ -697,6 +697,7 @@ class Reimbursement_FormsController extends Controller {
                           ->orderBy('reimbursement_forms.id', 'desc')
                           ->whereNull('reimbursement_forms.deleted_at');
             } else if ($request->account) {
+                
                   $value = DB::table('reimbursement_forms')
                           ->select($this->custom_cols)
                           ->leftJoin('reimbursement_approval', 'reimbursement_forms.id', '=', 'reimbursement_approval.request_id')
@@ -705,6 +706,7 @@ class Reimbursement_FormsController extends Controller {
                           ->orderBy('reimbursement_forms.id', 'desc')
                           ->whereNull('reimbursement_forms.deleted_at');
             } else {
+               
                   $value = DB::table('reimbursement_forms')
                           ->select($this->custom_cols)
                           ->orderBy('id', 'desc')
