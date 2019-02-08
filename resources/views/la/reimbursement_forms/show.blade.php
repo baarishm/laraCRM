@@ -415,9 +415,7 @@ $role = \Session::get('role');
                            
                             <h5>In process</h5>
 
-                            <div class="timeline-body">
-                                Application check  and under process...
-                            </div>
+                          
                             <div class="timeline-footer">
                                 
                             </div>
@@ -433,20 +431,104 @@ $role = \Session::get('role');
                             <i class="fa fa-check fa-2 bg-green"></i>
 
                             <div class="timeline-item">
-                                <span class="time">
-                                    <?php if((!empty($join_approve_form) && $join_approve_form[0]->updated_at != Null)){
-                                        ?>
-                                     <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[0]->updated_at)); ?>
-                                    <i class="fa fa-clock-o"></i>{{$ApplyDate}}
-                                     <?php
-                                           }else{
+                                <h5>
+                                    <span class="text-left">Level One</span> 
+                                    <span class="time float-right" >
+                                        <?php if((!empty($join_approve_form) && $join_approve_form[0]->updated_at != Null)){
+                                            ?>
+                                         <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[0]->updated_at)); ?>
+                                        <i class="fa fa-clock-o"></i> {{$ApplyDate}}
+                                         <?php
+                                               }else{
+                                                   ?>
+                                         <?php
+                                               }
                                                ?>
-                                     <?php
-                                           }
-                                           ?>
-                                </span>
-                                <span > 
-                                    <label for="date"> Action taken by: </label>
+                                    </span>
+                                </h5>
+                                <h5>
+                                    <span class="approved"> Approved </span>
+                                    <span class="float-right"> 
+                                      <?php if ((!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null)) {
+                                            ?>
+                                            <?php
+                                            if (!empty($join_approve_form[0]->action_taken_by)) {
+                                                foreach ($employeename as $value) {
+                                                    if ($join_approve_form[0]->action_taken_by == $value->id)
+                                                        echo $value->name;
+                                                }
+                                            }
+                                            ?>
+                                            <?php
+                                            }else {
+                                                ?><h6>None</h6>
+                                                <?php
+                                            }
+                                            ?>
+                                    </span>
+                                </h5>
+
+                            </div>
+                        </li>
+
+                        <?php
+                    } else if (!empty($join_approve_form[0]) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 2 && $join_approve_form[0]->level == 1) {
+                        ?>
+
+                        <li>
+                         
+                            <i class="fa fa-times-circle bg-red"></i>
+
+                           <div class="timeline-item">
+                                <h5>
+                                    <span class="text-left">Level One</span> 
+                                    <span class="time float-right" >
+                                        <?php if((!empty($join_approve_form) && $join_approve_form[0]->updated_at != Null)){
+                                            ?>
+                                         <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[0]->updated_at)); ?>
+                                        <i class="fa fa-clock-o"></i> {{$ApplyDate}}
+                                         <?php
+                                               }else{
+                                                   ?>
+                                         <?php
+                                               }
+                                               ?>
+                                    </span>
+                                </h5>
+                                <h5>
+                                    <span class="rejected"> Rejected </span>
+                                    <span class="float-right"> 
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null)) {
+                                            ?>
+                                            <?php
+                                            if (!empty($join_approve_form[0]->action_taken_by)) {
+                                                foreach ($employeename as $value) {
+                                                    if ($join_approve_form[0]->action_taken_by == $value->id)
+                                                        echo $value->name;
+                                                }
+                                            }
+                                            ?>
+                                            <?php
+                                            }else {
+                                                ?><h6>None</h6>
+                                                <?php
+                                            }
+                                            ?>
+                                    </span>
+                                </h5>
+
+                            </div>
+                        </li>
+                        <?php
+                    } else {
+                        ?>
+                       <li>
+                                <i class="fa fa-clock-o fa-2 bg-grey"></i>
+
+                                <div class="timeline-item">
+                                    <h5> <span class="text-left">Level One</span> </h5>
+                                    <span class="time"> 
+                                     
                                     <?php if ((!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null)) {
                                         ?>
                                         <?php
@@ -458,74 +540,20 @@ $role = \Session::get('role');
                                         }
                                         ?>
                                         <?php
-                                        }else {
-                                            ?><h6>None</h6>
-                                            <?php
-                                        }
-                                        ?>
-                                       
-                                </span>
-
-                                <h4> Approve level  one </h4>
-
-                            </div>
-                        </li>
-
-                        <?php
-                    } else if (!empty($join_approve_form[0]) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 2 && $join_approve_form[0]->level == 1) {
-                        ?>
-
-                        <li>
-                            <i class="fa fa-times-circle bg-red"></i>
-
-                            <div class="timeline-item">
-                                <span class="time"><i class="fa fa-clock-o"></i> </span>
-
-                                <h3 class="timeline-header no-border"> Reject on level one
-                                </h3>
-                                <div class="timeline-body">
-                                    Application check  and reject level one...
-                                </div>
-                            </div>
-                        </li>
-                        <?php
-                    } else {
-                        ?>
-                        <li>
-                            <i class="fa fa-clock-o fa-2 bg-grey"></i>
-
-                            <div class="timeline-item">
+                                    }else {
+                                        ?><h6>None</h6>
+                                        <?php
+                                    }
+                                    ?>
                                
-                                <div class="col-sm-6 text-right">
-                                    <span class="time">
-                                        <label for="date">Action pending by: </label>
-                                        <?php if ((!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null)) {
-                                            ?>
-                                            <?php
-                                            if (!empty($join_approve_form[0]->action_taken_by)) {
-                                                foreach ($employeename as $value) {
-                                                    if ($join_approve_form[0]->action_taken_by == $value->id)
-                                                        echo $value->name;
-                                                }
-                                            }
-                                            ?>
-                                            <?php
-                                        }else {
-                                            ?><h6>None</h6>
-                                            <?php
-                                        }
-                                        ?>
-
                                     </span>
+
+                                   
+                                    <div class="timeline-body">
+                                        Application pending level one...
+                                    </div>
                                 </div>
-                                
-                                
-                                <h3 class="timeline-header no-border">  Pending on level one </h3>
-                                <div class="timeline-body">
-                                    Application pending level one...
-                                </div>
-                            </div>
-                        </li>
+                            </li>
                         <?php
                     }
                     ?>
@@ -534,44 +562,43 @@ $role = \Session::get('role');
                         <li>
                             <i class="fa fa-check fa-2 bg-green"></i>
 
-                            <div class="timeline-item">
-                                 <span class="time">
-                                    <?php if((!empty($join_approve_form) && $join_approve_form[1]->updated_at != Null)){
-                                        ?>
-                                     <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[1]->updated_at)); ?>
-                                    <i class="fa fa-clock-o"></i> {{$ApplyDate}}
-                                     <?php
-                                           }else{
+                             <div class="timeline-item">
+                                <h5>
+                                    <span class="text-left">Level Two</span> 
+                                    <span class="time float-right" >
+                                        <?php if((!empty($join_approve_form) && $join_approve_form[1]->updated_at != Null)){
+                                            ?>
+                                         <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[1]->updated_at)); ?>
+                                        <i class="fa fa-clock-o"></i> {{$ApplyDate}}
+                                         <?php
+                                               }else{
+                                                   ?>
+                                         <?php
+                                               }
                                                ?>
-                                     <?php
-                                           }
-                                           ?>
-                                </span>
-                                
-                                <span>
-                                
-                                    <label for="date">Action taken by: </label>
-                                    <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
-                                        ?>
-                                        <?php
-                                        if (!empty($join_approve_form[1]->action_taken_by)) {
-                                            foreach ($employeename as $value) {
-                                                if ($join_approve_form[1]->action_taken_by == $value->id)
-                                                    echo $value->name;
+                                    </span>
+                                </h5>
+                                <h5>
+                                    <span class="approved"> Approved </span>
+                                    <span class="float-right"> 
+                                       <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
+                                            ?>
+                                            <?php
+                                            if (!empty($join_approve_form[1]->action_taken_by)) {
+                                                foreach ($employeename as $value) {
+                                                    if ($join_approve_form[1]->action_taken_by == $value->id)
+                                                        echo $value->name;
+                                                }
                                             }
-                                        }
-                                        ?>
-                                        <?php
-                                    }else {
-                                        ?><h6>None</h6>
-                                        <?php
-                                    }
-                                    ?>
-                                
-                                </span>
-
-                                <h3 class="timeline-header no-border"> Approve level two
-                                </h3>
+                                            ?>
+                                            <?php
+                                            }else {
+                                                ?><h6>None</h6>
+                                                <?php
+                                            }
+                                            ?>
+                                    </span>
+                                </h5>
 
                             </div>
                         </li>
@@ -584,13 +611,43 @@ $role = \Session::get('role');
                             <i class="fa fa-times-circle bg-red"></i>
 
                             <div class="timeline-item">
-                                <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+                                <h5>
+                                    <span class="text-left">Level Two</span> 
+                                    <span class="time float-right" >
+                                        <?php if((!empty($join_approve_form) && $join_approve_form[1]->updated_at != Null)){
+                                            ?>
+                                         <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[1]->updated_at)); ?>
+                                        <i class="fa fa-clock-o"></i> {{$ApplyDate}}
+                                         <?php
+                                               }else{
+                                                   ?>
+                                         <?php
+                                               }
+                                               ?>
+                                    </span>
+                                </h5>
+                                <h5>
+                                    <span class="rejected"> Rejected </span>
+                                    <span class="float-right"> 
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
+                                            ?>
+                                            <?php
+                                            if (!empty($join_approve_form[1]->action_taken_by)) {
+                                                foreach ($employeename as $value) {
+                                                    if ($join_approve_form[1]->action_taken_by == $value->id)
+                                                        echo $value->name;
+                                                }
+                                            }
+                                            ?>
+                                            <?php
+                                            }else {
+                                                ?><h6>None</h6>
+                                                <?php
+                                            }
+                                            ?>
+                                    </span>
+                                </h5>
 
-                                <h3 class="timeline-header no-border"> Reject on level two
-                                </h3>
-                                <div class="timeline-body">
-                                    Application check  and reject level two...
-                                </div>
                             </div>
                         </li>
                         <?php
@@ -601,9 +658,9 @@ $role = \Session::get('role');
                                 <i class="fa fa-clock-o fa-2 bg-grey"></i>
 
                                 <div class="timeline-item">
+                                      <h5> <span class="text-left">Level Two</span> </h5>
                                     <span class="time"> 
-                                         
-                                    <label for="date">Action pending by: </label>
+                                   
                                     <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
                                         ?>
                                         <?php
@@ -623,8 +680,7 @@ $role = \Session::get('role');
                                
                                     </span>
 
-                                    <h3 class="timeline-header no-border">  Pending on level two
-                                    </h3>
+                                    
                                     <div class="timeline-body">
                                         Application pending level two...
                                     </div>
@@ -642,42 +698,42 @@ $role = \Session::get('role');
                             <i class="fa fa-check fa-2 bg-green"></i>
 
                             <div class="timeline-item">
-                                 <span class="time">
-                                    <?php if((!empty($join_approve_form) && $join_approve_form[2]->updated_at != Null)){
-                                        ?>
-                                     <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[2]->updated_at)); ?>
-                                    <i class="fa fa-clock-o"></i>{{$ApplyDate}}
-                                     <?php
-                                           }else{
+                                <h5>
+                                    <span class="text-left">Level Three</span> 
+                                    <span class="time float-right" >
+                                        <?php if((!empty($join_approve_form) && $join_approve_form[2]->updated_at != Null)){
+                                            ?>
+                                         <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[2]->updated_at)); ?>
+                                        <i class="fa fa-clock-o"></i> {{$ApplyDate}}
+                                         <?php
+                                               }else{
+                                                   ?>
+                                         <?php
+                                               }
                                                ?>
-                                     <?php
-                                           }
-                                           ?>
-                                </span>
-                                <span>
-                               
-                                    <label for="date">Action taken by: </label>
+                                    </span>
+                                </h5>
+                                <h5>
+                                    <span class="approved"> Approved </span>
+                                    <span class="float-right"> 
                                     <?php if ((!empty($join_approve_form) && $join_approve_form[2]->action_taken_by != Null)) {
-                                        ?>
-                                        <?php
-                                        if (!empty($join_approve_form[2]->action_taken_by)) {
-                                            foreach ($employeename as $value) {
-                                                if ($join_approve_form[2]->action_taken_by == $value->id)
-                                                    echo $value->name;
+                                            ?>
+                                            <?php
+                                            if (!empty($join_approve_form[2]->action_taken_by)) {
+                                                foreach ($employeename as $value) {
+                                                    if ($join_approve_form[2]->action_taken_by == $value->id)
+                                                        echo $value->name;
+                                                }
                                             }
-                                        }
-                                        ?>
-                                        <?php
-                                    }else {
-                                        ?><h6>None</h6>
-                                        <?php
-                                    }
-                                    ?>
-                                 
-                                </span>
-
-                                <h3 class="timeline-header no-border"> Approve level three
-                                </h3>
+                                            ?>
+                                            <?php
+                                            }else {
+                                                ?><h6>None</h6>
+                                                <?php
+                                            }
+                                            ?>
+                                    </span>
+                                </h5>
 
                             </div>
                         </li>
@@ -688,15 +744,46 @@ $role = \Session::get('role');
 
                         <li>
                             <i class="fa fa-times-circle bg-red"></i>
+                            
 
-                            <div class="timeline-item">
-                                <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+                           <div class="timeline-item">
+                                <h5>
+                                    <span class="text-left">Level Three</span> 
+                                    <span class="time float-right" >
+                                        <?php if((!empty($join_approve_form) && $join_approve_form[2]->updated_at != Null)){
+                                            ?>
+                                         <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[2]->updated_at)); ?>
+                                        <i class="fa fa-clock-o"></i> {{$ApplyDate}}
+                                         <?php
+                                               }else{
+                                                   ?>
+                                         <?php
+                                               }
+                                               ?>
+                                    </span>
+                                </h5>
+                                <h5>
+                                    <span class="rejected"> Rejected </span>
+                                    <span class="float-right"> 
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
+                                            ?>
+                                            <?php
+                                            if (!empty($join_approve_form[2]->action_taken_by)) {
+                                                foreach ($employeename as $value) {
+                                                    if ($join_approve_form[2]->action_taken_by == $value->id)
+                                                        echo $value->name;
+                                                }
+                                            }
+                                            ?>
+                                            <?php
+                                            }else {
+                                                ?><h6>None</h6>
+                                                <?php
+                                            }
+                                            ?>
+                                    </span>
+                                </h5>
 
-                                <h3 class="timeline-header no-border"> Reject on level three
-                                </h3>
-                                <div class="timeline-body">
-                                    Application check  and reject level three...
-                                </div>
                             </div>
                         </li>
                         <?php
@@ -707,9 +794,9 @@ $role = \Session::get('role');
                                 <i class="fa fa-clock-o fa-2 bg-grey"></i>
 
                                 <div class="timeline-item">
+                                      <h5> <span class="text-left">Level Three</span> </h5>
                                     <span class="time">
-                                      
-                                    <label for="date">Action pending by: </label>
+                                    
                                     <?php if ((!empty($join_approve_form) && $join_approve_form[2]->action_taken_by != Null)) {
                                         ?>
                                         <?php
@@ -729,8 +816,7 @@ $role = \Session::get('role');
                                  
                                     </span>
 
-                                    <h3 class="timeline-header no-border">  Pending on level three
-                                    </h3>
+                                   
                                     <div class="timeline-body">
                                         Application pending level three...
                                     </div>
@@ -747,20 +833,35 @@ $role = \Session::get('role');
                         ?>
 
                         <li>
-                            <i class="fa fa-check fa-2 bg-green"></i>
+                            <i class="fa fa-check fa-2 bg-red"></i>
 
                             <div class="timeline-item">
-                                <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+                                <span class="time"></span>
 
                                 <h3 class="timeline-header no-border">Application close
                                 </h3>
-                                <div class="timeline-body">
-                                    Application check and close...
-                                </div>
+                               
                             </div>
                         </li>
                         <?php
-                    } else if (!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1) {
+                    } else if ($reimbursement_form->verified_level == $reimbursement_form->verified_approval || (!empty($join_approve_form[2]) && $join_approve_form[2]->status == 1 && $join_approve_form[2]->level == 3) && (!empty($join_approve_form) && $join_approve_form[1]->status == 1 && $join_approve_form[1]->level == 2) && (!empty($join_approve_form) && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1)) {
+                        ?>
+
+                        <li>
+                            <i class="fa fa-check fa-2 bg-green"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"></span>
+
+                                <h3 class="timeline-header no-border">Application close
+                                </h3>
+                                
+                            </div>
+                        </li>
+                        <?php
+                    }
+                    
+                    else if (!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1) {
                         ?>
                         <li>
                             <i class="fa fa-clock-o fa-2 bg-blue"></i>
@@ -784,8 +885,7 @@ $role = \Session::get('role');
                             <div class="timeline-item">
                                 <span class="time"></span>
 
-                                <h3 class="timeline-header no-border">Application pending
-                                </h3>
+                              
                                 <div class="timeline-body">
                                     Application pending...
                                 </div>
@@ -801,40 +901,42 @@ $role = \Session::get('role');
                             <i class="fa fa-check fa-2 bg-green"></i>
 
                             <div class="timeline-item">
-                                 <span class="time">
-                                    <?php if((!empty($join_approve_form) && $join_approve_form[0]->updated_at != Null)){
-                                        ?>
-                                     <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[0]->updated_at)); ?>
-                                    <i class="fa fa-clock-o"></i>{{$ApplyDate}}
-                                     <?php
-                                           }else{
+                                <h5>
+                                    <span class="text-left">Level One</span> 
+                                    <span class="time float-right" >
+                                        <?php if((!empty($join_approve_form) && $join_approve_form[0]->updated_at != Null)){
+                                            ?>
+                                         <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[0]->updated_at)); ?>
+                                        <i class="fa fa-clock-o"></i> {{$ApplyDate}}
+                                         <?php
+                                               }else{
+                                                   ?>
+                                         <?php
+                                               }
                                                ?>
-                                     <?php
-                                           }
-                                           ?>
-                                </span>
-                                <span>
-                                    <label for="date">Action taken by: </label>
+                                    </span>
+                                </h5>
+                                <h5>
+                                    <span class="approved"> Approved </span>
+                                    <span class="float-right"> 
                                     <?php if ((!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null)) {
-                                        ?>
-                                        <?php
-                                        if (!empty($join_approve_form[0]->action_taken_by)) {
-                                            foreach ($employeename as $value) {
-                                                if ($join_approve_form[0]->action_taken_by == $value->id)
-                                                    echo $value->name;
+                                            ?>
+                                            <?php
+                                            if (!empty($join_approve_form[0]->action_taken_by)) {
+                                                foreach ($employeename as $value) {
+                                                    if ($join_approve_form[0]->action_taken_by == $value->id)
+                                                        echo $value->name;
+                                                }
                                             }
-                                        }
-                                        ?>
-                                        <?php
-                                    }else {
-                                        ?><h6>None</h6>
-                                        <?php
-                                    }
-                                    ?>
-                                </span>
-                               
-
-                                <h3 class="timeline-header no-border"> Approve level  one</h3>
+                                            ?>
+                                            <?php
+                                            }else {
+                                                ?><h6>None</h6>
+                                                <?php
+                                            }
+                                            ?>
+                                    </span>
+                                </h5>
 
                             </div>
                         </li>
@@ -847,13 +949,43 @@ $role = \Session::get('role');
                             <i class="fa fa-times-circle bg-red"></i>
 
                             <div class="timeline-item">
-                                <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
+                                <h5>
+                                    <span class="text-left">Level One</span> 
+                                    <span class="time float-right" >
+                                        <?php if((!empty($join_approve_form) && $join_approve_form[0]->updated_at != Null)){
+                                            ?>
+                                         <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[0]->updated_at)); ?>
+                                        <i class="fa fa-clock-o"></i> {{$ApplyDate}}
+                                         <?php
+                                               }else{
+                                                   ?>
+                                         <?php
+                                               }
+                                               ?>
+                                    </span>
+                                </h5>
+                                <h5>
+                                    <span class="rejected"> Rejected </span>
+                                    <span class="float-right"> 
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null)) {
+                                            ?>
+                                            <?php
+                                            if (!empty($join_approve_form[0]->action_taken_by)) {
+                                                foreach ($employeename as $value) {
+                                                    if ($join_approve_form[0]->action_taken_by == $value->id)
+                                                        echo $value->name;
+                                                }
+                                            }
+                                            ?>
+                                            <?php
+                                            }else {
+                                                ?><h6>None</h6>
+                                                <?php
+                                            }
+                                            ?>
+                                    </span>
+                                </h5>
 
-                                <h3 class="timeline-header no-border"> Reject on level one
-                                </h3>
-                                <div class="timeline-body">
-                                    Application check  and reject level one...
-                                </div>
                             </div>
                         </li>
                         <?php
@@ -863,9 +995,9 @@ $role = \Session::get('role');
                             <i class="fa fa-clock-o fa-2 bg-grey"></i>
 
                             <div class="timeline-item">
+                                  <h5> <span class="text-left">Level One</span> </h5>
                                 <span class="time">
-                                    <td>
-                                    <label for="date">Action pending by: </label>
+                                    
                                     <?php if ((!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null)) {
                                         ?>
                                         <?php
@@ -882,13 +1014,9 @@ $role = \Session::get('role');
                                         <?php
                                     }
                                     ?>
-                                 </td>
+                              
                                 </span>
-
-                                <h3 class="timeline-header no-border">   Pending on level one
-                                </h3>
-                                
-                                <div class="timeline-body">
+                                 <div class="timeline-body">
                                     Application pending level one...
                                 </div>
                             </div>
@@ -902,42 +1030,42 @@ $role = \Session::get('role');
                             <i class="fa fa-check fa-2 bg-green"></i>
 
                             <div class="timeline-item">
-                                 <span class="time">
-                                    <?php if((!empty($join_approve_form) && $join_approve_form[1]->updated_at != Null)){
-                                        ?>
-                                     <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[1]->updated_at)); ?>
-                                    <i class="fa fa-clock-o"></i>{{$ApplyDate}}
-                                     <?php
-                                           }else{
+                                <h5>
+                                    <span class="text-left">Level Two</span> 
+                                    <span class="time float-right" >
+                                        <?php if((!empty($join_approve_form) && $join_approve_form[1]->updated_at != Null)){
+                                            ?>
+                                         <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[1]->updated_at)); ?>
+                                        <i class="fa fa-clock-o"></i> {{$ApplyDate}}
+                                         <?php
+                                               }else{
+                                                   ?>
+                                         <?php
+                                               }
                                                ?>
-                                     <?php
-                                           }
-                                           ?>
-                                </span>
-                                <span>
-                                     <td>
-                                    <label for="date">Action taken by: </label>
+                                    </span>
+                                </h5>
+                                <h5>
+                                    <span class="approved"> Approved </span>
+                                    <span class="float-right"> 
                                     <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
-                                        ?>
-                                        <?php
-                                        if (!empty($join_approve_form[1]->action_taken_by)) {
-                                            foreach ($employeename as $value) {
-                                                if ($join_approve_form[1]->action_taken_by == $value->id)
-                                                    echo $value->name;
+                                            ?>
+                                            <?php
+                                            if (!empty($join_approve_form[1]->action_taken_by)) {
+                                                foreach ($employeename as $value) {
+                                                    if ($join_approve_form[1]->action_taken_by == $value->id)
+                                                        echo $value->name;
+                                                }
                                             }
-                                        }
-                                        ?>
-                                        <?php
-                                    }else {
-                                        ?><h6>None</h6>
-                                        <?php
-                                    }
-                                    ?>
-                                 </td>
-                                </span>
-
-                                <h3 class="timeline-header no-border"> Approve level two
-                                </h3>
+                                            ?>
+                                            <?php
+                                            }else {
+                                                ?><h6>None</h6>
+                                                <?php
+                                            }
+                                            ?>
+                                    </span>
+                                </h5>
 
                             </div>
                         </li>
@@ -948,17 +1076,48 @@ $role = \Session::get('role');
 
                         <li>
                             <i class="fa fa-times-circle bg-red"></i>
+                            
+                             <div class="timeline-item">
+                                <h5>
+                                    <span class="text-left">Level Two</span> 
+                                    <span class="time float-right" >
+                                        <?php if((!empty($join_approve_form) && $join_approve_form[1]->updated_at != Null)){
+                                            ?>
+                                         <?php $ApplyDate = date('d M Y', strtotime($join_approve_form[1]->updated_at)); ?>
+                                        <i class="fa fa-clock-o"></i> {{$ApplyDate}}
+                                         <?php
+                                               }else{
+                                                   ?>
+                                         <?php
+                                               }
+                                               ?>
+                                    </span>
+                                </h5>
+                                <h5>
+                                    <span class="rejected"> Rejected </span>
+                                    <span class="float-right"> 
+                                    <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
+                                            ?>
+                                            <?php
+                                            if (!empty($join_approve_form[1]->action_taken_by)) {
+                                                foreach ($employeename as $value) {
+                                                    if ($join_approve_form[1]->action_taken_by == $value->id)
+                                                        echo $value->name;
+                                                }
+                                            }
+                                            ?>
+                                            <?php
+                                            }else {
+                                                ?><h6>None</h6>
+                                                <?php
+                                            }
+                                            ?>
+                                    </span>
+                                </h5>
 
-                            <div class="timeline-item">
-                                <span class="time"><i class="fa fa-clock-o"></i> 5 mins ago</span>
-
-                                <h3 class="timeline-header no-border"> Reject on level two
-                                </h3>
-                                <div class="timeline-body">
-                                    Application check  and reject level two...
-                                </div>
                             </div>
-                        </li>
+                            
+                             </li>
                         <?php
                     } else {
                         if ((!empty($join_approve_form[1]) && $join_approve_form[1]->action_taken_by != Null && $join_approve_form[1]->status == 0 && $join_approve_form[1]->level == 2) && (!empty($join_approve_form[0]) && $join_approve_form[0]->action_taken_by != Null && ($join_approve_form[0]->status == 1 || $join_approve_form[0]->status == 0 ) && $join_approve_form[0]->level == 1)) {
@@ -967,9 +1126,9 @@ $role = \Session::get('role');
                                 <i class="fa fa-clock-o fa-2 bg-grey"></i>
 
                                 <div class="timeline-item">
+                                      <h5> <span class="text-left">Level Two</span> </h5>
                                     <span class="time">
-                                         <td>
-                                    <label for="date">Action pending by: </label>
+                                       
                                     <?php if ((!empty($join_approve_form) && $join_approve_form[1]->action_taken_by != Null)) {
                                         ?>
                                         <?php
@@ -986,11 +1145,10 @@ $role = \Session::get('role');
                                         <?php
                                     }
                                     ?>
-                                 </td>
+                             
                                     </span>
 
-                                    <h3 class="timeline-header no-border">   Pending on level two
-                                    </h3>
+                                   
                                     <div class="timeline-body">
                                         Application pending level two...
                                     </div>
@@ -1010,6 +1168,22 @@ $role = \Session::get('role');
                         ?>
 
                         <li>
+                            <i class="fa fa-check fa-2 bg-red"></i>
+
+                            <div class="timeline-item">
+                                <span class="time"></span>
+
+                                <h3 class="timeline-header no-border">Application close
+                                </h3>
+                               
+                            </div>
+                        </li>
+                        <?php
+                    }
+                    else if ($reimbursement_form->verified_level == $reimbursement_form->verified_approval && (!empty($join_approve_form) && $join_approve_form[1]->status == 1 && $join_approve_form[1]->level == 2 && (!empty($join_approve_form) && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1))) {
+                        ?>
+
+                        <li>
                             <i class="fa fa-check fa-2 bg-green"></i>
 
                             <div class="timeline-item">
@@ -1017,13 +1191,13 @@ $role = \Session::get('role');
 
                                 <h3 class="timeline-header no-border">Application close
                                 </h3>
-                                <div class="timeline-body">
-                                    Application check and close...
-                                </div>
+                               
                             </div>
                         </li>
                         <?php
-                    } else if (!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1) {
+                    }
+                    
+                    else if (!empty($join_approve_form) && $join_approve_form[0]->action_taken_by != Null && $join_approve_form[0]->status == 1 && $join_approve_form[0]->level == 1) {
                         ?>
                         <li>
                             <i class="fa fa-clock-o fa-2 bg-blue"></i>
@@ -1047,8 +1221,7 @@ $role = \Session::get('role');
                             <div class="timeline-item">
                                 <span class="time"> </span>
 
-                                <h3 class="timeline-header no-border">Application pending
-                                </h3>
+                                
                                 <div class="timeline-body">
                                     Application pending...
                                 </div>

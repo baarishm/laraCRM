@@ -277,7 +277,7 @@ Edit Apply  Reimbursement
                                     });
                                     
                                       $("#type_id").change(function () {
-                                      debugger;
+                                    
                                         var req = $(this).children("option:selected").attr("data-doc-req");
                                          var  hard = $(this).children("option:selected").attr("data-hard-copy");
                                          limit_variance=$(this).children("option:selected").attr("data-limit_variance");
@@ -298,9 +298,10 @@ Edit Apply  Reimbursement
                                     $("#type_id").trigger("change");
                                     
                                 });
-                                  function CheckApproval(){
-                                      var employee = parseInt($("#cosharing_count").val());
-                                        var emptotal = parseInt(employee+1);
+                                   function CheckApproval(){
+                                       var employee =   $("#cosharing_count").val()!= '' ? parseInt($("#cosharing_count").val()):0 ;
+                                   
+                                        var emptotal = parseInt(employee)+1;
                                         var actualAmout = parseFloat($("#amount").val());
                                         var amount = emptotal * (limit * limit_variance / 100);
                                         var realamount = parseFloat(limit * emptotal);
