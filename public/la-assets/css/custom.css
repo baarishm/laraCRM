@@ -291,7 +291,7 @@ ul.dropdown-menu li.header{
     background-repeat: repeat-x;
 }
 .bg-red {
-    background-color: #ffffff !important;
+    background-color: #FF9EAC !important;
 }
 .bg-red{
 
@@ -1013,4 +1013,30 @@ a.btn-xs{
 }
 .btn-success {
     max-height: 31px;
+}
+
+.timeline:before {
+ 
+    bottom: 60px;
+ 
+}
+ .timeline-item  h5{
+    margin-bottom: 20px;
+}
+.float-right{
+    float:right;
+}
+
+.approved{
+    background: #10cfbd;
+    padding: 4px 10px;
+    border-radius: 3px;
+    color: #fff;
+}
+
+.rejected{
+    background: #f55753;
+    padding: 4px 10px;
+    border-radius: 3px;
+    color: #fff;
 }

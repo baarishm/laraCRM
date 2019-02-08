@@ -405,10 +405,7 @@ class Reimbursement_FormsController extends Controller {
                         ->select([DB::raw('reimbursement_forms.* , reimbursement_approval.*')])
                         ->leftJoin('reimbursement_forms', 'reimbursement_forms.id', '=', 'reimbursement_approval.request_id')
                         ->where('reimbursement_approval.request_id', '=', $id)
-//                         ->where('reimbursement_approval.id' )
-//                        ->where('updated_at')
-                          
-                       ->get();
+                        ->get();
                 
                 $images = DB::table('reimbursement_documents')
                         ->select([DB::raw('reimbursement_forms.* , reimbursement_documents.*')])
@@ -590,7 +587,7 @@ class Reimbursement_FormsController extends Controller {
                 }
                 Reimbursement_Approval::insert([
                     'request_id' => $id,
-                    'action_taken_by' => $data['employee_details']['second_approver'],
+                    'action_taken_by' => 34,
                     'level' => 3
                 ]);
             } else {
@@ -603,7 +600,7 @@ class Reimbursement_FormsController extends Controller {
                 }
                 Reimbursement_Approval::insert([
                     'request_id' => $id,
-                    'action_taken_by' => $data['employee_details']['second_approver'],
+                    'action_taken_by' => 34,
                     'level' => 2
                 ]);
             }

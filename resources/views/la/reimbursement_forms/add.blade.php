@@ -236,7 +236,7 @@ Apply For Reimbursement
                                         limit=$(this).children("option:selected").attr("data-limit");
                                      
                                      
-                                        if (req == 'Yes') {
+                                        if (hard == 'Yes') {
                                             $('#doc-att-yes').find('input').prop("checked", "checked").trigger('click');
                                             $('#doc-att-no').find('input').prop("checked", false);
                                             $('#doc-att-no').hide();
@@ -255,12 +255,18 @@ Apply For Reimbursement
                                 });
 
                                     function CheckApproval(){
-                                      
-                                      var actualAmout=  parseFloat($("#amount").val());  
-                                      var limitVarianceAmout=parseFloat(limit*limit_variance/100);
-                                      var totalAmout=parseFloat(limit)+parseFloat(limitVarianceAmout);
-                                      if(actualAmout>totalAmout)
-                                          $("#verified_approval").val(2);                                 
+                                     var employee =   $("#cosharingcount").val()!= '' ? parseInt($("#cosharingcount").val()):0 ;
+                                      var emptotal = parseInt(employee)+1;
+                                        var actualAmout = parseFloat($("#amount").val());
+                                        var amount = emptotal * (limit * limit_variance / 100);
+                                        var realamount = parseFloat(limit * emptotal);
+                                        var total = parseFloat(realamount) + parseFloat(amount);
+                                        if (actualAmout > total) {
+                                            $("#verified_approval").val(3);
+                                        } else {
+                                            $("#verified_approval").val(2);
+                                        }
+                                     
                                     }
 
                                 $(function () {
